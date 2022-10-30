@@ -45,7 +45,7 @@ this text, so there is no need to worry about its uniqueness or keeping it safe.
 ./chotto --sequencer=https://kzg-ceremony-sequencer-dev.fly.dev/ --entropy-entry="Ethereum is awesome" --authentication=github
 ```
 
-### chotto cli arguments
+### CLI arguments
 
 ```bash
 $ ./chotto --help
@@ -75,7 +75,7 @@ Ethereum's Power of Tau client implementation written in Java
       --contribution-attempt-period=<contributionAttemptPeriod>
                              How often (in seconds) to attempt contribution
                                once authenticated
-                               Default: 5
+                               Default: 3
       --entropy-entry=<entropyEntry>
                              A text which would be used as a seed to generate
                                random secrets in the background. There will be
