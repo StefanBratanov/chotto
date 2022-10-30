@@ -115,7 +115,7 @@ public class Chotto implements Runnable {
     try {
       runSafely();
     } catch (final Throwable ex) {
-      LOG.error("There was an error during ceremony", ex);
+      LOG.error("There was an error during the ceremony", ex);
       System.exit(1);
     }
   }
