@@ -1,58 +1,52 @@
 plugins {
-	id "application"
-	id "com.diffplug.spotless" version "6.11.0"
+    id "application"
+    id "com.diffplug.spotless" version "6.11.0"
 }
 
 version = "0.0.1"
 group = "chotto"
 
 repositories {
-	mavenCentral()
-	maven { url "https://artifacts.consensys.net/public/maven/maven/" }
+    mavenCentral()
+    maven { url "https://artifacts.consensys.net/public/maven/maven/" }
 }
 
 dependencies {
 
-	implementation("ch.qos.logback:logback-core:1.4.4")
-	implementation("ch.qos.logback:logback-classic:1.4.4")
-	implementation("org.slf4j:slf4j-api:2.0.3")
-	implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.4")
-	implementation("io.javalin:javalin:5.1.2")
-	implementation("info.picocli:picocli:4.6.3")
-	annotationProcessor("info.picocli:picocli-codegen:4.6.3")
-	implementation("tech.pegasys:jblst:0.3.8")
-	implementation("org.apache.tuweni:tuweni-units:2.3.0")
-	implementation("com.networknt:json-schema-validator:1.0.73")
-	implementation("com.pivovarit:throwing-function:1.5.1")
+    implementation("ch.qos.logback:logback-core:1.4.4")
+    implementation("ch.qos.logback:logback-classic:1.4.4")
+    implementation("org.slf4j:slf4j-api:2.0.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.4")
+    implementation("io.javalin:javalin:5.1.2")
+    implementation("info.picocli:picocli:4.6.3")
+    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
+    implementation("tech.pegasys:jblst:0.3.8")
+    implementation("org.apache.tuweni:tuweni-units:2.3.0")
+    implementation("com.networknt:json-schema-validator:1.0.73")
+    implementation("com.pivovarit:throwing-function:1.5.1")
 
-	testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-	testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
-	testImplementation("org.assertj:assertj-core:3.23.1")
-	testImplementation("org.skyscreamer:jsonassert:1.5.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
+    testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.skyscreamer:jsonassert:1.5.1")
 }
 
 application {
-	mainClass.set("chotto.Chotto")
+    mainClass.set("chotto.Chotto")
 }
 
 java {
-	sourceCompatibility = JavaVersion.toVersion("11")
-	targetCompatibility = JavaVersion.toVersion("11")
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
 }
 
 compileJava {
-	options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
-}
-
-spotless {
-	java {
-		googleJavaFormat()
-	}
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
 tasks.withType(Test) {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 

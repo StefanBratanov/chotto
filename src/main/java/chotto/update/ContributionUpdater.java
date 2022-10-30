@@ -1,11 +1,12 @@
 package chotto.update;
 
+import java.util.Optional;
+
 import chotto.Constants;
 import chotto.objects.Contribution;
 import chotto.objects.G1Point;
 import chotto.objects.G2Point;
 import chotto.objects.PowersOfTau;
-import java.util.Optional;
 import org.apache.tuweni.units.bigints.UInt256;
 
 public class ContributionUpdater {

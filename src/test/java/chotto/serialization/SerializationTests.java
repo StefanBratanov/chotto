@@ -1,12 +1,11 @@
 package chotto.serialization;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import chotto.TestUtil;
 import chotto.objects.Contribution;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
 import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

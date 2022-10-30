@@ -1,5 +1,8 @@
 package chotto.verification;
 
+import java.io.UncheckedIOException;
+import java.util.Set;
+
 import chotto.objects.BatchContribution;
 import chotto.objects.Contribution;
 import chotto.objects.G1Point;
@@ -9,8 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.ValidationMessage;
-import java.io.UncheckedIOException;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

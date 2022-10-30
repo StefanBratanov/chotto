@@ -1,10 +1,9 @@
 package chotto;
 
+import chotto.objects.Secret;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
-import chotto.objects.Secret;
 
 public class CsprngStub extends Csprng {
 

@@ -1,13 +1,12 @@
 package chotto.identity;
 
-import java.net.http.HttpClient;
-import java.util.UUID;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import chotto.serialization.ChottoObjectMapper;
+import java.net.http.HttpClient;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class GitHubIdentityRetrieverTest {
 

@@ -1,5 +1,7 @@
 package chotto.signing;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import chotto.Constants;
 import chotto.TestUtil;
 import chotto.objects.BlsSignature;
@@ -7,8 +9,6 @@ import chotto.objects.Secret;
 import org.junit.jupiter.api.Test;
 import supranational.blst.BLST_ERROR;
 import supranational.blst.P2;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class SignerTest {
 

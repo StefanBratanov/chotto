@@ -1,5 +1,10 @@
 package chotto;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
 import chotto.auth.AuthCallback;
 import chotto.auth.Provider;
 import chotto.auth.SessionStore;
@@ -17,10 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
 import io.javalin.Javalin;
 import io.javalin.http.HandlerType;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;

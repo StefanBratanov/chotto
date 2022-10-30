@@ -1,9 +1,9 @@
 package chotto.identity;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import chotto.auth.Provider;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class IdentityRetrieverTest {
 

@@ -1,11 +1,11 @@
 package chotto.verification;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import chotto.serialization.ChottoObjectMapper;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ContributionVerificationTest {
 

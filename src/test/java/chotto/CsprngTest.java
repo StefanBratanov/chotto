@@ -1,14 +1,13 @@
 package chotto;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import chotto.objects.Secret;
-import org.apache.tuweni.units.bigints.UInt256;
-import org.junit.jupiter.api.Test;
-
 import static chotto.Constants.CURVE_ORDER;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import chotto.objects.Secret;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.tuweni.units.bigints.UInt256;
+import org.junit.jupiter.api.Test;
 
 class CsprngTest {
 
