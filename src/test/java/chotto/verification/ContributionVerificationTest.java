@@ -14,7 +14,7 @@ class ContributionVerificationTest {
 
   @Test
   public void checksSchema() {
-    final String contribution = TestUtil.readResource("InitialContribution.json");
+    final String contribution = TestUtil.readResource("initialContribution.json");
 
     assertThat(contributionVerification.schemaCheck(contribution)).isTrue();
   }
