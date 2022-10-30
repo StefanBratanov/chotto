@@ -1,6 +1,8 @@
 package chotto.contribution;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 import chotto.Csprng;
 import chotto.CsprngStub;
@@ -10,13 +12,12 @@ import chotto.objects.Secret;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import org.json.JSONException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ContributorTest {
 

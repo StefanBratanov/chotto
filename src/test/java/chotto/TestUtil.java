@@ -1,16 +1,17 @@
 package chotto;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+
 import chotto.objects.BatchContribution;
 import chotto.objects.Contribution;
 import chotto.objects.Secret;
 import chotto.serialization.ChottoObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 public class TestUtil {
 
