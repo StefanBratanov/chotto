@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class Contributor {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ContributionUpdater.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Contributor.class);
 
   private final Csprng csprng;
   private final Optional<String> maybeIdentity;

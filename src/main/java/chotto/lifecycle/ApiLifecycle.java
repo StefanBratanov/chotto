@@ -3,7 +3,6 @@ package chotto.lifecycle;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
-import chotto.Csprng;
 import chotto.cli.AsciiArtPrinter;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class ApiLifecycle {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Csprng.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ApiLifecycle.class);
 
   private final SessionInfo sessionInfo;
   private final SequencerClient sequencerClient;
