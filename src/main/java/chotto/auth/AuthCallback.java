@@ -23,7 +23,6 @@ public class AuthCallback implements Handler {
     final String sessionId = request.getParameter("session_id");
     final String nickname = request.getParameter("nickname");
     final Provider provider = Provider.fromProviderName(request.getParameter("provider"));
-    LOG.info("Successfully logged in with {} ({})", provider, nickname);
     final SessionInfo sessionInfo = new SessionInfo(provider, nickname, sessionId);
     sessionStore.setSessionInfo(sessionInfo);
     ctx.result(

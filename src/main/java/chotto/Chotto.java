@@ -178,6 +178,11 @@ public class Chotto implements Runnable {
 
     final SessionInfo sessionInfo = sessionStore.getSessionInfo().get();
 
+    LOG.info(
+        "Successfully logged in with {} ({})",
+        sessionInfo.getProvider(),
+        sessionInfo.getNickname());
+
     final IdentityRetriever identityRetriever =
         IdentityRetriever.create(sessionInfo.getProvider(), httpClient, objectMapper);
 
