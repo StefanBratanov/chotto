@@ -1,4 +1,4 @@
-package chotto.sequencer;
+package chotto.objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

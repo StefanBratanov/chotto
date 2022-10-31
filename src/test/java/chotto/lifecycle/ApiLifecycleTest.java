@@ -9,11 +9,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import chotto.auth.Provider;
+import chotto.auth.SessionInfo;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
-import chotto.sequencer.Receipt;
+import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
-import chotto.sequencer.SessionInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
@@ -75,7 +75,10 @@ class ApiLifecycleTest {
 
     doThrow(new IllegalStateException("oopsy")).when(contributor).contribute(receivedContribution);
 
-    Assertions.assertThrows(ApiLifecycleException.class, apiLifecycle::runLifecycle);
+    final IllegalStateException exception =
+        Assertions.assertThrows(IllegalStateException.class, apiLifecycle::runLifecycle);
+
+    assertThat(exception).hasMessage("There was an error during contribution");
 
     verify(sequencerClient).abortContribution("123");
     verify(sequencerClient, times(0)).contribute(any(), any());

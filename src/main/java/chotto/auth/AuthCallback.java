@@ -1,6 +1,5 @@
 package chotto.auth;
 
-import chotto.sequencer.SessionInfo;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import jakarta.servlet.http.HttpServletRequest;

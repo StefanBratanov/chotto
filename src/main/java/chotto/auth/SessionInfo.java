@@ -1,6 +1,5 @@
-package chotto.sequencer;
+package chotto.auth;
 
-import chotto.auth.Provider;
 import java.util.Objects;
 
 public class SessionInfo {

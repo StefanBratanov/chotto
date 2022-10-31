@@ -5,6 +5,8 @@ import static com.pivovarit.function.ThrowingSupplier.unchecked;
 import chotto.auth.Provider;
 import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
+import chotto.objects.CeremonyStatus;
+import chotto.objects.Receipt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
@@ -43,7 +45,7 @@ public class SequencerClient {
   }
 
   public CeremonyStatus getCeremonyStatus() {
-    final HttpRequest request = buildRequest("/info/status", Method.GET).build();
+    final HttpRequest request = buildGetRequest("/info/status").build();
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 
     if (response.statusCode() != 200) {
@@ -55,7 +57,7 @@ public class SequencerClient {
 
   public String getLoginLink(final Provider provider, final String redirectTo) {
     final HttpRequest request =
-        buildRequest("/auth/request_link?redirect_to=" + redirectTo, Method.GET).build();
+        buildGetRequest("/auth/request_link?redirect_to=" + redirectTo).build();
 
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 
@@ -76,7 +78,7 @@ public class SequencerClient {
 
   public Optional<BatchContribution> tryContribute(final String sessionId) {
     final HttpRequest request =
-        buildRequest("/lobby/try_contribute", Method.POST)
+        buildPostRequest("/lobby/try_contribute", BodyPublishers.noBody())
             .header("Authorization", "Bearer " + sessionId)
             .build();
 
@@ -110,9 +112,8 @@ public class SequencerClient {
 
   public Receipt contribute(final BatchContribution batchContribution, final String sessionId) {
     final HttpRequest request =
-        buildRequest(
+        buildPostRequest(
                 "/contribute",
-                Method.POST,
                 BodyPublishers.ofByteArray(
                     ThrowingSupplier.unchecked(
                             () -> objectMapper.writeValueAsBytes(batchContribution))
@@ -132,7 +133,7 @@ public class SequencerClient {
 
   public void abortContribution(final String sessionId) {
     final HttpRequest request =
-        buildRequest("/contribution/abort", Method.POST)
+        buildPostRequest("/contribution/abort", BodyPublishers.noBody())
             .header("Authorization", "Bearer " + sessionId)
             .build();
 
@@ -145,19 +146,19 @@ public class SequencerClient {
     LOG.info("Aborted contribution");
   }
 
-  private HttpRequest.Builder buildRequest(final String path, final Method method) {
-    return buildRequest(path, method, Optional.empty());
+  private HttpRequest.Builder buildGetRequest(final String path) {
+    return buildRequest(path, Method.GET, BodyPublishers.noBody());
+  }
+
+  private HttpRequest.Builder buildPostRequest(
+      final String path, final BodyPublisher bodyPublisher) {
+    return buildRequest(path, Method.POST, bodyPublisher);
   }
 
   private HttpRequest.Builder buildRequest(
       final String path, final Method method, final BodyPublisher bodyPublisher) {
-    return buildRequest(path, method, Optional.of(bodyPublisher));
-  }
-
-  private HttpRequest.Builder buildRequest(
-      final String path, final Method method, final Optional<BodyPublisher> bodyPublisher) {
     return HttpRequest.newBuilder(sequencerEndpoint.resolve(path))
-        .method(method.name(), bodyPublisher.orElse(BodyPublishers.noBody()));
+        .method(method.name(), bodyPublisher);
   }
 
   private <T> HttpResponse<T> sendRequest(

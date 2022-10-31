@@ -6,7 +6,7 @@ import picocli.CommandLine.IVersionProvider;
 
 /**
  * {@link IVersionProvider} implementation that returns version information from a {@code
- * /version.txt} file in the classpath. Taken from
+ * /version.txt} file in the classpath. Copied from
  * https://github.com/remkop/picocli/blob/main/picocli-examples/src/main/java/picocli/examples/VersionProviderDemo1.java
  */
 public class PropertiesVersionProvider implements IVersionProvider {

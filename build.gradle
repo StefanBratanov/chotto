@@ -62,9 +62,8 @@ task generateVersionTxt {
     doLast {
         new File(generatedResources).mkdirs()
         def generated = new File(generatedResources, "version.txt")
-        generated.text = """
-         Version: $rootProject.version
-         """
+        generated.text = "Version: $rootProject.version"
+
     }
 }
 

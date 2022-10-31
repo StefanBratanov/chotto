@@ -3,12 +3,12 @@ package chotto.lifecycle;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
+import chotto.auth.SessionInfo;
 import chotto.cli.AsciiArtPrinter;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
-import chotto.sequencer.Receipt;
+import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
-import chotto.sequencer.SessionInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class ApiLifecycle {
       updatedBatchContribution = contributor.contribute(batchContribution);
     } catch (final Exception ex) {
       sequencerClient.abortContribution(sessionId);
-      throw new ApiLifecycleException("There was an error during contribution", ex);
+      throw new IllegalStateException("There was an error during contribution", ex);
     }
 
     LOG.info("Finished contribution");

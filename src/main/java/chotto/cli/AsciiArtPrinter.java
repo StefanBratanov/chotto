@@ -1,6 +1,6 @@
 package chotto.cli;
 
-import chotto.sequencer.CeremonyStatus;
+import chotto.objects.CeremonyStatus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -25,7 +25,8 @@ public class AsciiArtPrinter {
 
   public static void printCeremonySummoning(final String nickname) {
     final String summoningText =
-        String.format("You (%s) have been summoned to take part in the ceremony", nickname);
+        String.format(
+            "You (%s) have been summoned to take part in the Ethereum KZG ceremony", nickname);
     printCeremonyCandlesWithText(summoningText);
   }
 

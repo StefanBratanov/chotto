@@ -2,6 +2,7 @@ package chotto;
 
 import chotto.auth.AuthCallback;
 import chotto.auth.Provider;
+import chotto.auth.SessionInfo;
 import chotto.auth.SessionStore;
 import chotto.cli.AsciiArtPrinter;
 import chotto.cli.LoginInstructor;
@@ -10,9 +11,8 @@ import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
 import chotto.identity.IdentityRetriever;
 import chotto.lifecycle.ApiLifecycle;
-import chotto.sequencer.CeremonyStatus;
+import chotto.objects.CeremonyStatus;
 import chotto.sequencer.SequencerClient;
-import chotto.sequencer.SessionInfo;
 import chotto.serialization.ChottoObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;

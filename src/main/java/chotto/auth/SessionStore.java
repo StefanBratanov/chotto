@@ -1,6 +1,5 @@
 package chotto.auth;
 
-import chotto.sequencer.SessionInfo;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
