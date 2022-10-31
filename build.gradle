@@ -46,12 +46,33 @@ compileJava {
     options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
+def generatedResources = "$buildDir/generated-resources/main"
+
+sourceSets {
+    main {
+        //register an output folder on the main SourceSet:
+        output.dir(generatedResources, builtBy: 'generateVersionTxt')
+        //it is now a part of the 'main' classpath and will be a part of the jar
+    }
+}
+
+//a task that generates the resources:
+task generateVersionTxt {
+    description 'Creates a version.txt file with build info that is added to the root of the jar'
+    doLast {
+        new File(generatedResources).mkdirs()
+        def generated = new File(generatedResources, "version.txt")
+        generated.text = """
+         Version: $rootProject.version
+         """
+    }
+}
+
 spotless {
     java {
         googleJavaFormat("1.13.0")
     }
 }
-
 
 tasks.withType(Test) {
     useJUnitPlatform()

@@ -5,6 +5,7 @@ import chotto.auth.Provider;
 import chotto.auth.SessionStore;
 import chotto.cli.AsciiArtPrinter;
 import chotto.cli.LoginInstructor;
+import chotto.cli.PropertiesVersionProvider;
 import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
 import chotto.identity.IdentityRetriever;
@@ -40,7 +41,7 @@ import picocli.CommandLine.Spec;
 @Command(
     name = "chotto",
     mixinStandardHelpOptions = true,
-    version = "0.0.1",
+    versionProvider = PropertiesVersionProvider.class,
     header = {
       "  _____ _           _   _        ",
       " / ____| |         | | | |       ",
