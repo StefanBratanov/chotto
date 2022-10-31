@@ -1,11 +1,8 @@
 package chotto;
 
 import chotto.objects.BatchContribution;
-import chotto.objects.Contribution;
 import chotto.objects.Secret;
 import chotto.serialization.ChottoObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -40,13 +37,5 @@ public class TestUtil {
 
   public static Secret generateRandomSecret() {
     return CSPRNG.generateSecret();
-  }
-
-  public static Contribution deserializeContribution(final JsonNode contributionJson) {
-    try {
-      return ChottoObjectMapper.getInstance().treeToValue(contributionJson, Contribution.class);
-    } catch (JsonProcessingException ioex) {
-      throw new UncheckedIOException(ioex);
-    }
   }
 }

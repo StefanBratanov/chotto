@@ -69,7 +69,7 @@ public class ApiLifecycle {
     final BatchContribution updatedBatchContribution;
     try {
       updatedBatchContribution = contributor.contribute(batchContribution);
-    } catch (final Throwable ex) {
+    } catch (final Exception ex) {
       sequencerClient.abortContribution(sessionId);
       throw new ApiLifecycleException("There was an error during contribution", ex);
     }

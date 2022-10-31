@@ -90,8 +90,8 @@ public class SequencerClient {
     LOG.info("A contribution was received. Verifying it.");
 
     if (!contributionVerification.schemaCheck(response.body())) {
-      throw new IllegalArgumentException(
-          "The received contribution does not match the defined contribution json schema.");
+      throw new IllegalStateException(
+          "The received contribution does not match the defined contribution json schema");
     }
 
     LOG.info("Contribution passes schema check");
@@ -100,8 +100,7 @@ public class SequencerClient {
         unchecked(() -> objectMapper.readValue(response.body(), BatchContribution.class)).get();
 
     if (!contributionVerification.subgroupChecks(batchContribution)) {
-      throw new IllegalArgumentException(
-          "The received contribution does not pass the point checks.");
+      throw new IllegalStateException("The received contribution does not pass the point checks");
     }
 
     LOG.info("Contribution passes point checks");

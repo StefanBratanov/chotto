@@ -183,6 +183,8 @@ public class Chotto implements Runnable {
 
     final String identity = identityRetriever.getIdentity(sessionInfo.getNickname());
 
+    LOG.info("Your identity is {}", identity);
+
     final Contributor contributor = new Contributor(csprng, identity, signContributions);
 
     final ApiLifecycle apiLifecycle =
@@ -203,7 +205,7 @@ public class Chotto implements Runnable {
   private void createOutputDirectoryIfNeeded() {
     try {
       Files.createDirectories(outputDirectory);
-    } catch (IOException ex) {
+    } catch (final IOException ex) {
       throw new UncheckedIOException(ex);
     }
   }

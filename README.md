@@ -1,10 +1,12 @@
 # Chotto
 
+[![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
+
 > ⚠️ This project is still WIP.
 
 Chotto can be used to participate in the KZG Ceremony which will
 bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers of Tau
-(PoT) CLI client implementation written in Java. It follows the spec defined in
+(PoT) client CLI implementation written in Java. It follows the spec defined in
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
 ## Build Instructions
