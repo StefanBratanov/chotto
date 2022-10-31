@@ -5,6 +5,7 @@ import chotto.auth.Provider;
 import chotto.auth.SessionStore;
 import chotto.cli.AsciiArtPrinter;
 import chotto.cli.LoginInstructor;
+import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
 import chotto.identity.IdentityRetriever;
 import chotto.lifecycle.ApiLifecycle;
@@ -12,7 +13,6 @@ import chotto.sequencer.CeremonyStatus;
 import chotto.sequencer.SequencerClient;
 import chotto.sequencer.SessionInfo;
 import chotto.serialization.ChottoObjectMapper;
-import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
 import io.javalin.Javalin;
@@ -173,15 +173,10 @@ public class Chotto implements Runnable {
 
     while (sessionStore.getSessionInfo().isEmpty()) {
       LOG.info("Waiting for user login...");
-      ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(10)).run();
+      ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(5)).run();
     }
 
     final SessionInfo sessionInfo = sessionStore.getSessionInfo().get();
-
-    LOG.info(
-        "Successfully logged in with {} ({})",
-        sessionInfo.getProvider(),
-        sessionInfo.getNickname());
 
     final IdentityRetriever identityRetriever =
         IdentityRetriever.create(sessionInfo.getProvider(), httpClient, objectMapper);

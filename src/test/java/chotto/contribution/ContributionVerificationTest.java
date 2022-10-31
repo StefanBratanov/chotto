@@ -1,4 +1,4 @@
-package chotto.verification;
+package chotto.contribution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

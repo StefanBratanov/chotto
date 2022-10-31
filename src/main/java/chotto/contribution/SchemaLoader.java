@@ -1,4 +1,4 @@
-package chotto.verification;
+package chotto.contribution;
 
 import java.io.InputStream;
 

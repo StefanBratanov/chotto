@@ -1,4 +1,4 @@
-package chotto.verification;
+package chotto.contribution;
 
 import java.io.UncheckedIOException;
 import java.util.Set;

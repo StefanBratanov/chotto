@@ -8,7 +8,6 @@ import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import chotto.objects.Secret;
 import chotto.serialization.ChottoObjectMapper;
-import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;

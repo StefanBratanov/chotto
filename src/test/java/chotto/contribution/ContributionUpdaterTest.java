@@ -1,11 +1,10 @@
-package chotto.update;
+package chotto.contribution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import chotto.serialization.ChottoObjectMapper;
-import chotto.verification.ContributionVerification;
 import org.junit.jupiter.api.Test;
 
 class ContributionUpdaterTest {

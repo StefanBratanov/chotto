@@ -4,7 +4,7 @@ import static com.pivovarit.function.ThrowingSupplier.unchecked;
 
 import chotto.auth.Provider;
 import chotto.objects.BatchContribution;
-import chotto.verification.ContributionVerification;
+import chotto.contribution.ContributionVerification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;

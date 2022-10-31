@@ -6,7 +6,6 @@ import chotto.objects.BlsSignature;
 import chotto.objects.Contribution;
 import chotto.objects.Secret;
 import chotto.signing.Signer;
-import chotto.update.ContributionUpdater;
 import java.util.List;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.slf4j.Logger;

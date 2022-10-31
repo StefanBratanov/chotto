@@ -1,4 +1,4 @@
-package chotto.update;
+package chotto.contribution;
 
 import java.util.Optional;
 
