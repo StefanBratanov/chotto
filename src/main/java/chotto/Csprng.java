@@ -1,11 +1,10 @@
 package chotto;
 
+import chotto.objects.Secret;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
-import chotto.objects.Secret;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -55,7 +55,7 @@ public class ApiLifecycle {
     Optional<BatchContribution> maybeContribution = sequencerClient.tryContribute(sessionId);
 
     while (maybeContribution.isEmpty()) {
-      LOG.info("Will try to contribute again in {} seconds", contributionAttemptPeriod);
+      LOG.info("Will try to contribute again in {} second(s)", contributionAttemptPeriod);
       ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(contributionAttemptPeriod)).run();
       maybeContribution = sequencerClient.tryContribute(sessionId);
     }

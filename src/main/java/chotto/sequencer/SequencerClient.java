@@ -3,8 +3,8 @@ package chotto.sequencer;
 import static com.pivovarit.function.ThrowingSupplier.unchecked;
 
 import chotto.auth.Provider;
-import chotto.objects.BatchContribution;
 import chotto.contribution.ContributionVerification;
+import chotto.objects.BatchContribution;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;

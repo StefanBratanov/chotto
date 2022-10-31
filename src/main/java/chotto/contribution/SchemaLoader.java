@@ -1,10 +1,9 @@
 package chotto.contribution;
 
-import java.io.InputStream;
-
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
+import java.io.InputStream;
 
 public class SchemaLoader {
 
