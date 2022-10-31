@@ -142,6 +142,8 @@ public class SequencerClient {
     if (response.statusCode() != 200) {
       LOG.error(getFailureMessage(response, "Failed to abort contribution"));
     }
+
+    LOG.info("Aborted contribution");
   }
 
   private HttpRequest.Builder buildRequest(final String path, final Method method) {

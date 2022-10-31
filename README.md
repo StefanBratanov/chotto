@@ -1,12 +1,10 @@
 # Chotto
 
-[![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
-
 > ⚠️ This project is still WIP.
 
 Chotto can be used to participate in the KZG Ceremony which will
 bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers of Tau
-(PoT) client implementation written in Java. It follows the spec defined in
+(PoT) CLI client implementation written in Java. It follows the spec defined in
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
 ## Build Instructions
@@ -59,7 +57,8 @@ Usage: chotto [-hV] [--sign-contributions]
               [--auth-callback-endpoint=<authCallbackEndpoint>]
               [--authentication=<provider>]
               [--contribution-attempt-period=<contributionAttemptPeriod>]
-              --entropy-entry=<entropyEntry> --sequencer=<sequencer>
+              --entropy-entry=<entropyEntry>
+              --output-directory=<outputDirectory> --sequencer=<sequencer>
               [--server-port=<serverPort>]
 Ethereum's Power of Tau client implementation written in Java
       --auth-callback-endpoint=<authCallbackEndpoint>
@@ -83,6 +82,10 @@ Ethereum's Power of Tau client implementation written in Java
                                text, so there is no need to worry about its
                                uniqueness or keeping it safe.
   -h, --help                 Show this help message and exit.
+      --output-directory=<outputDirectory>
+                             The directory where the outputs of the ceremony
+                               will be stored
+                               Default: <user.home>\kzg-ceremony
       --sequencer=<sequencer>
                              The URL of the sequencer which would be used for
                                the ceremony

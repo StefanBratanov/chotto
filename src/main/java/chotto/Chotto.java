@@ -1,10 +1,5 @@
 package chotto;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
 import chotto.auth.AuthCallback;
 import chotto.auth.Provider;
 import chotto.auth.SessionStore;
@@ -22,6 +17,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
 import io.javalin.Javalin;
 import io.javalin.http.HandlerType;
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -110,17 +115,28 @@ public class Chotto implements Runnable {
           "The URL of this process which will be used as an authentication callback endpoint. Specify this option ONLY if you decide to login from a browser on a different computer. Make sure the URL is accessible from that browser.")
   private URI authCallbackEndpoint = null;
 
+  @Option(
+      names = {"--output-directory"},
+      description = "The directory where the outputs of the ceremony will be stored",
+      showDefaultValue = Visibility.ALWAYS)
+  private Path outputDirectory =
+      Paths.get(System.getProperty("user.home") + File.separator + "kzg-ceremony");
+
   @Override
   public void run() {
     try {
       runSafely();
     } catch (final Throwable ex) {
-      LOG.error("There was an error during the ceremony", ex);
+      LOG.error(
+          "There was an error during the ceremony. You can restart Chotto to try to contribute again.",
+          ex);
       System.exit(1);
     }
   }
 
   private void runSafely() {
+    createOutputDirectoryIfNeeded();
+
     AsciiArtPrinter.printBanner();
 
     final SessionStore sessionStore = new SessionStore();
@@ -167,16 +183,29 @@ public class Chotto implements Runnable {
 
     final String identity = identityRetriever.getIdentity(sessionInfo.getNickname());
 
-    final Contributor contributor =
-        new Contributor(csprng, signContributions ? Optional.of(identity) : Optional.empty());
+    final Contributor contributor = new Contributor(csprng, identity, signContributions);
 
     final ApiLifecycle apiLifecycle =
-        new ApiLifecycle(sessionInfo, sequencerClient, contributionAttemptPeriod, contributor);
+        new ApiLifecycle(
+            sessionInfo,
+            sequencerClient,
+            contributionAttemptPeriod,
+            contributor,
+            objectMapper,
+            outputDirectory);
 
     apiLifecycle.runLifecycle();
 
     AsciiArtPrinter.printThankYou();
     System.exit(0);
+  }
+
+  private void createOutputDirectoryIfNeeded() {
+    try {
+      Files.createDirectories(outputDirectory);
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    }
   }
 
   public static void main(String[] args) {

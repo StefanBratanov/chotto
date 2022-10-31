@@ -12,7 +12,6 @@ import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import org.json.JSONException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -36,12 +35,14 @@ class ContributorTest {
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
-  public void checkContributionFlow(final boolean withIdentity) throws IOException, JSONException {
+  public void checkContributionFlow(final boolean signContributions)
+      throws IOException, JSONException {
+    final String identity = "git|14827647|@StefanBratanov";
     final Contributor contributor;
-    if (withIdentity) {
-      contributor = new Contributor(csprng, Optional.of("git|14827647|@StefanBratanov"));
+    if (signContributions) {
+      contributor = new Contributor(csprng, identity, true);
     } else {
-      contributor = new Contributor(csprng, Optional.empty());
+      contributor = new Contributor(csprng, identity, false);
     }
     final BatchContribution initialBatchContribution = TestUtil.getInitialBatchContribution();
 
@@ -50,7 +51,9 @@ class ContributorTest {
     final String actualContribution = OBJECT_MAPPER.writeValueAsString(updatedContribution);
     final String expectedContribution =
         TestUtil.readResource(
-            withIdentity ? "updatedContribution.json" : "updatedContributionNoSignatures.json");
+            signContributions
+                ? "updatedContribution.json"
+                : "updatedContributionNoSignatures.json");
 
     JSONAssert.assertEquals(expectedContribution, actualContribution, true);
 

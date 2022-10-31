@@ -8,7 +8,6 @@ import chotto.objects.Secret;
 import chotto.signing.Signer;
 import chotto.update.ContributionUpdater;
 import java.util.List;
-import java.util.Optional;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +17,13 @@ public class Contributor {
   private static final Logger LOG = LoggerFactory.getLogger(Contributor.class);
 
   private final Csprng csprng;
-  private final Optional<String> maybeIdentity;
+  private final String identity;
+  private final boolean signContributions;
 
-  public Contributor(final Csprng csprng, final Optional<String> maybeIdentity) {
+  public Contributor(final Csprng csprng, final String identity, final boolean signContributions) {
     this.csprng = csprng;
-    this.maybeIdentity = maybeIdentity;
+    this.identity = identity;
+    this.signContributions = signContributions;
   }
 
   public BatchContribution contribute(final BatchContribution batchContribution) {
@@ -36,8 +37,7 @@ public class Contributor {
       LOG.info("Updated Powers of Tau");
       ContributionUpdater.updateWitness(contribution, secretNumber);
       LOG.info("Updated Witness");
-      if (maybeIdentity.isPresent()) {
-        final String identity = maybeIdentity.get();
+      if (signContributions) {
         final BlsSignature signature = Signer.blsSign(secret, identity);
         contribution.setBlsSignature(signature);
         LOG.info("Signed contribution");
