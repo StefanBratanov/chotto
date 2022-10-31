@@ -4,12 +4,8 @@ import chotto.sequencer.SessionInfo;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AuthCallback implements Handler {
-
-  private static final Logger LOG = LoggerFactory.getLogger(AuthCallback.class);
 
   private final SessionStore sessionStore;
 
