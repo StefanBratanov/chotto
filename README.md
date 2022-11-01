@@ -58,10 +58,8 @@ $ ./chotto --help
  \_____|_| |_|\___/ \__|\__\___/
 Usage: chotto [-hV] [--sign-contributions]
               [--auth-callback-endpoint=<authCallbackEndpoint>]
-              [--authentication=<provider>]
-              [--contribution-attempt-period=<contributionAttemptPeriod>]
-              --entropy-entry=<entropyEntry>
-              --output-directory=<outputDirectory> --sequencer=<sequencer>
+              [--authentication=<provider>] --entropy-entry=<entropyEntry>
+              [--output-directory=<outputDirectory>] --sequencer=<sequencer>
               [--server-port=<serverPort>]
 Ethereum's Power of Tau client implementation written in Java
       --auth-callback-endpoint=<authCallbackEndpoint>
@@ -74,10 +72,6 @@ Ethereum's Power of Tau client implementation written in Java
                              The authentication provider which will be used for
                                logging in. Valid values: Ethereum, Github
                                Default: Ethereum
-      --contribution-attempt-period=<contributionAttemptPeriod>
-                             How often (in seconds) to attempt contribution
-                               once authenticated
-                               Default: 5
       --entropy-entry=<entropyEntry>
                              A text which would be used as a seed to generate
                                random secrets in the background. There will be
@@ -88,7 +82,7 @@ Ethereum's Power of Tau client implementation written in Java
       --output-directory=<outputDirectory>
                              The directory where the outputs of the ceremony
                                will be stored
-                               Default: <user.home>\kzg-ceremony
+                               Default: C:\Users\Stefan\kzg-ceremony
       --sequencer=<sequencer>
                              The URL of the sequencer which would be used for
                                the ceremony

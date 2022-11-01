@@ -16,7 +16,7 @@ public class TestUtil {
   public static String readResource(final String resource) {
     try {
       return new String(readResourceAsInputStream(resource).readAllBytes(), StandardCharsets.UTF_8);
-    } catch (IOException ioex) {
+    } catch (final IOException ioex) {
       throw new UncheckedIOException(ioex);
     }
   }
@@ -30,7 +30,7 @@ public class TestUtil {
 
     try {
       return ChottoObjectMapper.getInstance().readValue(contributionIs, BatchContribution.class);
-    } catch (IOException ioex) {
+    } catch (final IOException ioex) {
       throw new UncheckedIOException(ioex);
     }
   }

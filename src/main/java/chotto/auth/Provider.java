@@ -12,15 +12,15 @@ public enum Provider {
     this.providerName = providerName;
   }
 
+  @Override
+  public String toString() {
+    return providerName;
+  }
+
   public static Provider fromProviderName(final String providerName) {
     return Arrays.stream(Provider.values())
         .filter(provider -> provider.providerName.equalsIgnoreCase(providerName))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Unknown provider: " + providerName));
-  }
-
-  @Override
-  public String toString() {
-    return providerName;
   }
 }
