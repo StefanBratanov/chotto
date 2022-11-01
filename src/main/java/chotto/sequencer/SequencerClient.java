@@ -89,9 +89,16 @@ public class SequencerClient {
       return Optional.empty();
     }
 
+    final String contributionJson = response.body();
+
+    if (contributionJsonIsErrorMessage(contributionJson)) {
+      LOG.error(getFailureMessage(response, "Contribution is not available"));
+      return Optional.empty();
+    }
+
     LOG.info("A contribution was received. Verifying it.");
 
-    if (!contributionVerification.schemaCheck(response.body())) {
+    if (!contributionVerification.schemaCheck(contributionJson)) {
       throw new IllegalStateException(
           "The received contribution does not match the defined contribution json schema");
     }
@@ -99,7 +106,7 @@ public class SequencerClient {
     LOG.info("Contribution passes schema check");
 
     final BatchContribution batchContribution =
-        unchecked(() -> objectMapper.readValue(response.body(), BatchContribution.class)).get();
+        unchecked(() -> objectMapper.readValue(contributionJson, BatchContribution.class)).get();
 
     if (!contributionVerification.subgroupChecks(batchContribution)) {
       throw new IllegalStateException("The received contribution does not pass the point checks");
@@ -182,5 +189,9 @@ public class SequencerClient {
             .filter(body -> !body.isBlank())
             .map(body -> ", message: " + body)
             .orElse(""));
+  }
+
+  private boolean contributionJsonIsErrorMessage(final String contributionJson) {
+    return contributionJson.contains("\"code\"") && contributionJson.contains("\"message\"");
   }
 }

@@ -52,6 +52,8 @@ class SequencerClientTest {
             URI.create("http://localhost:" + mockServer.getPort()),
             objectMapper,
             contributionVerification);
+    when(contributionVerification.schemaCheck(anyString())).thenReturn(true);
+    when(contributionVerification.subgroupChecks(any())).thenReturn(true);
   }
 
   @AfterEach
@@ -117,6 +119,23 @@ class SequencerClientTest {
   }
 
   @Test
+  public void testContributionReturnsErrorMessage() {
+    mockServer
+        .when(
+            request()
+                .withMethod("POST")
+                .withHeader("Authorization", "Bearer " + sessionId)
+                .withPath("/lobby/try_contribute"))
+        .respond(
+            response()
+                .withStatusCode(200)
+                .withBody(
+                    "{\"code\":\"TryContributeError::AnotherContributionInProgress\",\"message\":\"another contribution in progress\"}"));
+
+    assertThat(sequencerClient.tryContribute(sessionId)).isEmpty();
+  }
+
+  @Test
   public void testContributionDoesNotPassSchemaCheck() {
     setupContributionResponse();
 
@@ -135,7 +154,6 @@ class SequencerClientTest {
   public void testContributionDoesNotPassPointChecks() {
     setupContributionResponse();
 
-    when(contributionVerification.schemaCheck(anyString())).thenReturn(true);
     when(contributionVerification.subgroupChecks(any())).thenReturn(false);
 
     final IllegalStateException exception =
@@ -148,9 +166,6 @@ class SequencerClientTest {
   @Test
   public void testContributionIsAvailable() {
     setupContributionResponse();
-
-    when(contributionVerification.schemaCheck(anyString())).thenReturn(true);
-    when(contributionVerification.subgroupChecks(any())).thenReturn(true);
 
     assertThat(sequencerClient.tryContribute(sessionId))
         .hasValue(TestUtil.getInitialBatchContribution());
