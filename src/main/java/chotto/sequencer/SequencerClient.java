@@ -147,18 +147,17 @@ public class SequencerClient {
   }
 
   private HttpRequest.Builder buildGetRequest(final String path) {
-    return buildRequest(path, Method.GET, BodyPublishers.noBody());
+    return buildRequest(path, "GET", BodyPublishers.noBody());
   }
 
   private HttpRequest.Builder buildPostRequest(
       final String path, final BodyPublisher bodyPublisher) {
-    return buildRequest(path, Method.POST, bodyPublisher);
+    return buildRequest(path, "POST", bodyPublisher);
   }
 
   private HttpRequest.Builder buildRequest(
-      final String path, final Method method, final BodyPublisher bodyPublisher) {
-    return HttpRequest.newBuilder(sequencerEndpoint.resolve(path))
-        .method(method.name(), bodyPublisher);
+      final String path, final String method, final BodyPublisher bodyPublisher) {
+    return HttpRequest.newBuilder(sequencerEndpoint.resolve(path)).method(method, bodyPublisher);
   }
 
   private <T> HttpResponse<T> sendRequest(
@@ -179,11 +178,9 @@ public class SequencerClient {
         "%s (status: %s%s)",
         errorPrefix,
         response.statusCode(),
-        Optional.ofNullable(response.body()).map(body -> ", message: " + body).orElse(""));
-  }
-
-  private enum Method {
-    GET,
-    POST;
+        Optional.ofNullable(response.body())
+            .filter(body -> !body.isBlank())
+            .map(body -> ", message: " + body)
+            .orElse(""));
   }
 }
