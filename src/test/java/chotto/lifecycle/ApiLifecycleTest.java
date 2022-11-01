@@ -17,13 +17,14 @@ import chotto.sequencer.SequencerClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 class ApiLifecycleTest {
+
+  private final ContributeTrier contributeTrier = mock(ContributeTrier.class);
 
   private final SequencerClient sequencerClient = mock(SequencerClient.class);
 
@@ -43,12 +44,11 @@ class ApiLifecycleTest {
 
   @BeforeEach
   public void setup() {
-    when(sequencerClient.tryContribute("123"))
-        .thenReturn(Optional.empty())
-        .thenReturn(Optional.of(receivedContribution));
+    when(contributeTrier.tryContributeUntilSuccess("123")).thenReturn(receivedContribution);
 
     apiLifecycle =
-        new ApiLifecycle(sessionInfo, sequencerClient, 1, contributor, objectMapper, tempDir);
+        new ApiLifecycle(
+            sessionInfo, contributeTrier, sequencerClient, contributor, objectMapper, tempDir);
   }
 
   @Test

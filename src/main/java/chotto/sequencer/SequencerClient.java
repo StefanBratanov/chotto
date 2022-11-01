@@ -7,6 +7,8 @@ import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.Receipt;
+import chotto.objects.SequencerError;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
@@ -92,7 +94,7 @@ public class SequencerClient {
     final String contributionJson = response.body();
 
     if (contributionJsonIsErrorMessage(contributionJson)) {
-      LOG.error(getFailureMessage(response, "Contribution is not available"));
+      LOG.warn(getFailureMessage(response, "Contribution is not available"));
       return Optional.empty();
     }
 
@@ -192,6 +194,11 @@ public class SequencerClient {
   }
 
   private boolean contributionJsonIsErrorMessage(final String contributionJson) {
-    return contributionJson.contains("\"code\"") && contributionJson.contains("\"message\"");
+    try {
+      objectMapper.readValue(contributionJson, SequencerError.class);
+      return true;
+    } catch (final JsonProcessingException __) {
+      return false;
+    }
   }
 }

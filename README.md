@@ -77,7 +77,7 @@ Ethereum's Power of Tau client implementation written in Java
       --contribution-attempt-period=<contributionAttemptPeriod>
                              How often (in seconds) to attempt contribution
                                once authenticated
-                               Default: 3
+                               Default: 5
       --entropy-entry=<entropyEntry>
                              A text which would be used as a seed to generate
                                random secrets in the background. There will be

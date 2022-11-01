@@ -61,5 +61,7 @@ class ContributorTest {
 
     assertThat(validJson).isTrue();
     assertThat(validContribution).isTrue();
+
+    assertThat(updatedContribution.getEcdsaSignature()).isNull();
   }
 }

@@ -11,6 +11,7 @@ import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
 import chotto.identity.IdentityRetriever;
 import chotto.lifecycle.ApiLifecycle;
+import chotto.lifecycle.ContributeTrier;
 import chotto.objects.CeremonyStatus;
 import chotto.sequencer.SequencerClient;
 import chotto.serialization.ChottoObjectMapper;
@@ -85,12 +86,12 @@ public class Chotto implements Runnable {
       showDefaultValue = Visibility.ALWAYS)
   private Provider provider = Provider.ETHEREUM;
 
-  private int contributionAttemptPeriod = 3;
+  private int contributionAttemptPeriod = 5;
 
   @Option(
       names = {"--contribution-attempt-period"},
-      description = "How often (in seconds) to attempt contribution once authenticated",
-      defaultValue = "3",
+      description = "How often (in seconds) to attempt contribution once authenticated.",
+      defaultValue = "5",
       showDefaultValue = Visibility.ALWAYS)
   public void setContributionAttemptPeriod(final int value) {
     if (value < 1) {
@@ -188,11 +189,14 @@ public class Chotto implements Runnable {
 
     final Contributor contributor = new Contributor(csprng, identity, signContributions);
 
+    final ContributeTrier contributeTrier =
+        new ContributeTrier(sequencerClient, contributionAttemptPeriod);
+
     final ApiLifecycle apiLifecycle =
         new ApiLifecycle(
             sessionInfo,
+            contributeTrier,
             sequencerClient,
-            contributionAttemptPeriod,
             contributor,
             objectMapper,
             outputDirectory);

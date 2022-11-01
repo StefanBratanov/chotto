@@ -45,6 +45,7 @@ public class Contributor {
         LOG.info("Skipped signing contribution");
       }
     }
+    batchContribution.setEcdsaSignature(null);
     return batchContribution;
   }
 }

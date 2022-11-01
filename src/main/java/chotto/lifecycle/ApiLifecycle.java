@@ -10,12 +10,9 @@ import chotto.objects.BatchContribution;
 import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pivovarit.function.ThrowingRunnable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,22 +21,22 @@ public class ApiLifecycle {
   private static final Logger LOG = LoggerFactory.getLogger(ApiLifecycle.class);
 
   private final SessionInfo sessionInfo;
+  private final ContributeTrier contributeTrier;
   private final SequencerClient sequencerClient;
-  private final int contributionAttemptPeriod;
   private final Contributor contributor;
   private final ObjectMapper objectMapper;
   private final Path outputDirectory;
 
   public ApiLifecycle(
       final SessionInfo sessionInfo,
+      final ContributeTrier contributeTrier,
       final SequencerClient sequencerClient,
-      final int contributionAttemptPeriod,
       final Contributor contributor,
       final ObjectMapper objectMapper,
       final Path outputDirectory) {
     this.sessionInfo = sessionInfo;
+    this.contributeTrier = contributeTrier;
     this.sequencerClient = sequencerClient;
-    this.contributionAttemptPeriod = contributionAttemptPeriod;
     this.contributor = contributor;
     this.objectMapper = objectMapper;
     this.outputDirectory = outputDirectory;
@@ -52,15 +49,8 @@ public class ApiLifecycle {
 
     LOG.info("Trying to contribute");
 
-    Optional<BatchContribution> maybeContribution = sequencerClient.tryContribute(sessionId);
-
-    while (maybeContribution.isEmpty()) {
-      LOG.info("Will try to contribute again in {} second(s)", contributionAttemptPeriod);
-      ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(contributionAttemptPeriod)).run();
-      maybeContribution = sequencerClient.tryContribute(sessionId);
-    }
-
-    final BatchContribution batchContribution = maybeContribution.get();
+    final BatchContribution batchContribution =
+        contributeTrier.tryContributeUntilSuccess(sessionId);
 
     AsciiArtPrinter.printCeremonySummoning(nickname);
 
