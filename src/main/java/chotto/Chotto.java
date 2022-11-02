@@ -91,7 +91,7 @@ public class Chotto implements Runnable {
   @Option(
       names = {"--contribution-attempt-period"},
       description =
-          "How often (in seconds) to attempt contribution once authenticated. If this value is set to a low number, you may observe rate limiting errors from the sequencer.",
+          "How often (in seconds) to attempt contribution once authenticated. This value could change dynamically based on responses from the sequencer.",
       defaultValue = "15",
       showDefaultValue = Visibility.ALWAYS)
   public void setContributionAttemptPeriod(final int value) {

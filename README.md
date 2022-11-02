@@ -76,9 +76,9 @@ Ethereum's Power of Tau client implementation written in Java
                                Default: Ethereum
       --contribution-attempt-period=<contributionAttemptPeriod>
                              How often (in seconds) to attempt contribution
-                               once authenticated. If this value is set to a
-                               low number, you may observe rate limiting errors
-                               from the sequencer.
+                               once authenticated. This value could change
+                               dynamically based on responses from the
+                               sequencer.
                                Default: 15
       --entropy-entry=<entropyEntry>
                              A text which would be used as a seed to generate
