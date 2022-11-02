@@ -5,6 +5,8 @@ import org.apache.tuweni.units.bigints.UInt256;
 
 public class Constants {
 
+  public static final String AUTH_CALLBACK_PATH = "/auth/callback";
+
   public static final UInt256 CURVE_ORDER =
       UInt256.valueOf(
           new BigInteger(

@@ -1,5 +1,7 @@
 package chotto;
 
+import static chotto.Constants.AUTH_CALLBACK_PATH;
+
 import chotto.auth.AuthCallback;
 import chotto.auth.Provider;
 import chotto.auth.SessionInfo;
@@ -36,6 +38,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Spec;
 
 @Command(
@@ -54,8 +57,6 @@ import picocli.CommandLine.Spec;
 public class Chotto implements Runnable {
 
   private static final Logger LOG = LoggerFactory.getLogger(Chotto.class);
-
-  private static final String AUTH_CALLBACK_PATH = "/auth/callback";
 
   @Spec CommandSpec spec;
 
@@ -84,6 +85,26 @@ public class Chotto implements Runnable {
           "The authentication provider which will be used for logging in. Valid values: ${COMPLETION-CANDIDATES}",
       showDefaultValue = Visibility.ALWAYS)
   private Provider provider = Provider.ETHEREUM;
+
+  private int contributionAttemptPeriod = 15;
+
+  @Option(
+      names = {"--contribution-attempt-period"},
+      description =
+          "How often (in seconds) to attempt contribution once authenticated. If this value is set to a low number, you may observe rate limiting errors from the sequencer.",
+      defaultValue = "15",
+      showDefaultValue = Visibility.ALWAYS)
+  public void setContributionAttemptPeriod(final int value) {
+    if (value < 1) {
+      throw new ParameterException(
+          spec.commandLine(),
+          String.format(
+              "Invalid value '%d' for option '--contribution-attempt-period': "
+                  + "value should be bigger than 0.",
+              value));
+    }
+    contributionAttemptPeriod = value;
+  }
 
   @Option(
       names = {"--sign-contributions"},
@@ -169,7 +190,8 @@ public class Chotto implements Runnable {
 
     final Contributor contributor = new Contributor(csprng, identity, signContributions);
 
-    final ContributeTrier contributeTrier = new ContributeTrier(sequencerClient, 5);
+    final ContributeTrier contributeTrier =
+        new ContributeTrier(sequencerClient, TimeUnit.SECONDS, contributionAttemptPeriod);
 
     final ApiLifecycle apiLifecycle =
         new ApiLifecycle(

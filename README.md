@@ -58,7 +58,9 @@ $ ./chotto --help
  \_____|_| |_|\___/ \__|\__\___/
 Usage: chotto [-hV] [--sign-contributions]
               [--auth-callback-endpoint=<authCallbackEndpoint>]
-              [--authentication=<provider>] --entropy-entry=<entropyEntry>
+              [--authentication=<provider>]
+              [--contribution-attempt-period=<contributionAttemptPeriod>]
+              --entropy-entry=<entropyEntry>
               [--output-directory=<outputDirectory>] --sequencer=<sequencer>
               [--server-port=<serverPort>]
 Ethereum's Power of Tau client implementation written in Java
@@ -72,6 +74,12 @@ Ethereum's Power of Tau client implementation written in Java
                              The authentication provider which will be used for
                                logging in. Valid values: Ethereum, Github
                                Default: Ethereum
+      --contribution-attempt-period=<contributionAttemptPeriod>
+                             How often (in seconds) to attempt contribution
+                               once authenticated. If this value is set to a
+                               low number, you may observe rate limiting errors
+                               from the sequencer.
+                               Default: 15
       --entropy-entry=<entropyEntry>
                              A text which would be used as a seed to generate
                                random secrets in the background. There will be

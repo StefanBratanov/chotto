@@ -115,7 +115,16 @@ class SequencerClientTest {
                 .withBody(
                     "{\"code\":\"TryContributeError::RateLimited\",\"error\":\"call came too early. rate limited\"}"));
 
-    assertThat(sequencerClient.tryContribute(sessionId)).isEmpty();
+    final TryContributeResponse response = sequencerClient.tryContribute(sessionId);
+
+    assertThat(response.getBatchContribution()).isEmpty();
+    assertThat(response.getSequencerError())
+        .hasValueSatisfying(
+            sequencerError -> {
+              assertThat(sequencerError.getCode()).isEqualTo("TryContributeError::RateLimited");
+              assertThat(sequencerError.getMessage())
+                  .isEqualTo("call came too early. rate limited");
+            });
   }
 
   @Test
@@ -132,7 +141,16 @@ class SequencerClientTest {
                 .withBody(
                     "{\"code\":\"TryContributeError::AnotherContributionInProgress\",\"message\":\"another contribution in progress\"}"));
 
-    assertThat(sequencerClient.tryContribute(sessionId)).isEmpty();
+    final TryContributeResponse response = sequencerClient.tryContribute(sessionId);
+
+    assertThat(response.getBatchContribution()).isEmpty();
+    assertThat(response.getSequencerError())
+        .hasValueSatisfying(
+            sequencerError -> {
+              assertThat(sequencerError.getCode())
+                  .isEqualTo("TryContributeError::AnotherContributionInProgress");
+              assertThat(sequencerError.getMessage()).isEqualTo("another contribution in progress");
+            });
   }
 
   @Test
@@ -167,8 +185,9 @@ class SequencerClientTest {
   public void testContributionIsAvailable() {
     setupContributionResponse();
 
-    assertThat(sequencerClient.tryContribute(sessionId))
-        .hasValue(TestUtil.getInitialBatchContribution());
+    final TryContributeResponse response = sequencerClient.tryContribute(sessionId);
+    assertThat(response.getBatchContribution()).hasValue(TestUtil.getInitialBatchContribution());
+    assertThat(response.getSequencerError()).isEmpty();
   }
 
   @Test

@@ -1,5 +1,6 @@
 package chotto.auth;
 
+import static chotto.Constants.AUTH_CALLBACK_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.javalin.http.HandlerType;
@@ -19,11 +20,12 @@ class AuthCallbackTest {
 
     JavalinTest.test(
         ((server, client) -> {
-          server.addHandler(HandlerType.GET, "/test", authCallback);
+          server.addHandler(HandlerType.GET, AUTH_CALLBACK_PATH, authCallback);
 
           final Response response =
               client.get(
-                  "/test?session_id=a6d8bd3b-3154-4d29-bdd7-d28669b0a4a5&sub=eth+%7C+0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad&nickname=0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad&provider=Ethereum&exp=18446744073709551645");
+                  AUTH_CALLBACK_PATH
+                      + "?session_id=a6d8bd3b-3154-4d29-bdd7-d28669b0a4a5&sub=eth+%7C+0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad&nickname=0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad&provider=Ethereum&exp=18446744073709551645");
 
           assertThat(response.code()).isEqualTo(200);
           assertThat(Objects.requireNonNull(response.body()).string())

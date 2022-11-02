@@ -8,7 +8,6 @@ import chotto.objects.BatchContribution;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.Receipt;
 import chotto.objects.SequencerError;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
@@ -78,7 +77,7 @@ public class SequencerClient {
     }
   }
 
-  public Optional<BatchContribution> tryContribute(final String sessionId) {
+  public TryContributeResponse tryContribute(final String sessionId) {
     final HttpRequest request =
         buildPostRequest("/lobby/try_contribute", BodyPublishers.noBody())
             .header("Authorization", "Bearer " + sessionId)
@@ -88,14 +87,16 @@ public class SequencerClient {
 
     if (response.statusCode() != 200) {
       LOG.error(getFailureMessage(response, "Contribution is not available"));
-      return Optional.empty();
+      return new TryContributeResponse(Optional.empty(), getMaybeSequencerError(response.body()));
     }
 
     final String contributionJson = response.body();
 
-    if (contributionJsonIsErrorMessage(contributionJson)) {
-      LOG.warn(getFailureMessage(response, "Contribution is not available"));
-      return Optional.empty();
+    final Optional<SequencerError> maybeSequencerError = getMaybeSequencerError(contributionJson);
+
+    if (maybeSequencerError.isPresent()) {
+      LOG.info(getFailureMessage(response, "Contribution is not available"));
+      return new TryContributeResponse(Optional.empty(), maybeSequencerError);
     }
 
     LOG.info("A contribution was received. Verifying it.");
@@ -116,7 +117,7 @@ public class SequencerClient {
 
     LOG.info("Contribution passes point checks");
 
-    return Optional.of(batchContribution);
+    return new TryContributeResponse(Optional.of(batchContribution), Optional.empty());
   }
 
   public Receipt contribute(final BatchContribution batchContribution, final String sessionId) {
@@ -150,6 +151,7 @@ public class SequencerClient {
 
     if (response.statusCode() != 200) {
       LOG.error(getFailureMessage(response, "Failed to abort contribution"));
+      return;
     }
 
     LOG.info("Aborted contribution");
@@ -193,12 +195,12 @@ public class SequencerClient {
             .orElse(""));
   }
 
-  private boolean contributionJsonIsErrorMessage(final String contributionJson) {
+  private Optional<SequencerError> getMaybeSequencerError(final String json) {
     try {
-      objectMapper.readValue(contributionJson, SequencerError.class);
-      return true;
-    } catch (final JsonProcessingException __) {
-      return false;
+      final SequencerError sequencerError = objectMapper.readValue(json, SequencerError.class);
+      return Optional.of(sequencerError);
+    } catch (final Exception __) {
+      return Optional.empty();
     }
   }
 }
