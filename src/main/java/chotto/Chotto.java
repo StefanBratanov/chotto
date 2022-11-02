@@ -115,7 +115,7 @@ public class Chotto implements Runnable {
   @Option(
       names = {"--auth-callback-endpoint"},
       description =
-          "The URL of this process which will be used as an authentication callback endpoint. Specify this option ONLY if you decide to login from a browser on a different computer. Make sure the URL is accessible from that browser.")
+          "The URL of the server which is started by this process. Specify this option ONLY if you decide to login from a browser on a different computer. Make sure the URL is accessible from that browser.")
   private URI authCallbackEndpoint = null;
 
   @Option(
@@ -147,6 +147,8 @@ public class Chotto implements Runnable {
 
     final Javalin app = Javalin.create().start(serverPort);
     app.addHandler(HandlerType.GET, AUTH_CALLBACK_PATH, authCallback);
+
+    LOG.info("Started server on port {}", serverPort);
 
     final HttpClient httpClient = HttpClient.newBuilder().build();
     final ObjectMapper objectMapper = ChottoObjectMapper.getInstance();

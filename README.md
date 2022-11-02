@@ -66,11 +66,11 @@ Usage: chotto [-hV] [--sign-contributions]
               [--server-port=<serverPort>]
 Ethereum's Power of Tau client implementation written in Java
       --auth-callback-endpoint=<authCallbackEndpoint>
-                             The URL of this process which will be used as an
-                               authentication callback endpoint. Specify this
-                               option ONLY if you decide to login from a
-                               browser on a different computer. Make sure the
-                               URL is accessible from that browser.
+                             The URL of the server which is started by this
+                               process. Specify this option ONLY if you decide
+                               to login from a browser on a different computer.
+                               Make sure the URL is accessible from that
+                               browser.
       --authentication=<provider>
                              The authentication provider which will be used for
                                logging in. Valid values: Ethereum, Github

@@ -54,7 +54,7 @@ public class ContributeTrier {
       final SequencerError sequencerError = maybeSequencerError.get();
       if (errorIsRateLimiting(sequencerError)) {
         LOG.info(
-            "Rate limiting error was received. Will increase period for the next contribution attempt.");
+            "Rate limiting error was received from the sequencer. Will increase period for the next contribution attempt.");
         rateLimitingAttemptPeriod *= 2;
         return rateLimitingAttemptPeriod;
       } else {
