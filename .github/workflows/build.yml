@@ -29,3 +29,5 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: spotlessCheck build
+      - name: Codecov
+          uses: codecov/codecov-action@v3

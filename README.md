@@ -28,9 +28,9 @@ This will install ready to use executables in `build/install/chotto/bin`
 
 ## Usage
 
-`entropy-entry` is a required value to the process. It would be used as a seed to generate
-random secrets in the background. There will be several layers of randomness on top of
-this text, so there is no need to worry about its uniqueness or keeping it safe.
+`entropy-entry` is a required value to the process. It would be used as a seed to generate random
+secrets in the background. There will be several layers of randomness on top of this text, so there
+is no need to worry about its uniqueness or keeping it safe.
 
 ### Sample Usage
 
