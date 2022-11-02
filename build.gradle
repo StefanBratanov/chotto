@@ -80,12 +80,7 @@ tasks.withType(Test) {
     useJUnitPlatform()
 }
 
-test {
-    finalizedBy jacocoTestReport
-}
-
 jacocoTestReport {
-    dependsOn test
     reports {
         xml.required = true
     }

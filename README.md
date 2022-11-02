@@ -1,6 +1,7 @@
 # Chotto
 
 [![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
+[![codecov](https://codecov.io/github/StefanBratanov/chotto/branch/master/graph/badge.svg?token=9WEPEA6GA7)](https://codecov.io/github/StefanBratanov/chotto)
 [![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
 
 > ⚠️ This project is still WIP.
