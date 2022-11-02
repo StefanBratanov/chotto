@@ -90,7 +90,7 @@ Ethereum's Power of Tau client implementation written in Java
       --output-directory=<outputDirectory>
                              The directory where the outputs of the ceremony
                                will be stored
-                               Default: C:\Users\Stefan\kzg-ceremony
+                               Default: <user.home>\kzg-ceremony
       --sequencer=<sequencer>
                              The URL of the sequencer which would be used for
                                the ceremony
