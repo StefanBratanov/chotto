@@ -12,6 +12,7 @@ import chotto.sequencer.SequencerClient;
 import chotto.sequencer.TryContributeResponse;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ContributeTrierTest {
@@ -121,5 +122,29 @@ class ContributeTrierTest {
     // 200 (2nd call) + 100 (2nd call) + 200 (3rd call)
     assertThat(endCall - startCall).isGreaterThanOrEqualTo(500);
     assertThat(endCall - startCall).isLessThan(700);
+  }
+
+  @Test
+  public void testContributionFailsIfThereIsUnknownSessionIdError() {
+    final TryContributeResponse unknownSessionIdResponse =
+        new TryContributeResponse(
+            Optional.empty(),
+            Optional.of(
+                new SequencerError("TryContributeError::UnknownSessionId", "unknown session id")));
+
+    when(sequencerClient.tryContribute(sessionId))
+        .thenReturn(emptyResponse)
+        .thenReturn(unknownSessionIdResponse);
+
+    final IllegalStateException exception =
+        Assertions.assertThrows(
+            IllegalStateException.class,
+            () -> contributeTrier.tryContributeUntilSuccess(sessionId));
+
+    assertThat(exception)
+        .hasMessage(
+            "Unknown session id error was received from the sequencer. Try restarting the client and authenticating again.");
+
+    verify(sequencerClient, times(2)).tryContribute(sessionId);
   }
 }

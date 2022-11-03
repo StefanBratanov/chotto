@@ -57,6 +57,9 @@ public class ContributeTrier {
             "Rate limiting error was received from the sequencer. Will increase period for the next contribution attempt.");
         rateLimitingAttemptPeriod *= 2;
         return rateLimitingAttemptPeriod;
+      } else if (errorIsUnknownSessionId(sequencerError)) {
+        throw new IllegalStateException(
+            "Unknown session id error was received from the sequencer. Try restarting the client and authenticating again.");
       } else {
         resetRateLimitingAttemptPeriod();
       }
@@ -71,6 +74,10 @@ public class ContributeTrier {
 
   private boolean errorIsRateLimiting(final SequencerError sequencerError) {
     return sequencerError.getCode().contains("RateLimited");
+  }
+
+  private boolean errorIsUnknownSessionId(final SequencerError sequencerError) {
+    return sequencerError.getCode().contains("UnknownSessionId");
   }
 
   private void sleep(final int period) {

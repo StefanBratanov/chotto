@@ -16,7 +16,7 @@ public class LoginInstructor {
           loginLink);
       unchecked(
               () -> {
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(1);
                 final Desktop desktop = Desktop.getDesktop();
                 desktop.browse(new URI(loginLink));
               })
