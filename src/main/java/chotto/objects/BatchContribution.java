@@ -1,5 +1,6 @@
 package chotto.objects;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
@@ -13,7 +14,7 @@ public class BatchContribution {
   @JsonCreator
   public BatchContribution(
       @JsonProperty("contributions") final List<Contribution> contributions,
-      @JsonProperty("ecdsaSignature") final String ecdsaSignature) {
+      @JsonProperty("ecdsaSignature") @JsonAlias("ecdsa_signature") final String ecdsaSignature) {
     this.contributions = contributions;
     this.ecdsaSignature = ecdsaSignature;
   }

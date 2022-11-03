@@ -86,7 +86,7 @@ public class SequencerClient {
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 
     if (response.statusCode() != 200) {
-      LOG.error(getFailureMessage(response, "Contribution is not available"));
+      LOG.warn(getFailureMessage(response, "Contribution is not available"));
       return new TryContributeResponse(Optional.empty(), getMaybeSequencerError(response.body()));
     }
 

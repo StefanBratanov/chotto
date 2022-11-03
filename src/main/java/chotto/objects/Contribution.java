@@ -1,5 +1,6 @@
 package chotto.objects;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
@@ -19,7 +20,7 @@ public class Contribution {
       @JsonProperty("numG2Powers") final int numG2Powers,
       @JsonProperty("powersOfTau") final PowersOfTau powersOfTau,
       @JsonProperty("potPubkey") final Optional<G2Point> potPubkey,
-      @JsonProperty("bls_signature") final BlsSignature blsSignature) {
+      @JsonProperty("bls_signature") @JsonAlias("blsSignature") final BlsSignature blsSignature) {
     this.numG1Powers = numG1Powers;
     this.numG2Powers = numG2Powers;
     this.powersOfTau = powersOfTau;

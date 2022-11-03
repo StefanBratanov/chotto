@@ -11,6 +11,10 @@ public class BlsSignatureDeserializer extends JsonDeserializer<BlsSignature> {
   @Override
   public BlsSignature deserialize(final JsonParser p, final DeserializationContext ctxt)
       throws IOException {
-    return BlsSignature.fromHexString(p.getValueAsString());
+    final String valueAsString = p.getValueAsString();
+    if (valueAsString.isBlank()) {
+      return null;
+    }
+    return BlsSignature.fromHexString(valueAsString);
   }
 }
