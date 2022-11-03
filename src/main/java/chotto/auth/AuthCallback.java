@@ -3,6 +3,7 @@ package chotto.auth;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +20,10 @@ public class AuthCallback implements Handler {
   @Override
   public void handle(final Context ctx) {
     final HttpServletRequest request = ctx.req();
-    final String sessionId = request.getParameter("session_id");
-    final String nickname = request.getParameter("nickname");
+    final String sessionId =
+        Objects.requireNonNull(request.getParameter("session_id"), "session_id must not be null");
+    final String nickname =
+        Objects.requireNonNull(request.getParameter("nickname"), "nickname must not be null");
     final Provider provider = Provider.fromProviderName(request.getParameter("provider"));
     final SessionInfo sessionInfo = new SessionInfo(provider, nickname, sessionId);
     sessionStore.setSessionInfo(sessionInfo);
