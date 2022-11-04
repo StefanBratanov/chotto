@@ -51,6 +51,8 @@ class ChottoIntegrationTest {
     mockServer =
         ClientAndServer.startClientAndServer(Configuration.configuration().logLevel(Level.WARN));
     serverPort = getFreePort();
+    mockCeremonyStatusResponse();
+    mockLoginLinksResponse();
   }
 
   @AfterEach
@@ -61,8 +63,6 @@ class ChottoIntegrationTest {
   @Test
   public void testSuccessfulContribution() throws IOException, InterruptedException {
 
-    mockCeremonyStatusResponse();
-    mockLoginLinksResponse();
     mockTryContributeResponse();
     mockUploadingContributionResponse();
 
@@ -84,9 +84,30 @@ class ChottoIntegrationTest {
         .satisfies(
             contributionJson ->
                 assertThat(contributionVerification.schemaCheck(contributionJson)).isTrue());
-
     // verify receipt is saved
     assertThat(tempDir.resolve("receipt-" + ethAddress + ".txt")).exists().isNotEmptyFile();
+  }
+
+  @Test
+  public void testProcessFailWhenUnknownSessionIdFromSequencer()
+      throws IOException, InterruptedException {
+
+    mockTryContributeUnknownSessionIdResponse();
+
+    final CompletableFuture<Integer> exitCode = runChottoCommand();
+
+    await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
+
+    triggerAuthCallbackManually();
+
+    await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
+
+    assertThat(exitCode).isCompletedWithValue(1);
+
+    assertThat(logCaptor.getErrorLogs())
+        .contains(
+            "There was an error during the ceremony. You can restart Chotto to try to contribute again.");
+    assertThat(tempDir).isEmptyDirectory();
   }
 
   private CompletableFuture<Integer> runChottoCommand() {
@@ -136,6 +157,20 @@ class ChottoIntegrationTest {
             response()
                 .withStatusCode(200)
                 .withBody(TestUtil.readResource("integration/contribution.json")));
+  }
+
+  private void mockTryContributeUnknownSessionIdResponse() {
+    mockServer
+        .when(
+            request()
+                .withMethod("POST")
+                .withHeader("Authorization", "Bearer " + sessionId)
+                .withPath("/lobby/try_contribute"))
+        .respond(
+            response()
+                .withStatusCode(401)
+                .withBody(
+                    "{\"code\":\"TryContributeError::UnknownSessionId\",\"error\":\"unknown session id\"}"));
   }
 
   private void mockUploadingContributionResponse() {
