@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ import picocli.CommandLine.Spec;
       " \\_____|_| |_|\\___/ \\__|\\__\\___/ "
     },
     description = "Ethereum's Power of Tau client implementation written in Java")
-public class Chotto implements Runnable {
+public class Chotto implements Callable<Integer> {
 
   private static final Logger LOG = LoggerFactory.getLogger(Chotto.class);
 
@@ -126,14 +127,15 @@ public class Chotto implements Runnable {
       Paths.get(System.getProperty("user.home") + File.separator + "kzg-ceremony");
 
   @Override
-  public void run() {
+  public Integer call() {
     try {
       runSafely();
+      return 0;
     } catch (final Throwable ex) {
       LOG.error(
           "There was an error during the ceremony. You can restart Chotto to try to contribute again.",
           ex);
-      System.exit(1);
+      return 1;
     }
   }
 
@@ -207,7 +209,6 @@ public class Chotto implements Runnable {
     apiLifecycle.runLifecycle();
 
     AsciiArtPrinter.printThankYou();
-    System.exit(0);
   }
 
   private void createOutputDirectoryIfNeeded() {
@@ -220,6 +221,8 @@ public class Chotto implements Runnable {
 
   public static void main(String[] args) {
     System.setProperty("picocli.ansi", "false");
-    new CommandLine(new Chotto()).setCaseInsensitiveEnumValuesAllowed(true).execute(args);
+    final int exitCode =
+        new CommandLine(new Chotto()).setCaseInsensitiveEnumValuesAllowed(true).execute(args);
+    System.exit(exitCode);
   }
 }

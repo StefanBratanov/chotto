@@ -43,7 +43,7 @@ class SequencerClientTest {
   private SequencerClient sequencerClient;
 
   @BeforeEach
-  public void startMockServer() {
+  public void setUp() {
     mockServer =
         ClientAndServer.startClientAndServer(Configuration.configuration().logLevel(Level.WARN));
     sequencerClient =
@@ -57,7 +57,7 @@ class SequencerClientTest {
   }
 
   @AfterEach
-  public void stopMockServer() {
+  public void cleanUp() {
     mockServer.stop();
   }
 
