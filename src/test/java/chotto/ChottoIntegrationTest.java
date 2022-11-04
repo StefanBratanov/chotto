@@ -70,7 +70,7 @@ class ChottoIntegrationTest {
 
     await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
 
-    triggerCallbackManually();
+    triggerAuthCallbackManually();
 
     await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
 
@@ -151,7 +151,7 @@ class ChottoIntegrationTest {
                 .withBody(TestUtil.readResource("integration/receipt.json")));
   }
 
-  private void triggerCallbackManually() throws IOException, InterruptedException {
+  private void triggerAuthCallbackManually() throws IOException, InterruptedException {
     final HttpRequest httpRequest =
         HttpRequest.newBuilder()
             .uri(

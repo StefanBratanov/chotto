@@ -12,8 +12,6 @@ public class Csprng {
 
   private static final Logger LOG = LoggerFactory.getLogger(Csprng.class);
 
-  private final Random random = new Random();
-
   private final byte[] entropyEntry;
 
   private final Set<Secret> generatedSecrets = new HashSet<>();
@@ -27,7 +25,7 @@ public class Csprng {
     // replace half or more entries with random bytes to increase entropy
     final int leftBytesToFill = Math.max(seed.length - entropyEntry.length, 16);
     final byte[] randomBytes = new byte[leftBytesToFill];
-    random.nextBytes(randomBytes);
+    new Random().nextBytes(randomBytes);
     System.arraycopy(randomBytes, 0, seed, 32 - leftBytesToFill, leftBytesToFill);
     final Secret secret = Secret.fromSeed(seed);
     if (generatedSecrets.contains(secret)) {
