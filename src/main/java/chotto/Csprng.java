@@ -21,12 +21,12 @@ public class Csprng {
   }
 
   public Secret generateSecret() {
-    final byte[] seed = Arrays.copyOf(entropyEntry, 32);
+    final byte[] seed = Arrays.copyOf(entropyEntry, 64);
     // replace half or more entries with random bytes to increase entropy
-    final int leftBytesToFill = Math.max(seed.length - entropyEntry.length, 16);
+    final int leftBytesToFill = Math.max(seed.length - entropyEntry.length, 32);
     final byte[] randomBytes = new byte[leftBytesToFill];
     new Random().nextBytes(randomBytes);
-    System.arraycopy(randomBytes, 0, seed, 32 - leftBytesToFill, leftBytesToFill);
+    System.arraycopy(randomBytes, 0, seed, 64 - leftBytesToFill, leftBytesToFill);
     final Secret secret = Secret.fromSeed(seed);
     if (generatedSecrets.contains(secret)) {
       LOG.warn("The generated secret has already been generated before. Will generate a new one.");
