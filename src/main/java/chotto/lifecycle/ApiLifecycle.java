@@ -7,18 +7,24 @@ import chotto.auth.SessionInfo;
 import chotto.cli.AsciiArtPrinter;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
+import chotto.objects.BatchTranscript;
 import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApiLifecycle {
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiLifecycle.class);
+
+  private static final DateTimeFormatter FILE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
   private final SessionInfo sessionInfo;
   private final ContributeTrier contributeTrier;
@@ -76,6 +82,7 @@ public class ApiLifecycle {
 
     saveContribution(updatedBatchContribution, nickname);
     saveReceipt(receipt, nickname);
+    requestAndSaveTranscript();
   }
 
   private void saveContribution(final BatchContribution contribution, final String nickname) {
@@ -84,7 +91,7 @@ public class ApiLifecycle {
       final String contributionJson = objectMapper.writeValueAsString(contribution);
       Files.writeString(contributionPath, contributionJson, CREATE, TRUNCATE_EXISTING);
       LOG.info("Saved contribution to {}", contributionPath);
-    } catch (IOException __) {
+    } catch (final IOException __) {
       LOG.warn("Couldn't save contribution to {}", contributionPath);
     }
   }
@@ -94,9 +101,23 @@ public class ApiLifecycle {
     try {
       Files.writeString(receiptPath, receipt.getReceipt(), CREATE, TRUNCATE_EXISTING);
       LOG.info("Saved receipt to {}", receiptPath);
-    } catch (IOException __) {
+    } catch (final IOException __) {
       LOG.warn("Couldn't save receipt to {}. Will log it instead below.", receiptPath);
       LOG.info(receipt.getReceipt());
+    }
+  }
+
+  private void requestAndSaveTranscript() {
+    final Path transcriptPath =
+        outputDirectory.resolve(
+            "transcript-" + FILE_TIME_FORMATTER.format(LocalDateTime.now()) + ".json");
+    try {
+      final BatchTranscript transcript = sequencerClient.getTranscript();
+      final String transcriptJson = objectMapper.writeValueAsString(transcript);
+      Files.writeString(transcriptPath, transcriptJson, CREATE);
+      LOG.info("Saved transcript to {}", transcriptPath);
+    } catch (final Exception ex) {
+      LOG.warn("Couldn't save transcript to " + transcriptPath, ex);
     }
   }
 }

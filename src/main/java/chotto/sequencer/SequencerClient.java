@@ -5,6 +5,7 @@ import static com.pivovarit.function.ThrowingSupplier.unchecked;
 import chotto.auth.Provider;
 import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
+import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.Receipt;
 import chotto.objects.SequencerError;
@@ -54,6 +55,17 @@ public class SequencerClient {
     }
 
     return unchecked(() -> objectMapper.readValue(response.body(), CeremonyStatus.class)).get();
+  }
+
+  public BatchTranscript getTranscript() {
+    final HttpRequest request = buildGetRequest("/info/current_state").build();
+    final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
+
+    if (response.statusCode() != 200) {
+      throwException(response, "Failed to get transcript");
+    }
+
+    return unchecked(() -> objectMapper.readValue(response.body(), BatchTranscript.class)).get();
   }
 
   public String getLoginLink(final Provider provider, final String redirectTo) {

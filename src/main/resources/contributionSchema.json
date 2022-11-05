@@ -79,7 +79,7 @@
         "potPubkey": {
           "type": "string"
         },
-        "bls_signature": {
+        "blsSignature": {
           "anyOf": [
             {
               "$ref": "#/$defs/G1Point"
@@ -137,7 +137,7 @@
         "potPubkey": {
           "type": "string"
         },
-        "bls_signature": {
+        "blsSignature": {
           "anyOf": [
             {
               "$ref": "#/$defs/G1Point"
@@ -195,7 +195,7 @@
         "potPubkey": {
           "type": "string"
         },
-        "bls_signature": {
+        "blsSignature": {
           "anyOf": [
             {
               "$ref": "#/$defs/G1Point"
@@ -253,7 +253,7 @@
         "potPubkey": {
           "type": "string"
         },
-        "bls_signature": {
+        "blsSignature": {
           "anyOf": [
             {
               "$ref": "#/$defs/G1Point"

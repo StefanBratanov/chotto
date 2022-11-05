@@ -44,7 +44,6 @@ public class Contribution {
     return potPubkey;
   }
 
-  @JsonProperty("bls_signature")
   public BlsSignature getBlsSignature() {
     return blsSignature;
   }

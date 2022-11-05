@@ -12,12 +12,16 @@ import chotto.TestUtil;
 import chotto.auth.Provider;
 import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
+import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.Receipt;
+import chotto.objects.Transcript;
+import chotto.objects.Witness;
 import chotto.serialization.ChottoObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.util.List;
 import org.json.JSONException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -27,6 +31,7 @@ import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.event.Level;
 
 class SequencerClientTest {
@@ -76,6 +81,34 @@ class SequencerClientTest {
     assertThat(ceremonyStatus.getLobbySize()).isEqualTo(1);
     assertThat(ceremonyStatus.getNumContributions()).isEqualTo(16);
     assertThat(ceremonyStatus.getSequencerAddress()).isEqualTo("string");
+  }
+
+  @Test
+  public void testGettingCurrentTranscript() {
+    mockServer
+        .when(request().withMethod("GET").withPath("/info/current_state"))
+        .respond(
+            response()
+                .withStatusCode(200)
+                .withBody(TestUtil.readResource("initialTranscript.json")));
+
+    final BatchTranscript batchTranscript = sequencerClient.getTranscript();
+    final List<Transcript> transcripts = batchTranscript.getTranscripts();
+
+    assertThat(transcripts).hasSize(4);
+    assertThat(batchTranscript.getParticipantIds()).hasSize(1);
+    assertThat(batchTranscript.getParticipantEcdsaSignatures()).hasSize(1);
+
+    transcripts.forEach(
+        transcript -> {
+          assertThat(transcript.getPowersOfTau()).isNotNull();
+          final Witness witness = transcript.getWitness();
+          assertThat(witness.getRunningProducts()).isNotEmpty();
+          assertThat(witness.getPotPubkeys()).isNotEmpty();
+          assertThat(witness.getBlsSignatures()).isNotEmpty();
+          assertThat(transcript.getNumG1Powers()).isGreaterThan(0);
+          assertThat(transcript.getNumG2Powers()).isGreaterThan(0);
+        });
   }
 
   @Test
@@ -219,7 +252,7 @@ class SequencerClientTest {
     JSONAssert.assertEquals(
         TestUtil.readResource("initialContribution.json"),
         recordedRequest[0].getBodyAsString(),
-        true);
+        JSONCompareMode.STRICT_ORDER);
   }
 
   @Test

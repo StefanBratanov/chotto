@@ -23,7 +23,7 @@ public class LoginInstructor {
           .run();
     } else {
       if (authCallbackEndpoint == null) {
-        throw new IllegalArgumentException(
+        throw new IllegalStateException(
             "--auth-callback-endpoint must be defined when a local browser is not supported");
       }
       System.out.printf(

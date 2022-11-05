@@ -65,6 +65,7 @@ class ChottoIntegrationTest {
 
     mockTryContributeResponse();
     mockUploadingContributionResponse();
+    mockGetTranscriptResponse();
 
     final CompletableFuture<Integer> exitCode = runChottoCommand();
 
@@ -86,6 +87,7 @@ class ChottoIntegrationTest {
                 assertThat(contributionVerification.schemaCheck(contributionJson)).isTrue());
     // verify receipt is saved
     assertThat(tempDir.resolve("receipt-" + ethAddress + ".txt")).exists().isNotEmptyFile();
+    assertThat(TestUtil.findSavedTranscriptFile(tempDir)).isNotEmptyFile();
   }
 
   @Test
@@ -184,6 +186,15 @@ class ChottoIntegrationTest {
             response()
                 .withStatusCode(200)
                 .withBody(TestUtil.readResource("integration/receipt.json")));
+  }
+
+  private void mockGetTranscriptResponse() {
+    mockServer
+        .when(request().withMethod("GET").withPath("/info/current_state"))
+        .respond(
+            response()
+                .withStatusCode(200)
+                .withBody(TestUtil.readResource("integration/transcript.json")));
   }
 
   private void triggerAuthCallbackManually() throws IOException, InterruptedException {
