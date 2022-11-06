@@ -1,4 +1,4 @@
-package chotto.signing;
+package chotto.sign;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 import supranational.blst.BLST_ERROR;
 import supranational.blst.P2;
 
-class SignerTest {
+class BlsSignerTest {
 
   @Test
   public void testBlsSigning() {
     final Secret secret = TestUtil.generateRandomSecret();
     final String identity = "git|12345678|@username";
 
-    final BlsSignature signature = Signer.blsSign(secret, identity);
+    final BlsSignature signature = BlsSigner.sign(secret, identity);
 
     assertThat(signature.toBytesCompressed().size()).isEqualTo(48);
 

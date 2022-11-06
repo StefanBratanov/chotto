@@ -5,7 +5,7 @@ import chotto.objects.BatchContribution;
 import chotto.objects.BlsSignature;
 import chotto.objects.Contribution;
 import chotto.objects.Secret;
-import chotto.signing.Signer;
+import chotto.sign.BlsSigner;
 import java.util.List;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class Contributor {
       ContributionUpdater.updateWitness(contribution, secretNumber);
       LOG.info("Updated Witness");
       if (signContributions) {
-        final BlsSignature signature = Signer.blsSign(secret, identity);
+        final BlsSignature signature = BlsSigner.sign(secret, identity);
         contribution.setBlsSignature(signature);
         LOG.info("Signed contribution");
       } else {

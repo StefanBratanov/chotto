@@ -28,7 +28,11 @@ public class TestUtil {
   }
 
   public static BatchContribution getInitialBatchContribution() {
-    final InputStream contributionIs = readResourceAsInputStream("initialContribution.json");
+    return getBatchContribution("initialContribution.json");
+  }
+
+  public static BatchContribution getBatchContribution(final String resource) {
+    final InputStream contributionIs = readResourceAsInputStream(resource);
 
     try {
       return ChottoObjectMapper.getInstance().readValue(contributionIs, BatchContribution.class);
