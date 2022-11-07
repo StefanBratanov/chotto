@@ -1,3 +1,8 @@
+@import gg.jte.support.ForSupport
+@import chotto.objects.BatchContribution
+
+@param BatchContribution model
+
 {
   "types": {
     "EIP712Domain": [
@@ -43,13 +48,16 @@
   },
   "message": {
     "potPubkeys": [
-      {{#contribution}}
-      {
-      "numG1Powers": {{numG1Powers}},
-      "numG2Powers": {{numG2Powers}},
-      "potPubkey": "{{potPubkey}}"
-      }{{#comma}},{{/comma}}
-      {{/contribution}}
+      @for(var contribution : ForSupport.of(model.getContributions()))
+        {
+          "numG1Powers": ${contribution.get().getNumG1Powers()},
+          "numG2Powers": ${contribution.get().getNumG2Powers()},
+          "potPubkey": "${contribution.get().getPotPubkey().orElseThrow().toHexString()}"
+        }
+        @if(!contribution.isLast())
+          ,  
+        @endif  
+      @endfor
     ]
   }
 }

@@ -2,14 +2,13 @@ package chotto.template;
 
 import chotto.TestUtil;
 import chotto.objects.BatchContribution;
-import com.github.mustachejava.DefaultMustacheFactory;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-class TemplateEngineTest {
+class TemplateResolverTest {
 
-  private final TemplateEngine templateEngine = new TemplateEngine(new DefaultMustacheFactory());
+  private final TemplateResolver templateEngine = new TemplateResolver();
 
   @Test
   public void createsTypedDataFromContribution() throws JSONException {
