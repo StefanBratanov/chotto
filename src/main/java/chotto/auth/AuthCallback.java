@@ -1,5 +1,6 @@
 package chotto.auth;
 
+import chotto.Store;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +12,10 @@ public class AuthCallback implements Handler {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthCallback.class);
 
-  private final SessionStore sessionStore;
+  private final Store store;
 
-  public AuthCallback(final SessionStore sessionStore) {
-    this.sessionStore = sessionStore;
+  public AuthCallback(final Store store) {
+    this.store = store;
   }
 
   @Override
@@ -26,7 +27,7 @@ public class AuthCallback implements Handler {
         Objects.requireNonNull(request.getParameter("nickname"), "nickname must not be null");
     final Provider provider = Provider.fromProviderName(request.getParameter("provider"));
     final SessionInfo sessionInfo = new SessionInfo(provider, nickname, sessionId);
-    sessionStore.setSessionInfo(sessionInfo);
+    store.setSessionInfo(sessionInfo);
     LOG.info("Successfully logged in with {} ({})", provider, nickname);
     ctx.result(
         String.format(

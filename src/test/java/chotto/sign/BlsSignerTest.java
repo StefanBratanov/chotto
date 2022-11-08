@@ -12,12 +12,14 @@ import supranational.blst.P2;
 
 class BlsSignerTest {
 
+  final BlsSigner blsSigner = new BlsSigner();
+
   @Test
   public void testBlsSigning() {
     final Secret secret = TestUtil.generateRandomSecret();
     final String identity = "git|12345678|@username";
 
-    final BlsSignature signature = BlsSigner.sign(secret, identity);
+    final BlsSignature signature = blsSigner.sign(secret, identity);
 
     assertThat(signature.toBytesCompressed().size()).isEqualTo(48);
 

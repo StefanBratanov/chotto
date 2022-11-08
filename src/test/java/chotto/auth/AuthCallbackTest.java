@@ -3,6 +3,7 @@ package chotto.auth;
 import static chotto.Constants.AUTH_CALLBACK_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import chotto.Store;
 import io.javalin.http.HandlerType;
 import io.javalin.testtools.JavalinTest;
 import java.util.Objects;
@@ -11,9 +12,9 @@ import org.junit.jupiter.api.Test;
 
 class AuthCallbackTest {
 
-  private final SessionStore sessionStore = new SessionStore();
+  private final Store store = new Store();
 
-  private final AuthCallback authCallback = new AuthCallback(sessionStore);
+  private final AuthCallback authCallback = new AuthCallback(store);
 
   @Test
   public void testCallback() {
@@ -32,7 +33,7 @@ class AuthCallbackTest {
               .isEqualTo(
                   "Successfully logged in with Ethereum. You can go back to the Chotto logs to witness your ceremony contribution.");
 
-          assertThat(sessionStore.getSessionInfo())
+          assertThat(store.getSessionInfo())
               .hasValueSatisfying(
                   sessionInfo -> {
                     assertThat(sessionInfo.getProvider()).isEqualTo(Provider.ETHEREUM);

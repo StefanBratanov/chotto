@@ -1,13 +1,13 @@
 package chotto;
 
 import static chotto.Constants.AUTH_CALLBACK_PATH;
+import static chotto.Constants.ECDSA_SIGN_CALLBACK_PATH;
 
 import chotto.auth.AuthCallback;
 import chotto.auth.Provider;
 import chotto.auth.SessionInfo;
-import chotto.auth.SessionStore;
 import chotto.cli.AsciiArtPrinter;
-import chotto.cli.LoginInstructor;
+import chotto.cli.CliInstructor;
 import chotto.cli.PropertiesVersionProvider;
 import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
@@ -17,6 +17,10 @@ import chotto.lifecycle.ContributeTrier;
 import chotto.objects.CeremonyStatus;
 import chotto.sequencer.SequencerClient;
 import chotto.serialization.ChottoObjectMapper;
+import chotto.sign.BlsSigner;
+import chotto.sign.EcdsaSignCallback;
+import chotto.sign.EcdsaSigner;
+import chotto.template.TemplateResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
 import io.javalin.Javalin;
@@ -120,16 +124,23 @@ public class Chotto implements Callable<Integer> {
   }
 
   @Option(
-      names = {"--sign-contributions"},
+      names = {"--bls-sign-contributions"},
       description = "Sign your contributions with your identity. Doing so is RECOMMENDED.",
       showDefaultValue = Visibility.ALWAYS)
-  private boolean signContributions = true;
+  private boolean blsSignContributions = true;
 
   @Option(
-      names = {"--auth-callback-endpoint"},
+      names = {"--ecdsa-sign-batch-contribution"},
       description =
-          "The URL of the server which is started by this process. Specify this option ONLY if you decide to login from a browser on a different computer. Make sure the URL is accessible from that browser.")
-  private URI authCallbackEndpoint = null;
+          "Sign the batch contribution with your Ethereum address. Doing so is RECOMMENDED. This value is only applicable when the user has authenticated with Ethereum.",
+      showDefaultValue = Visibility.ALWAYS)
+  private boolean ecdsaSignBatchContribution = true;
+
+  @Option(
+      names = {"--callback-endpoint"},
+      description =
+          "The URL of the server which is started by this process. Specify this option ONLY if you decide to login and sign from a browser on a different computer. Make sure the URL is accessible from that browser.")
+  private Optional<URI> callbackEndpoint = Optional.empty();
 
   @Option(
       names = {"--output-directory"},
@@ -156,11 +167,22 @@ public class Chotto implements Callable<Integer> {
 
     AsciiArtPrinter.printBanner();
 
-    final SessionStore sessionStore = new SessionStore();
-    final AuthCallback authCallback = new AuthCallback(sessionStore);
+    final Store store = new Store();
 
-    final Javalin app = Javalin.create().start(serverPort);
+    final AuthCallback authCallback = new AuthCallback(store);
+    final EcdsaSignCallback ecdsaSignCallback = new EcdsaSignCallback(store);
+
+    final Javalin app =
+        Javalin.create(
+                config ->
+                    config.staticFiles.add(
+                        staticFiles -> {
+                          staticFiles.hostedPath = "/static";
+                          staticFiles.directory = "/static";
+                        }))
+            .start(serverPort);
     app.addHandler(HandlerType.GET, AUTH_CALLBACK_PATH, authCallback);
+    app.addHandler(HandlerType.GET, ECDSA_SIGN_CALLBACK_PATH, ecdsaSignCallback);
 
     LOG.info("Started server on port {}", serverPort);
 
@@ -178,24 +200,30 @@ public class Chotto implements Callable<Integer> {
 
     final Csprng csprng = new Csprng(entropyEntry);
 
+    final BlsSigner blsSigner = new BlsSigner();
+
     Runtime.getRuntime().addShutdownHook(new Thread(csprng::destroySecrets));
 
-    final String redirectTo =
-        Optional.ofNullable(authCallbackEndpoint)
-                .map(URI::toString)
-                .orElse("http://localhost:" + serverPort)
-            + AUTH_CALLBACK_PATH;
+    final String host =
+        callbackEndpoint.map(URI::toString).orElse("http://localhost:" + serverPort);
 
-    final String loginLink = sequencerClient.getLoginLink(provider, redirectTo);
+    final String loginLink = sequencerClient.getLoginLink(provider, host + AUTH_CALLBACK_PATH);
 
-    LoginInstructor.instructUserToLogin(loginLink, authCallbackEndpoint);
+    final boolean callbackEndpointIsDefined = callbackEndpoint.isPresent();
 
-    while (sessionStore.getSessionInfo().isEmpty()) {
+    final TemplateResolver templateResolver = new TemplateResolver();
+
+    final EcdsaSigner ecdsaSigner =
+        new EcdsaSigner(app, templateResolver, host, callbackEndpointIsDefined, store);
+
+    CliInstructor.instructUserToLogin(loginLink, callbackEndpointIsDefined);
+
+    while (store.getSessionInfo().isEmpty()) {
       LOG.info("Waiting for user login...");
       ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(5)).run();
     }
 
-    final SessionInfo sessionInfo = sessionStore.getSessionInfo().get();
+    final SessionInfo sessionInfo = store.getSessionInfo().get();
 
     final IdentityRetriever identityRetriever =
         IdentityRetriever.create(sessionInfo.getProvider(), httpClient, objectMapper);
@@ -204,7 +232,15 @@ public class Chotto implements Callable<Integer> {
 
     LOG.info("Your identity is {}", identity);
 
-    final Contributor contributor = new Contributor(csprng, identity, signContributions);
+    final Contributor contributor =
+        new Contributor(
+            csprng,
+            blsSigner,
+            ecdsaSigner,
+            sessionInfo,
+            identity,
+            blsSignContributions,
+            ecdsaSignBatchContribution);
 
     final ContributeTrier contributeTrier =
         new ContributeTrier(sequencerClient, TimeUnit.SECONDS, contributionAttemptPeriod);

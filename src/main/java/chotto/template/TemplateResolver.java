@@ -22,4 +22,21 @@ public class TemplateResolver {
     templateEngine.render("typedData.jte", batchContribution, output);
     return output.toString();
   }
+
+  public String createSignContributionHtml(
+      final String ethAddress, final String typedData, final String callbackPath) {
+    final TemplateOutput output = new StringOutput();
+    final SignContributionHtmlModel model = new SignContributionHtmlModel();
+    model.ethAddress = ethAddress;
+    model.typedData = typedData;
+    model.callbackPath = callbackPath;
+    templateEngine.render("signContribution.jte", model, output);
+    return output.toString();
+  }
+
+  public static class SignContributionHtmlModel {
+    public String ethAddress;
+    public String typedData;
+    public String callbackPath;
+  }
 }

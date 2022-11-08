@@ -16,13 +16,12 @@ public class ChottoObjectMapper {
   public static ObjectMapper getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new ObjectMapper();
-      final BlsSignatureSerializer blsSignatureSerializer = new BlsSignatureSerializer();
       final SimpleModule module = new SimpleModule("Chotto");
       module.addSerializer(G1Point.class, new G1PointSerializer());
       module.addDeserializer(G1Point.class, new G1PointDeserializer());
       module.addSerializer(G2Point.class, new G2PointSerializer());
       module.addDeserializer(G2Point.class, new G2PointDeserializer());
-      module.addSerializer(BlsSignature.class, blsSignatureSerializer);
+      module.addSerializer(BlsSignature.class, new BlsSignatureSerializer());
       module.addDeserializer(BlsSignature.class, new BlsSignatureDeserializer());
       INSTANCE.registerModule(module);
       INSTANCE.registerModule(new Jdk8Module());

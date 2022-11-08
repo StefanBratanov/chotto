@@ -1,5 +1,8 @@
 package chotto.template;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import chotto.Constants;
 import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import org.json.JSONException;
@@ -19,5 +22,16 @@ class TemplateResolverTest {
 
     JSONAssert.assertEquals(
         TestUtil.readResource("template/expectedTypedData.json"), typedData, true);
+  }
+
+  @Test
+  public void createsSignContributionHtml() {
+    final String html =
+        templateEngine.createSignContributionHtml(
+            "0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad", "{}", Constants.ECDSA_SIGN_CALLBACK_PATH);
+
+    assertThat(html).contains("const typedData = \"{}\"");
+    assertThat(html).contains("const ethAddress = \"0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad\"");
+    assertThat(html).contains("const callbackPath = \"/sign/ecdsa/callback\"");
   }
 }

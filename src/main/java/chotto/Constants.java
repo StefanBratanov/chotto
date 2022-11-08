@@ -7,6 +7,8 @@ public class Constants {
 
   public static final String AUTH_CALLBACK_PATH = "/auth/callback";
 
+  public static final String ECDSA_SIGN_CALLBACK_PATH = "/sign/ecdsa/callback";
+
   public static final UInt256 CURVE_ORDER =
       UInt256.valueOf(
           new BigInteger(

@@ -23,7 +23,8 @@ class SerializationTests {
         "integration/contribution.json",
         "contributionLocalSequencer.json",
         "updatedContribution.json",
-        "updatedContributionNoSignatures.json"
+        "updatedContributionNoBlsNoEcdsa.json",
+        "updatedContributionNoEcdsa.json"
       })
   public void deserializesAndSerializesContributions(final String contributionResource)
       throws IOException, JSONException {

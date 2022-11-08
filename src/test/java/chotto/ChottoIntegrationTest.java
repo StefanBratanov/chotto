@@ -6,7 +6,9 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 import chotto.contribution.ContributionVerification;
+import chotto.objects.BatchContribution;
 import chotto.serialization.ChottoObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
@@ -31,14 +33,19 @@ class ChottoIntegrationTest {
 
   private final CommandLine cmd = new CommandLine(new Chotto());
 
-  private final LogCaptor logCaptor = LogCaptor.forClass(Chotto.class);
+  private final LogCaptor logCaptor = LogCaptor.forRoot();
+
+  private final ObjectMapper objectMapper = ChottoObjectMapper.getInstance();
 
   private final String sessionId = "a6d8bd3b-3154-4d29-bdd7-d28669b0a4a5";
 
   private final String ethAddress = "0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad";
 
+  private final String ecdsaSignature =
+      "0x1949e68bfab53a3f921ace3c83d562e36fa5fe82d6f603394e58627a2fa4a31553aca183c6adbb1dad2ac032358b863d2c2137fe2b046e822041037fb97758251c";
+
   private final ContributionVerification contributionVerification =
-      new ContributionVerification(ChottoObjectMapper.getInstance());
+      new ContributionVerification(objectMapper);
 
   private ClientAndServer mockServer;
 
@@ -73,6 +80,16 @@ class ChottoIntegrationTest {
 
     triggerAuthCallbackManually();
 
+    await()
+        .atMost(Duration.ofMinutes(1))
+        .until(
+            () ->
+                logCaptor
+                    .getInfoLogs()
+                    .contains("Waiting for an ECDSA signature for the batch contribution..."));
+
+    triggerEcdsaSignCallbackManually();
+
     await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
 
     assertThat(exitCode).isCompletedWithValue(0);
@@ -83,8 +100,13 @@ class ChottoIntegrationTest {
         .exists()
         .content()
         .satisfies(
-            contributionJson ->
-                assertThat(contributionVerification.schemaCheck(contributionJson)).isTrue());
+            contributionJson -> {
+              assertThat(contributionVerification.schemaCheck(contributionJson)).isTrue();
+              final BatchContribution batchContribution =
+                  objectMapper.readValue(contributionJson, BatchContribution.class);
+              assertThat(contributionVerification.subgroupChecks(batchContribution)).isTrue();
+              assertThat(batchContribution.getEcdsaSignature()).isEqualTo(ecdsaSignature);
+            });
     // verify receipt is saved
     assertThat(tempDir.resolve("receipt-" + ethAddress + ".txt")).exists().isNotEmptyFile();
     assertThat(TestUtil.findSavedTranscriptFile(tempDir)).isNotEmptyFile();
@@ -119,7 +141,7 @@ class ChottoIntegrationTest {
                 "--sequencer=" + "http://localhost:" + mockServer.getPort(),
                 "--entropy-entry=Danksharding",
                 "--server-port=" + serverPort,
-                "--auth-callback-endpoint=" + getLocalServerHost(),
+                "--callback-endpoint=" + getLocalServerHost(),
                 "--output-directory=" + tempDir));
   }
 
@@ -203,6 +225,18 @@ class ChottoIntegrationTest {
             .uri(
                 URI.create(getLocalServerHost())
                     .resolve(Constants.AUTH_CALLBACK_PATH + getAuthCallbackQueryParams()))
+            .GET()
+            .build();
+    final HttpClient httpClient = HttpClient.newBuilder().build();
+    httpClient.send(httpRequest, BodyHandlers.discarding());
+  }
+
+  private void triggerEcdsaSignCallbackManually() throws IOException, InterruptedException {
+    final HttpRequest httpRequest =
+        HttpRequest.newBuilder()
+            .uri(
+                URI.create(getLocalServerHost())
+                    .resolve(Constants.ECDSA_SIGN_CALLBACK_PATH + "?signature=" + ecdsaSignature))
             .GET()
             .build();
     final HttpClient httpClient = HttpClient.newBuilder().build();
