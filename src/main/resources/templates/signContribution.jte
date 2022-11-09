@@ -43,6 +43,11 @@
                 changeInfoTagContent(`Please log in into your wallet with ${ethAddress} instead of ${accounts} and then refresh this page.`)
                 return;
             }
+            const chainId = await web3.eth.getChainId();
+            if (chainId != 1) {
+                changeInfoTagContent(`Please log in into your wallet with mainnet (chainId: 1) instead of chainId: ${chainId} and then refresh this page.`)
+                return;
+            }
             web3.currentProvider.sendAsync(
                 {
                     method: "eth_signTypedData_v4",
@@ -77,8 +82,6 @@
             }
         });
         @endraw
-
-
 </script>
 </body>
 
