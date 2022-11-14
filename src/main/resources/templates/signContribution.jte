@@ -14,6 +14,14 @@
 </head>
 
 <body>
+<pre>
+  _____ _           _   _
+ / ____| |         | | | |
+| |    | |__   ___ | |_| |_ ___
+| |    | '_ \ / _ \| __| __/ _ \
+| |____| | | | (_) | |_| || (_) |
+ \_____|_| |_|\___/ \__|\__\___/
+</pre>
 <div id="info"></div>
 <script>
 
@@ -22,7 +30,7 @@
         }
         @raw
         function changeInfoTagContentWithError(error) {
-            changeInfoTagContent(`Error occurred while signing: ${error instanceof Error ? error.toString() : JSON.stringify(error)}. You can try refreshing this page and signing again.`)
+            changeInfoTagContent(`Error occurred while signing: ${error instanceof Error ? error.toString() : JSON.stringify(error)}. You can try refreshing this page and signing again or disable ECDSA signing.`)
         }
         @endraw
         const typedData = "${model.typedData}"
