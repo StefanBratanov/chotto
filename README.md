@@ -57,8 +57,8 @@ $ ./chotto --help
 | |    | '_ \ / _ \| __| __/ _ \
 | |____| | | | (_) | |_| || (_) |
  \_____|_| |_|\___/ \__|\__\___/
-Usage: chotto [-hV] [--bls-sign-contributions]
-              [--ecdsa-sign-batch-contribution] [--authentication=<provider>]
+Usage: chotto [-hV] [--bls-sign-sub-contributions] [--ecdsa-sign-contribution]
+              [--authentication=<provider>]
               [--callback-endpoint=<callbackEndpoint>]
               [--contribution-attempt-period=<contributionAttemptPeriod>]
               --entropy-entry=<entropyEntry>
@@ -69,8 +69,8 @@ Ethereum's Power of Tau client implementation written in Java
                   The authentication provider which will be used for logging
                     in. Valid values: Ethereum, Github
                     Default: Ethereum
-      --bls-sign-contributions
-                  Sign your contributions with your identity. Doing so is
+      --bls-sign-sub-contributions
+                  Sign your sub-contributions using your identity. Doing so is
                     RECOMMENDED.
                     Default: true
       --callback-endpoint=<callbackEndpoint>
@@ -83,10 +83,10 @@ Ethereum's Power of Tau client implementation written in Java
                     authenticated. This value could change dynamically based on
                     responses from the sequencer.
                     Default: 15
-      --ecdsa-sign-batch-contribution
-                  Sign the batch contribution with your Ethereum address. Doing
-                    so is RECOMMENDED. This value is only applicable when the
-                    user has authenticated with Ethereum.
+      --ecdsa-sign-contribution
+                  Sign your contribution using the Ethereum address you logged
+                    in with. Doing so is RECOMMENDED. This value is only
+                    applicable when you have authenticated with Ethereum.
                     Default: true
       --entropy-entry=<entropyEntry>
                   A text which would be used as a seed to generate random

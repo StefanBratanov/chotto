@@ -24,7 +24,7 @@ public class EcdsaSignCallback implements Handler {
     final String signature =
         Objects.requireNonNull(request.getParameter("signature"), "signature must not be null");
     store.setEcdsaSignature(signature);
-    LOG.info("Received an ECDSA signature for the batch contribution: {}", signature);
+    LOG.info("Received an ECDSA signature for the contribution: {}", signature);
     ctx.result(
         "Thank you for your signature. You can return to the Chotto logs to witness the remainder of the ceremony.");
   }

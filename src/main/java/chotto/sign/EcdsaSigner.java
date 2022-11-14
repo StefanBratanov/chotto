@@ -49,7 +49,7 @@ public class EcdsaSigner {
     CliInstructor.instructUserToSignContribution(host + SIGN_PATH, callbackEndpointIsDefined);
 
     while (store.getEcdsaSignature().isEmpty()) {
-      LOG.info("Waiting for an ECDSA signature for the batch contribution...");
+      LOG.info("Waiting for an ECDSA signature for the contribution...");
       ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(5)).run();
     }
 

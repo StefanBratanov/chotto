@@ -124,17 +124,17 @@ public class Chotto implements Callable<Integer> {
   }
 
   @Option(
-      names = {"--bls-sign-contributions"},
-      description = "Sign your contributions with your identity. Doing so is RECOMMENDED.",
+      names = {"--bls-sign-sub-contributions"},
+      description = "Sign your sub-contributions using your identity. Doing so is RECOMMENDED.",
       showDefaultValue = Visibility.ALWAYS)
-  private boolean blsSignContributions = true;
+  private boolean blsSignSubContributions = true;
 
   @Option(
-      names = {"--ecdsa-sign-batch-contribution"},
+      names = {"--ecdsa-sign-contribution"},
       description =
-          "Sign the batch contribution with your Ethereum address. Doing so is RECOMMENDED. This value is only applicable when the user has authenticated with Ethereum.",
+          "Sign your contribution using the Ethereum address you logged in with. Doing so is RECOMMENDED. This value is only applicable when you have authenticated with Ethereum.",
       showDefaultValue = Visibility.ALWAYS)
-  private boolean ecdsaSignBatchContribution = true;
+  private boolean ecdsaSignContribution = true;
 
   @Option(
       names = {"--callback-endpoint"},
@@ -239,8 +239,8 @@ public class Chotto implements Callable<Integer> {
             ecdsaSigner,
             sessionInfo,
             identity,
-            blsSignContributions,
-            ecdsaSignBatchContribution);
+            blsSignSubContributions,
+            ecdsaSignContribution);
 
     final ContributeTrier contributeTrier =
         new ContributeTrier(sequencerClient, TimeUnit.SECONDS, contributionAttemptPeriod);

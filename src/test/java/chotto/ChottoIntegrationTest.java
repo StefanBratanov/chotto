@@ -86,7 +86,7 @@ class ChottoIntegrationTest {
             () ->
                 logCaptor
                     .getInfoLogs()
-                    .contains("Waiting for an ECDSA signature for the batch contribution..."));
+                    .contains("Waiting for an ECDSA signature for the contribution..."));
 
     triggerEcdsaSignCallbackManually();
 

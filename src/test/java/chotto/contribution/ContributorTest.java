@@ -50,7 +50,7 @@ class ContributorTest {
   @MethodSource("provideContributorInput")
   public void checkContributionFlow(
       final SessionInfo sessionInfo,
-      final boolean blsSignContribution,
+      final boolean blsSignSubContributions,
       final boolean ecdsaSignContribution,
       final String expectedContributionResource)
       throws IOException, JSONException {
@@ -67,7 +67,7 @@ class ContributorTest {
             ecdsaSigner,
             sessionInfo,
             identity,
-            blsSignContribution,
+            blsSignSubContributions,
             ecdsaSignContribution);
 
     when(ecdsaSigner.sign(eq(sessionInfo.getNickname()), notNull())).thenReturn(ecdsaSignature);

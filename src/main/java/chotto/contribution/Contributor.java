@@ -24,8 +24,8 @@ public class Contributor {
   private final EcdsaSigner ecdsaSigner;
   private final SessionInfo sessionInfo;
   private final String identity;
-  private final boolean blsSignContributions;
-  private final boolean ecdsaSignBatchContribution;
+  private final boolean blsSignSubContributions;
+  private final boolean ecdsaSignContribution;
 
   public Contributor(
       final Csprng csprng,
@@ -33,15 +33,15 @@ public class Contributor {
       final EcdsaSigner ecdsaSigner,
       final SessionInfo sessionInfo,
       final String identity,
-      final boolean blsSignContributions,
-      final boolean ecdsaSignBatchContribution) {
+      final boolean blsSignSubContributions,
+      final boolean ecdsaSignContribution) {
     this.csprng = csprng;
     this.blsSigner = blsSigner;
     this.ecdsaSigner = ecdsaSigner;
     this.sessionInfo = sessionInfo;
     this.identity = identity;
-    this.blsSignContributions = blsSignContributions;
-    this.ecdsaSignBatchContribution = ecdsaSignBatchContribution;
+    this.blsSignSubContributions = blsSignSubContributions;
+    this.ecdsaSignContribution = ecdsaSignContribution;
   }
 
   public BatchContribution contribute(final BatchContribution batchContribution) {
@@ -50,27 +50,28 @@ public class Contributor {
     for (Contribution contribution : contributions) {
       final Secret secret = csprng.generateSecret();
       final UInt256 secretNumber = secret.toUInt256();
-      LOG.info("Updating contribution {}/{}", ++index, contributions.size());
+      LOG.info("Updating sub-contribution {}/{}", ++index, contributions.size());
       ContributionUpdater.updatePowersOfTau(contribution, secretNumber);
       LOG.info("Updated Powers of Tau");
       ContributionUpdater.updateWitness(contribution, secretNumber);
       LOG.info("Updated Witness");
-      if (blsSignContributions) {
+      if (blsSignSubContributions) {
         final BlsSignature signature = blsSigner.sign(secret, identity);
         contribution.setBlsSignature(signature);
-        LOG.info("BLS-Signed the contribution with your identity");
+        LOG.info("Signed the sub-contribution using your identity");
       } else {
         contribution.setBlsSignature(null);
-        LOG.info("Skipped BLS-Signing the contribution");
+        LOG.info("Skipped signing the sub-contribution");
       }
     }
-    if (sessionInfo.getProvider().equals(ETHEREUM) && ecdsaSignBatchContribution) {
-      final String ecdsaSignature = ecdsaSigner.sign(sessionInfo.getNickname(), batchContribution);
+    if (sessionInfo.getProvider().equals(ETHEREUM) && ecdsaSignContribution) {
+      final String ethAddress = sessionInfo.getNickname();
+      final String ecdsaSignature = ecdsaSigner.sign(ethAddress, batchContribution);
       batchContribution.setEcdsaSignature(ecdsaSignature);
-      LOG.info("Signed the batch contribution with your ECDSA Signature");
+      LOG.info("Signed the contribution with your ECDSA Signature");
     } else {
       batchContribution.setEcdsaSignature(null);
-      LOG.info("Skipped signing the batch contribution with an ECDSA Signature");
+      LOG.info("Skipped signing the contribution with an ECDSA Signature");
     }
 
     return batchContribution;

@@ -30,7 +30,7 @@ public class CliInstructor {
       final String signContributionLink, final boolean callbackEndpointIsDefined) {
     if (canOpenBrowserOnThisMachine()) {
       System.out.printf(
-          "A sign window will open on your browser in a second. Follow the instructions to sign your contribution. If you accidentally close the browser window before signing, observe an error or you want to sign from a different machine, you can use the link below.%n%n%s%n%n",
+          "%nA sign window will open on your browser in a second. Follow the instructions to sign your contribution. If you accidentally close the browser window before signing, observe an error or you want to sign from a different machine, you can use the link below.%n%n%s%n%n",
           signContributionLink);
       openLinkInBrowser(signContributionLink);
     } else {
@@ -38,7 +38,7 @@ public class CliInstructor {
         throwCallbackEndpointMustBeDefinedException();
       }
       System.out.printf(
-          "Browsing is not supported on your machine. Copy the link below in browser of your choice on another machine and follow the sign instructions.%n%n%s%n%n",
+          "%nBrowsing is not supported on your machine. Copy the link below in browser of your choice on another machine and follow the sign instructions.%n%n%s%n%n",
           signContributionLink);
     }
   }
