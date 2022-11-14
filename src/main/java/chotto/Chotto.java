@@ -6,7 +6,7 @@ import static chotto.Constants.ECDSA_SIGN_CALLBACK_PATH;
 import chotto.auth.AuthCallback;
 import chotto.auth.Provider;
 import chotto.auth.SessionInfo;
-import chotto.cli.AsciiArtPrinter;
+import chotto.cli.AsciiArtHelper;
 import chotto.cli.CliInstructor;
 import chotto.cli.PropertiesVersionProvider;
 import chotto.contribution.ContributionVerification;
@@ -165,7 +165,7 @@ public class Chotto implements Callable<Integer> {
   private void runSafely() {
     createOutputDirectoryIfNeeded();
 
-    AsciiArtPrinter.printBanner();
+    AsciiArtHelper.printBannerOnStartup();
 
     final Store store = new Store();
 
@@ -196,7 +196,7 @@ public class Chotto implements Callable<Integer> {
         new SequencerClient(httpClient, sequencer, objectMapper, contributionVerification);
 
     final CeremonyStatus ceremonyStatus = sequencerClient.getCeremonyStatus();
-    AsciiArtPrinter.printCeremonyStatus(ceremonyStatus);
+    AsciiArtHelper.printCeremonyStatus(ceremonyStatus);
 
     final Csprng csprng = new Csprng(entropyEntry);
 
@@ -256,7 +256,7 @@ public class Chotto implements Callable<Integer> {
 
     apiLifecycle.runLifecycle();
 
-    AsciiArtPrinter.printThankYou();
+    AsciiArtHelper.printThankYou();
   }
 
   private void createOutputDirectoryIfNeeded() {

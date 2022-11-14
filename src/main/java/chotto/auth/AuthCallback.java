@@ -1,6 +1,7 @@
 package chotto.auth;
 
 import chotto.Store;
+import chotto.cli.AsciiArtHelper;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,9 +30,13 @@ public class AuthCallback implements Handler {
     final SessionInfo sessionInfo = new SessionInfo(provider, nickname, sessionId);
     store.setSessionInfo(sessionInfo);
     LOG.info("Successfully logged in with {} ({})", provider, nickname);
-    ctx.result(
-        String.format(
-            "Successfully logged in with %s. You can go back to the Chotto logs to witness your ceremony contribution.",
-            provider));
+    ctx.html(
+        "<html><pre>"
+            + AsciiArtHelper.getBanner()
+            + "</pre><div>"
+            + String.format(
+                "Successfully logged in with %s. You can go back to the Chotto logs to witness your ceremony contribution.",
+                provider)
+            + "</div></html>");
   }
 }

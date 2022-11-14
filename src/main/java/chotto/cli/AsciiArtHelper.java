@@ -6,11 +6,27 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class AsciiArtPrinter {
+public class AsciiArtHelper {
 
-  public static void printBanner() {
-    System.out.printf("%n%s%n", readResource("banner.txt"));
+  private static final AtomicReference<String> CACHED_BANNER = new AtomicReference<>();
+
+  public static String getBanner() {
+    return Optional.ofNullable(CACHED_BANNER.get())
+        .orElseGet(
+            () -> {
+              final String banner = readResource("banner.txt");
+              CACHED_BANNER.set(banner);
+              return banner;
+            });
+  }
+
+  public static void printBannerOnStartup() {
+    System.out.printf(
+        "%n%s%n%n%s%n%n",
+        getBanner(), "Ethereum's Power of Tau client implementation written in Java");
   }
 
   public static void printCeremonyStatus(final CeremonyStatus ceremonyStatus) {

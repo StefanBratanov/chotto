@@ -4,7 +4,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import chotto.auth.SessionInfo;
-import chotto.cli.AsciiArtPrinter;
+import chotto.cli.AsciiArtHelper;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
 import chotto.objects.BatchTranscript;
@@ -58,7 +58,7 @@ public class ApiLifecycle {
     final BatchContribution batchContribution =
         contributeTrier.tryContributeUntilSuccess(sessionId);
 
-    AsciiArtPrinter.printCeremonySummoning(nickname);
+    AsciiArtHelper.printCeremonySummoning(nickname);
 
     LOG.info("Beginning contribution");
 

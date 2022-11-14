@@ -1,3 +1,4 @@
+@import chotto.cli.AsciiArtHelper
 @import chotto.template.TemplateResolver.SignContributionHtmlModel
 
 @param SignContributionHtmlModel model
@@ -15,12 +16,7 @@
 
 <body>
 <pre>
-  _____ _           _   _
- / ____| |         | | | |
-| |    | |__   ___ | |_| |_ ___
-| |    | '_ \ / _ \| __| __/ _ \
-| |____| | | | (_) | |_| || (_) |
- \_____|_| |_|\___/ \__|\__\___/
+${AsciiArtHelper.getBanner()}
 </pre>
 <div id="info"></div>
 <script>

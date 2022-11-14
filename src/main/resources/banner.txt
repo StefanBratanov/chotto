@@ -4,5 +4,3 @@
 | |    | '_ \ / _ \| __| __/ _ \
 | |____| | | | (_) | |_| || (_) |
  \_____|_| |_|\___/ \__|\__\___/
-
-Ethereum's Power of Tau client implementation written in Java
