@@ -47,6 +47,14 @@ is no need to worry about its uniqueness or keeping it safe.
 ./chotto --sequencer=https://kzg-ceremony-sequencer-dev.fly.dev/ --entropy-entry="Ethereum is awesome" --authentication=github
 ```
 
+#### Run against a local sequencer
+
+```bash
+./chotto --sequencer=http://localhost:3000/ --entropy-entry="Ethereum is awesome"
+```
+
+You can set up a local sequencer by following the setup instructions at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer)
+
 ### CLI arguments
 
 ```bash
