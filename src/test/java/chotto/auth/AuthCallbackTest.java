@@ -29,8 +29,9 @@ class AuthCallbackTest {
                       + "?session_id=a6d8bd3b-3154-4d29-bdd7-d28669b0a4a5&sub=eth+%7C+0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad&nickname=0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad&provider=Ethereum&exp=18446744073709551645");
 
           assertThat(response.code()).isEqualTo(200);
+          assertThat(response.headers().get("Content-Type")).isEqualTo("text/html");
           assertThat(Objects.requireNonNull(response.body()).string())
-              .isEqualTo(
+              .contains(
                   "Successfully logged in with Ethereum. You can go back to the Chotto logs to witness your ceremony contribution.");
 
           assertThat(store.getSessionInfo())
