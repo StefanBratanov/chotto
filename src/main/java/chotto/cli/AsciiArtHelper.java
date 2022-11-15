@@ -11,23 +11,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AsciiArtHelper {
 
-  private static final AtomicReference<String> CACHED_BANNER = new AtomicReference<>();
-  private static final AtomicReference<String> CACHED_CANDLE = new AtomicReference<>();
+  private static final String BANNER = readResource("banner.txt");
+  private static final String CEREMONY_CANDLE = readResource("ceremony.txt");
 
   public static String getBanner() {
-    return Optional.ofNullable(CACHED_BANNER.get())
-        .orElseGet(
-            () -> {
-              final String banner = readResource("banner.txt");
-              CACHED_BANNER.set(banner);
-              return banner;
-            });
+    return BANNER;
   }
 
   public static void printBannerOnStartup() {
     System.out.printf(
-        "%n%s%n%n%s%n%n",
-        getBanner(), "Ethereum's Power of Tau client implementation written in Java");
+        "%n%s%n%n%s%n%n", BANNER, "Ethereum's Power of Tau client implementation written in Java");
   }
 
   public static void printCeremonyStatus(final CeremonyStatus ceremonyStatus) {
@@ -52,17 +45,7 @@ public class AsciiArtHelper {
   }
 
   private static void printCeremonyCandleWithText(final String text) {
-    System.out.printf("%n" + getCeremonyCandle() + "%n%n", text);
-  }
-
-  private static String getCeremonyCandle() {
-    return Optional.ofNullable(CACHED_CANDLE.get())
-        .orElseGet(
-            () -> {
-              final String candle = readResource("ceremony.txt");
-              CACHED_CANDLE.set(candle);
-              return candle;
-            });
+    System.out.printf("%n" + CEREMONY_CANDLE + "%n%n", text);
   }
 
   private static String readResource(final String resource) {
