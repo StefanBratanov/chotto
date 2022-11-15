@@ -53,7 +53,7 @@ is no need to worry about its uniqueness or keeping it safe.
 ./chotto --sequencer=http://localhost:3000/ --entropy-entry="Ethereum is awesome"
 ```
 
-You can set up a local sequencer by following the setup instructions at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer)
+You can start a local sequencer by following the setup instructions at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer)
 
 ### CLI arguments
 
@@ -103,7 +103,7 @@ Ethereum's Power of Tau client implementation written in Java
                     worry about its uniqueness or keeping it safe.
   -h, --help      Show this help message and exit.
       --output-directory=<outputDirectory>
-                  The directory where the outputs of the ceremony will be stored
+                  The directory where the outputs of the ceremony will be saved
                     Default: <user.home>\kzg-ceremony
       --sequencer=<sequencer>
                   The URL of the sequencer which would be used for the ceremony

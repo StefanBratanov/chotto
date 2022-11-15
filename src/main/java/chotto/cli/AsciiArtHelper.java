@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AsciiArtHelper {
 
   private static final AtomicReference<String> CACHED_BANNER = new AtomicReference<>();
+  private static final AtomicReference<String> CACHED_CANDLE = new AtomicReference<>();
 
   public static String getBanner() {
     return Optional.ofNullable(CACHED_BANNER.get())
@@ -36,22 +37,32 @@ public class AsciiArtHelper {
             ceremonyStatus.getLobbySize(),
             ceremonyStatus.getNumContributions(),
             ceremonyStatus.getSequencerAddress());
-    printCeremonyCandlesWithText(statusText);
+    printCeremonyCandleWithText(statusText);
   }
 
   public static void printCeremonySummoning(final String nickname) {
     final String summoningText =
         String.format(
             "You (%s) have been summoned to take part in the Ethereum KZG ceremony", nickname);
-    printCeremonyCandlesWithText(summoningText);
+    printCeremonyCandleWithText(summoningText);
   }
 
   public static void printThankYou() {
-    printCeremonyCandlesWithText("Thank you for your contribution!!!");
+    printCeremonyCandleWithText("Thank you for your contribution!!!");
   }
 
-  private static void printCeremonyCandlesWithText(final String text) {
-    System.out.printf("%n" + readResource("ceremony.txt") + "%n%n", text);
+  private static void printCeremonyCandleWithText(final String text) {
+    System.out.printf("%n" + getCeremonyCandle() + "%n%n", text);
+  }
+
+  private static String getCeremonyCandle() {
+    return Optional.ofNullable(CACHED_CANDLE.get())
+        .orElseGet(
+            () -> {
+              final String candle = readResource("ceremony.txt");
+              CACHED_CANDLE.set(candle);
+              return candle;
+            });
   }
 
   private static String readResource(final String resource) {

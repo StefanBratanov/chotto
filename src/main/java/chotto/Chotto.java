@@ -144,7 +144,7 @@ public class Chotto implements Callable<Integer> {
 
   @Option(
       names = {"--output-directory"},
-      description = "The directory where the outputs of the ceremony will be stored",
+      description = "The directory where the outputs of the ceremony will be saved",
       showDefaultValue = Visibility.ALWAYS)
   private Path outputDirectory =
       Paths.get(System.getProperty("user.home") + File.separator + "kzg-ceremony");
