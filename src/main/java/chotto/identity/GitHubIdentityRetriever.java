@@ -39,13 +39,13 @@ public class GitHubIdentityRetriever implements IdentityRetriever {
       final JsonNode response = objectMapper.readTree(httpResponse.body());
       if (!response.has(ID_FIELD)) {
         throw new IllegalArgumentException(
-            response + " was not an expected response from Github. 'id' field is missing.");
+            response + " was not an expected response from GitHub. 'id' field is missing.");
       }
       final long id = response.get(ID_FIELD).asLong();
       return String.format("git|%s|%s", id, "@" + githubUsername);
     } catch (final IOException | InterruptedException | URISyntaxException ex) {
       throw new IllegalStateException(
-          "Error when retrieving Github identity for " + githubUsername, ex);
+          "Error when retrieving GitHub identity for " + githubUsername, ex);
     }
   }
 }

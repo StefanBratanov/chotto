@@ -200,9 +200,9 @@ public class Chotto implements Callable<Integer> {
 
     final Csprng csprng = new Csprng(entropyEntry);
 
-    final BlsSigner blsSigner = new BlsSigner();
-
     Runtime.getRuntime().addShutdownHook(new Thread(csprng::destroySecrets));
+
+    final BlsSigner blsSigner = new BlsSigner();
 
     final String host =
         callbackEndpoint.map(URI::toString).orElse("http://localhost:" + serverPort);
