@@ -12,6 +12,8 @@ public class Csprng {
 
   private static final Logger LOG = LoggerFactory.getLogger(Csprng.class);
 
+  private static final int SEED_LENGTH = 128;
+
   private final byte[] entropyEntry;
 
   private final Set<Secret> generatedSecrets = new HashSet<>();
@@ -21,12 +23,13 @@ public class Csprng {
   }
 
   public Secret generateSecret() {
-    final byte[] seed = Arrays.copyOf(entropyEntry, 64);
+    final byte[] seed = Arrays.copyOf(entropyEntry, SEED_LENGTH);
     // replace half or more entries with random bytes to increase entropy
-    final int leftBytesToFill = Math.max(seed.length - entropyEntry.length, 32);
+    final int leftBytesToFill = Math.max(seed.length - entropyEntry.length, SEED_LENGTH / 2);
     final byte[] randomBytes = new byte[leftBytesToFill];
     new Random().nextBytes(randomBytes);
-    System.arraycopy(randomBytes, 0, seed, 64 - leftBytesToFill, leftBytesToFill);
+    System.arraycopy(randomBytes, 0, seed, SEED_LENGTH - leftBytesToFill, leftBytesToFill);
+    // fromSeed is using the BLS KeyGen function to generate a secret
     final Secret secret = Secret.fromSeed(seed);
     if (generatedSecrets.contains(secret)) {
       LOG.warn("The generated secret has already been generated before. Will generate a new one.");

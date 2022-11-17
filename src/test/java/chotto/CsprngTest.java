@@ -16,11 +16,11 @@ class CsprngTest {
   @Test
   void generatesRandomSecrets() {
     final Set<Secret> secrets = new HashSet<>();
-    for (int i = 0; i < 1000000; i++) {
+    for (int i = 0; i < 1_000_000; i++) {
       secrets.add(csprng.generateSecret());
     }
     assertThat(secrets)
-        .hasSize(1000000)
+        .hasSize(1_000_000)
         .allSatisfy(
             secret -> assertThat(secret.toUInt256()).isStrictlyBetween(UInt256.ZERO, CURVE_ORDER));
   }
