@@ -9,16 +9,19 @@ import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
 import chotto.serialization.ChottoObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pivovarit.function.ThrowingSupplier;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +39,8 @@ class ChottoIntegrationTest {
   private final LogCaptor logCaptor = LogCaptor.forRoot();
 
   private final ObjectMapper objectMapper = ChottoObjectMapper.getInstance();
+
+  private final HttpClient httpClient = HttpClient.newBuilder().build();
 
   private final String sessionId = "a6d8bd3b-3154-4d29-bdd7-d28669b0a4a5";
 
@@ -77,6 +82,8 @@ class ChottoIntegrationTest {
     final CompletableFuture<Integer> exitCode = runChottoCommand();
 
     await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
+
+    verifyStaticFilesAreAvailable();
 
     triggerAuthCallbackManually();
 
@@ -219,20 +226,37 @@ class ChottoIntegrationTest {
                 .withBody(TestUtil.readResource("integration/transcript.json")));
   }
 
+  private void verifyStaticFilesAreAvailable() {
+    Stream.of("web3.min.js")
+        .forEach(
+            staticFile -> {
+              final HttpRequest request =
+                  HttpRequest.newBuilder()
+                      .uri(URI.create(getLocalServerHost()).resolve("/static/" + staticFile))
+                      .GET()
+                      .build();
+              final HttpResponse<String> response =
+                  ThrowingSupplier.unchecked(
+                          () -> httpClient.send(request, BodyHandlers.ofString()))
+                      .get();
+              assertThat(response.statusCode()).isEqualTo(200);
+              assertThat(response.body()).isNotBlank();
+            });
+  }
+
   private void triggerAuthCallbackManually() throws IOException, InterruptedException {
-    final HttpRequest httpRequest =
+    final HttpRequest request =
         HttpRequest.newBuilder()
             .uri(
                 URI.create(getLocalServerHost())
                     .resolve(Constants.AUTH_CALLBACK_PATH + getAuthCallbackQueryParams()))
             .GET()
             .build();
-    final HttpClient httpClient = HttpClient.newBuilder().build();
-    httpClient.send(httpRequest, BodyHandlers.discarding());
+    httpClient.send(request, BodyHandlers.discarding());
   }
 
   private void triggerEcdsaSignCallbackManually() throws IOException, InterruptedException {
-    final HttpRequest httpRequest =
+    final HttpRequest request =
         HttpRequest.newBuilder()
             .uri(
                 URI.create(getLocalServerHost())
@@ -240,7 +264,7 @@ class ChottoIntegrationTest {
             .GET()
             .build();
     final HttpClient httpClient = HttpClient.newBuilder().build();
-    httpClient.send(httpRequest, BodyHandlers.discarding());
+    httpClient.send(request, BodyHandlers.discarding());
   }
 
   private String getAuthCallbackQueryParams() {

@@ -72,7 +72,7 @@ public class ApiLifecycle {
 
     LOG.info("Finished contribution");
 
-    LOG.info("Uploading contribution");
+    LOG.info("Uploading contribution...");
 
     final Receipt receipt = sequencerClient.contribute(updatedBatchContribution, sessionId);
 
