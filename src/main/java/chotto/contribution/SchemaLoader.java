@@ -7,12 +7,14 @@ import java.io.InputStream;
 
 public class SchemaLoader {
 
-  public static JsonSchema loadSchema() {
-    final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(VersionFlag.V202012);
-    final InputStream schemaIs =
-        Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream("contributionSchema.json");
-    return factory.getSchema(schemaIs);
+  private static final JsonSchemaFactory factory =
+      JsonSchemaFactory.getInstance(VersionFlag.V202012);
+
+  public static JsonSchema loadContributionSchema() {
+    return factory.getSchema(getResource("contributionSchema.json"));
+  }
+
+  private static InputStream getResource(final String resource) {
+    return Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
   }
 }

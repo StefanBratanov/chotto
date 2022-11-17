@@ -22,7 +22,7 @@ public class ContributionVerification {
   private final ObjectMapper objectMapper;
 
   public ContributionVerification(final ObjectMapper objectMapper) {
-    this.contributionSchema = SchemaLoader.loadSchema();
+    this.contributionSchema = SchemaLoader.loadContributionSchema();
     this.objectMapper = objectMapper;
   }
 

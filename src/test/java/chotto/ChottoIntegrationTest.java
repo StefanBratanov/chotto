@@ -20,8 +20,8 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -227,21 +227,20 @@ class ChottoIntegrationTest {
   }
 
   private void verifyStaticFilesAreAvailable() {
-    Stream.of("web3.min.js")
-        .forEach(
-            staticFile -> {
-              final HttpRequest request =
-                  HttpRequest.newBuilder()
-                      .uri(URI.create(getLocalServerHost()).resolve("/static/" + staticFile))
-                      .GET()
-                      .build();
-              final HttpResponse<String> response =
-                  ThrowingSupplier.unchecked(
-                          () -> httpClient.send(request, BodyHandlers.ofString()))
-                      .get();
-              assertThat(response.statusCode()).isEqualTo(200);
-              assertThat(response.body()).isNotBlank();
-            });
+    final List<String> staticFiles = List.of("web3.min.js");
+    staticFiles.forEach(
+        staticFile -> {
+          final HttpRequest request =
+              HttpRequest.newBuilder()
+                  .uri(URI.create(getLocalServerHost()).resolve("/static/" + staticFile))
+                  .GET()
+                  .build();
+          final HttpResponse<String> response =
+              ThrowingSupplier.unchecked(() -> httpClient.send(request, BodyHandlers.ofString()))
+                  .get();
+          assertThat(response.statusCode()).isEqualTo(200);
+          assertThat(response.body()).isNotBlank();
+        });
   }
 
   private void triggerAuthCallbackManually() throws IOException, InterruptedException {

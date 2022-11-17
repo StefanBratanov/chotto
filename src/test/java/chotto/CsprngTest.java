@@ -4,9 +4,8 @@ import static chotto.Constants.CURVE_ORDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import chotto.objects.Secret;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.LongStream;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.junit.jupiter.api.Test;
 
@@ -16,21 +15,22 @@ class CsprngTest {
 
   @Test
   void generatesRandomSecrets() {
-    final Set<Secret> secrets = new HashSet<>();
-    final LongStream.Builder performanceTimes = LongStream.builder();
-    for (int i = 0; i < 1_000_000; i++) {
+    final Map<Secret, Long> performanceTimes = new HashMap<>();
+
+    final int numberOfIterations = 1_000_000;
+
+    for (int i = 0; i < numberOfIterations; i++) {
       final long start = getCurrentTimeInMicroseconds();
       final Secret secret = csprng.generateSecret();
       final long end = getCurrentTimeInMicroseconds();
-      secrets.add(secret);
-      performanceTimes.add(end - start);
+      assertThat(secret.toUInt256()).isStrictlyBetween(UInt256.ZERO, CURVE_ORDER);
+      performanceTimes.put(secret, end - start);
     }
-    assertThat(secrets)
-        .hasSize(1_000_000)
-        .allSatisfy(
-            secret -> assertThat(secret.toUInt256()).isStrictlyBetween(UInt256.ZERO, CURVE_ORDER));
+
+    assertThat(performanceTimes).hasSize(numberOfIterations);
     // performance check
-    final double averageTime = performanceTimes.build().average().orElseThrow();
+    final double averageTime =
+        performanceTimes.values().stream().mapToLong(Long::longValue).average().orElseThrow();
     assertThat(averageTime).isBetween(0.0, 50.0);
   }
 
