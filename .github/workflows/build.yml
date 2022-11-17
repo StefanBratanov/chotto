@@ -12,6 +12,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [ "created" ]
 
 jobs:
   build:
@@ -25,9 +27,14 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-      - name: Build with Gradle
+      - name: Build
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: spotlessCheck build jacocoTestReport
+          arguments: spotlessCheck build jacocoTestReport installDist
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: distributions
+          path: build/distributions/
       - name: Codecov
         uses: codecov/codecov-action@v3

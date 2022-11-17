@@ -2,9 +2,22 @@ plugins {
     id "application"
     id "com.diffplug.spotless" version "6.11.0"
     id "jacoco"
+    id "me.qoomon.git-versioning" version "6.3.6"
 }
 
-version = "0.0.1"
+version = "develop"
+
+gitVersioning.apply {
+    refs {
+        tag("v(?<version>.*)") {
+            version = '${ref.version}'
+        }
+        rev {
+            version = 'develop-${commit.short}'
+        }
+    }
+}
+
 group = "chotto"
 
 repositories {
