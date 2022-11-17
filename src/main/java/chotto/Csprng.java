@@ -25,7 +25,7 @@ public class Csprng {
   public Secret generateSecret() {
     final byte[] seed = Arrays.copyOf(entropyEntry, SEED_LENGTH);
     // replace half or more entries with random bytes to increase entropy
-    final int leftBytesToFill = Math.max(seed.length - entropyEntry.length, SEED_LENGTH / 2);
+    final int leftBytesToFill = Math.max(SEED_LENGTH - entropyEntry.length, SEED_LENGTH / 2);
     final byte[] randomBytes = new byte[leftBytesToFill];
     new Random().nextBytes(randomBytes);
     System.arraycopy(randomBytes, 0, seed, SEED_LENGTH - leftBytesToFill, leftBytesToFill);
