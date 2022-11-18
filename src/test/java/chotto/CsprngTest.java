@@ -31,7 +31,7 @@ class CsprngTest {
     // performance check
     final double averageTime =
         performanceTimes.values().stream().mapToLong(Long::longValue).average().orElseThrow();
-    assertThat(averageTime).isBetween(0.0, 50.0);
+    assertThat(averageTime).isBetween(0.0, 20.0);
   }
 
   private long getCurrentTimeInMicroseconds() {

@@ -12,7 +12,7 @@ public class Csprng {
 
   private static final Logger LOG = LoggerFactory.getLogger(Csprng.class);
 
-  private static final int SEED_LENGTH = 128;
+  private static final int SEED_LENGTH = 256;
 
   private final byte[] entropyEntry;
 

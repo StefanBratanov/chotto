@@ -11,7 +11,6 @@ import chotto.objects.BatchTranscript;
 import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -91,8 +90,8 @@ public class ApiLifecycle {
       final String contributionJson = objectMapper.writeValueAsString(contribution);
       Files.writeString(contributionPath, contributionJson, CREATE, TRUNCATE_EXISTING);
       LOG.info("Saved contribution to {}", contributionPath);
-    } catch (final IOException __) {
-      LOG.warn("Couldn't save contribution to {}", contributionPath);
+    } catch (final Exception ex) {
+      LOG.error("Couldn't save contribution to {}", contributionPath, ex);
     }
   }
 
@@ -101,7 +100,7 @@ public class ApiLifecycle {
     try {
       Files.writeString(receiptPath, receipt.getReceipt(), CREATE, TRUNCATE_EXISTING);
       LOG.info("Saved receipt to {}", receiptPath);
-    } catch (final IOException __) {
+    } catch (final Exception __) {
       LOG.warn("Couldn't save receipt to {}. Will log it instead below.", receiptPath);
       LOG.info(receipt.getReceipt());
     }
@@ -115,9 +114,9 @@ public class ApiLifecycle {
       final BatchTranscript transcript = sequencerClient.getTranscript();
       final String transcriptJson = objectMapper.writeValueAsString(transcript);
       Files.writeString(transcriptPath, transcriptJson, CREATE);
-      LOG.info("Saved transcript to {}", transcriptPath);
+      LOG.info("Saved the current transcript to {}", transcriptPath);
     } catch (final Exception ex) {
-      LOG.warn("Couldn't save transcript to " + transcriptPath, ex);
+      LOG.error("Couldn't save the current transcript to " + transcriptPath, ex);
     }
   }
 }
