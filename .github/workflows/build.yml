@@ -12,14 +12,10 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  release:
-    types: [ "created" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -30,11 +26,6 @@ jobs:
       - name: Build
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: spotlessCheck build jacocoTestReport installDist
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: distributions
-          path: build/distributions/
+          arguments: spotlessCheck build jacocoTestReport
       - name: Codecov
         uses: codecov/codecov-action@v3
