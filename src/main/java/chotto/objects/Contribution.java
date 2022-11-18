@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Contribution {
 
   private final int numG1Powers;
   private final int numG2Powers;
   private final PowersOfTau powersOfTau;
-  private Optional<G2Point> potPubkey;
+  private G2Point potPubkey;
   private BlsSignature blsSignature;
 
   @JsonCreator
@@ -19,7 +18,7 @@ public class Contribution {
       @JsonProperty("numG1Powers") final int numG1Powers,
       @JsonProperty("numG2Powers") final int numG2Powers,
       @JsonProperty("powersOfTau") final PowersOfTau powersOfTau,
-      @JsonProperty("potPubkey") final Optional<G2Point> potPubkey,
+      @JsonProperty("potPubkey") final G2Point potPubkey,
       @JsonProperty("bls_signature") @JsonAlias("blsSignature") final BlsSignature blsSignature) {
     this.numG1Powers = numG1Powers;
     this.numG2Powers = numG2Powers;
@@ -40,7 +39,7 @@ public class Contribution {
     return powersOfTau;
   }
 
-  public Optional<G2Point> getPotPubkey() {
+  public G2Point getPotPubkey() {
     return potPubkey;
   }
 
@@ -48,7 +47,7 @@ public class Contribution {
     return blsSignature;
   }
 
-  public void setPotPubkey(final Optional<G2Point> potPubkey) {
+  public void setPotPubkey(final G2Point potPubkey) {
     this.potPubkey = potPubkey;
   }
 

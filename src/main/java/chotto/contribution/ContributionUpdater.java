@@ -5,7 +5,6 @@ import chotto.objects.Contribution;
 import chotto.objects.G1Point;
 import chotto.objects.G2Point;
 import chotto.objects.PowersOfTau;
-import java.util.Optional;
 import org.apache.tuweni.units.bigints.UInt256;
 
 public class ContributionUpdater {
@@ -31,8 +30,7 @@ public class ContributionUpdater {
   }
 
   public static void updateWitness(final Contribution contribution, final UInt256 secret) {
-    final Optional<G2Point> updatedPotPubkey =
-        contribution.getPotPubkey().map(g2 -> g2.mul(secret));
-    contribution.setPotPubkey(updatedPotPubkey);
+    final G2Point potPubkey = G2Point.generator().mul(secret);
+    contribution.setPotPubkey(potPubkey);
   }
 }

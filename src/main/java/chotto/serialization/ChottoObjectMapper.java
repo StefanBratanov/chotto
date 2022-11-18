@@ -5,7 +5,6 @@ import chotto.objects.G1Point;
 import chotto.objects.G2Point;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 public class ChottoObjectMapper {
 
@@ -24,7 +23,6 @@ public class ChottoObjectMapper {
       module.addSerializer(BlsSignature.class, new BlsSignatureSerializer());
       module.addDeserializer(BlsSignature.class, new BlsSignatureDeserializer());
       INSTANCE.registerModule(module);
-      INSTANCE.registerModule(new Jdk8Module());
       INSTANCE.getSerializerProvider().setNullValueSerializer(new CustomNullSerializer());
     }
     return INSTANCE;

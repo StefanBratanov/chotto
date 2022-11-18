@@ -12,6 +12,10 @@ public class G2Point {
     return new G2Point(new P2(bytes.toArrayUnsafe()));
   }
 
+  public static G2Point generator() {
+    return new G2Point(P2.generator());
+  }
+
   private final P2 p2;
 
   private G2Point(final P2 p2) {

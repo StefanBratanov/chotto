@@ -52,7 +52,7 @@
         {
           "numG1Powers": ${contribution.get().getNumG1Powers()},
           "numG2Powers": ${contribution.get().getNumG2Powers()},
-          "potPubkey": "${contribution.get().getPotPubkey().orElseThrow().toHexString()}"
+          "potPubkey": "${contribution.get().getPotPubkey().toHexString()}"
         }
         @if(!contribution.isLast())
           ,  
