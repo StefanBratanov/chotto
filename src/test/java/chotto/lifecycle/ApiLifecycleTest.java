@@ -1,11 +1,10 @@
 package chotto.lifecycle;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import chotto.TestUtil;
@@ -90,7 +89,8 @@ class ApiLifecycleTest {
     assertThat(exception).hasMessage("There was an error during contribution");
 
     verify(sequencerClient).abortContribution("123");
-    verify(sequencerClient, times(0)).contribute(any(), any());
+
+    verifyNoMoreInteractions(sequencerClient);
 
     assertThat(tempDir).isEmptyDirectory();
   }

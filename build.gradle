@@ -32,7 +32,6 @@ dependencies {
     def picocliVersion = "4.7.0"
     def junitVersion = "5.9.1"
 
-
     implementation("ch.qos.logback:logback-core:${logbackVersion}")
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
     implementation("org.slf4j:slf4j-api:2.0.4")

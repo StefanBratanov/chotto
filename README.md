@@ -1,6 +1,7 @@
 # Chotto
 
 [![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/StefanBratanov/chotto)](https://github.com/StefanBratanov/chotto/releases/latest)
 [![codecov](https://codecov.io/github/StefanBratanov/chotto/branch/master/graph/badge.svg?token=9WEPEA6GA7)](https://codecov.io/github/StefanBratanov/chotto)
 [![CodeFactor](https://www.codefactor.io/repository/github/stefanbratanov/chotto/badge)](https://www.codefactor.io/repository/github/stefanbratanov/chotto)
 [![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
@@ -12,13 +13,21 @@ bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers o
 (PoT) client CLI implementation written in Java. It follows the spec defined in
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
-## Build Instructions
+## Install Instructions
 
 ### Install Prerequisites
 
 - Java 11+
 
-### Build and Dist
+### Binary Releases
+
+Binary releases are available from the [releases page](https://github.com/StefanBratanov/chotto/releases). 
+
+Once downloaded and unzipped, executables will be available in the `bin/` folder.
+
+### Manual Build
+
+You can also manually build the code:
 
 ```bash
 git clone https://github.com/StefanBratanov/chotto.git
@@ -26,7 +35,7 @@ cd chotto
 ./gradlew installDist
 ```
 
-This will install ready to use executables in `build/install/chotto/bin`
+This will install ready to use executables in the `build/install/chotto/bin` folder.
 
 ## Usage
 
@@ -35,6 +44,8 @@ secrets in the background. There will be several layers of randomness on top of 
 is no need to worry about its uniqueness or keeping it safe.
 
 ### Sample Usage
+
+Note: For Windows, use the `chotto.bat` executable.
 
 #### Authenticate with Ethereum
 
@@ -54,7 +65,7 @@ is no need to worry about its uniqueness or keeping it safe.
 ./chotto --sequencer=http://localhost:3000/ --entropy-entry="Ethereum is awesome"
 ```
 
-You can start a local sequencer by following the setup instructions at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer)
+You can start a local sequencer by following the setup instructions at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer).
 
 ### CLI arguments
 
