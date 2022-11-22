@@ -41,7 +41,7 @@ This will install ready to use executables in the `build/install/chotto/bin` fol
 
 `entropy-entry` is a required value to the process. It would be used as a seed to generate random
 secrets in the background. There will be several layers of randomness on top of this text, so there
-is no need to worry about its uniqueness or keeping it safe.
+is no need to worry about its uniqueness or keeping it a secret.
 
 ### Sample Usage
 
@@ -112,7 +112,7 @@ Ethereum's Power of Tau client implementation written in Java
                   A text which would be used as a seed to generate random
                     secrets in the background. There will be several layers of
                     randomness on top of this text, so there is no need to
-                    worry about its uniqueness or keeping it safe.
+                    worry about its uniqueness or keeping it a secret.
   -h, --help      Show this help message and exit.
       --output-directory=<outputDirectory>
                   The directory where the outputs of the ceremony will be saved

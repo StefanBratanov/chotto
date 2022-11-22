@@ -76,7 +76,7 @@ public class Chotto implements Callable<Integer> {
   @Option(
       names = {"--entropy-entry"},
       description =
-          "A text which would be used as a seed to generate random secrets in the background. There will be several layers of randomness on top of this text, so there is no need to worry about its uniqueness or keeping it safe.",
+          "A text which would be used as a seed to generate random secrets in the background. There will be several layers of randomness on top of this text, so there is no need to worry about its uniqueness or keeping it a secret.",
       required = true)
   public void setEntropyEntry(final String value) {
     if (value.length() <= 5) {
