@@ -2,9 +2,9 @@
 
 [![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/StefanBratanov/chotto)](https://github.com/StefanBratanov/chotto/releases/latest)
+[![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
 [![codecov](https://codecov.io/github/StefanBratanov/chotto/branch/master/graph/badge.svg?token=9WEPEA6GA7)](https://codecov.io/github/StefanBratanov/chotto)
 [![CodeFactor](https://www.codefactor.io/repository/github/stefanbratanov/chotto/badge)](https://www.codefactor.io/repository/github/stefanbratanov/chotto)
-[![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
 
 Chotto can be used to participate in the KZG Ceremony which will
 bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers of Tau
