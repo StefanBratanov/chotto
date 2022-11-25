@@ -47,8 +47,8 @@ secret is generated in Chotto is as follows:
 * A seed with 256 bytes is initialised with the `entropy-entry` bytes. (truncated or padded with
   zeros)
 * Half or more bytes (256 - `entropy-entry` length or 128) are replaced by random bytes. (based on
-  java.util.Random)
-* The seed is passed to a BLS KeyGen function which adds more randomness and ultimately generates
+  `java.util.Random`)
+* The seed is passed to a `BLS KeyGen` function which adds more randomness and ultimately generates
   the secret.
 
 The secrets only live in the process, so when logging in and signing your contribution via the
