@@ -19,7 +19,8 @@ the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
 ### Binary Releases
 
-Binary releases are available from the [releases page](https://github.com/StefanBratanov/chotto/releases). 
+Binary releases are available from
+the [releases page](https://github.com/StefanBratanov/chotto/releases).
 
 Once downloaded and unzipped, executables will be available in the `bin/` folder.
 
@@ -35,11 +36,31 @@ cd chotto
 
 This will install ready to use executables in the `build/install/chotto/bin` folder.
 
+## Generating randomness
+
+Generating randomness is an important part of the KZG Ceremony. Each participant needs to generate 4
+different random secrets. The user should not have a knowledge of these generated values and also
+all secrets should be wiped out from memory after the contribution is complete. The way each random
+secret is generated in Chotto is as follows:
+
+* User provides `entropy-entry` argument of any number of bytes.
+* A seed with 256 bytes is initialised with the `entropy-entry` bytes. (truncated or padded with
+  zeros)
+* Half or more bytes (256 - `entropy-entry` length or 128) are replaced by random bytes. (based on
+  java.util.Random)
+* The seed is passed to a BLS KeyGen function which adds more randomness and ultimately generates
+  the secret.
+
+The secrets only live in the process, so when logging in and signing your contribution via the
+browser there is no need to worry about the browser cache or cookies. After the process is
+terminated, all secrets will be wiped out from the memory.
+
 ## Usage
 
-`entropy-entry` is a required value to the process. It would be used as a seed to generate random
-secrets in the background. There will be several layers of randomness on top of this text, so there
-is no need to worry about its uniqueness or keeping it a secret.
+Required arguments:
+
+* `entropy-entry`
+* `sequencer`
 
 ### Sample Usage
 
@@ -63,7 +84,8 @@ Note: For Windows, use the `chotto.bat` executable.
 ./chotto --sequencer=http://localhost:3000/ --entropy-entry="Ethereum is awesome"
 ```
 
-You can start a local sequencer by following the setup instructions at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer).
+You can start a local sequencer by following the setup instructions
+at [KZG Ceremony Rest API](https://github.com/ethereum/kzg-ceremony-sequencer).
 
 ### CLI arguments
 
