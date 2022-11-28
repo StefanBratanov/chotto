@@ -34,7 +34,7 @@ dependencies {
 
     implementation("ch.qos.logback:logback-core:${logbackVersion}")
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
-    implementation("org.slf4j:slf4j-api:2.0.4")
+    implementation("org.slf4j:slf4j-api:2.0.5")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
     implementation("io.javalin:javalin:${javalinVersion}")
     implementation("info.picocli:picocli:${picocliVersion}")
