@@ -43,16 +43,16 @@ different random secrets. The user should not have a knowledge of these generate
 all secrets should be wiped out from memory after the contribution is complete. The way each random
 secret is generated in Chotto is as follows:
 
-* User provides `entropy-entry` argument of any number of bytes.
+* User provides `entropy-entry` argument of a text with at least 6 characters.
 * A seed with 256 bytes is initialised with the `entropy-entry` bytes. (truncated or padded with
   zeros)
-* Half or more bytes (256 - `entropy-entry` length or 128) are replaced by random bytes. (based on
+* Half or more bytes (128 or 256 - `entropy-entry` length) are replaced by random bytes. (based on
   `java.util.Random`)
 * The seed is passed to a `BLS KeyGen` function which adds more randomness and ultimately generates
   the secret.
 
-The secrets only live in the process, so when logging in and signing your contribution via the
-browser there is no need to worry about the browser cache or cookies. After the process is
+The secrets only live in the Java process, so when logging in and signing your contribution via the
+browser there is no need to worry about the browser cache or cookies. After the Java process is
 terminated, all secrets will be wiped out from the memory.
 
 ## Usage
