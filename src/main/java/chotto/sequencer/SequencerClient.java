@@ -11,7 +11,6 @@ import chotto.objects.Receipt;
 import chotto.objects.SequencerError;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pivovarit.function.ThrowingSupplier;
 import io.javalin.http.ContentType;
 import java.io.IOException;
 import java.net.URI;
@@ -98,7 +97,7 @@ public class SequencerClient {
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 
     if (response.statusCode() != 200) {
-      LOG.warn(getFailureMessage(response, "Contribution is not available"));
+      LOG.warn(createExceptionMessage(response, "Contribution is not available"));
       return new TryContributeResponse(Optional.empty(), getMaybeSequencerError(response.body()));
     }
 
@@ -107,7 +106,7 @@ public class SequencerClient {
     final Optional<SequencerError> maybeSequencerError = getMaybeSequencerError(contributionJson);
 
     if (maybeSequencerError.isPresent()) {
-      LOG.info(getFailureMessage(response, "Contribution is not available"));
+      LOG.info(createExceptionMessage(response, "Contribution is not available"));
       return new TryContributeResponse(Optional.empty(), maybeSequencerError);
     }
 
@@ -133,24 +132,30 @@ public class SequencerClient {
   }
 
   public Receipt contribute(final BatchContribution batchContribution, final String sessionId) {
-    final HttpRequest request =
-        buildPostRequest(
-                "/contribute",
-                BodyPublishers.ofByteArray(
-                    ThrowingSupplier.unchecked(
-                            () -> objectMapper.writeValueAsBytes(batchContribution))
-                        .get()))
-            .header("Authorization", "Bearer " + sessionId)
-            .header("Content-Type", ContentType.JSON)
-            .build();
 
-    final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
+    final String body = unchecked(() -> objectMapper.writeValueAsString(batchContribution)).get();
+
+    HttpRequest request = createContributeRequest(body, sessionId);
+    HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
+
+    // will be no longer needed after https://github.com/ethereum/kzg-ceremony-sequencer/pull/127 is
+    // merged
+    if (response.statusCode() == 422
+        && getFailureMessage(response).stream()
+            .anyMatch(
+                failureMessage -> failureMessage.contains("unknown field `ecdsaSignature`"))) {
+      request =
+          createContributeRequest(body.replace("ecdsaSignature", "ecdsa_signature"), sessionId);
+      response = sendRequest(request, BodyHandlers.ofString());
+    }
 
     if (response.statusCode() != 200) {
       throwException(response, "Failed to upload contribution");
     }
 
-    return unchecked(() -> objectMapper.readValue(response.body(), Receipt.class)).get();
+    final HttpResponse<String> finalResponse = response;
+
+    return unchecked(() -> objectMapper.readValue(finalResponse.body(), Receipt.class)).get();
   }
 
   public void abortContribution(final String sessionId) {
@@ -162,7 +167,7 @@ public class SequencerClient {
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 
     if (response.statusCode() != 200) {
-      LOG.error(getFailureMessage(response, "Failed to abort contribution"));
+      LOG.error(createExceptionMessage(response, "Failed to abort contribution"));
       return;
     }
 
@@ -176,6 +181,13 @@ public class SequencerClient {
   private HttpRequest.Builder buildPostRequest(
       final String path, final BodyPublisher bodyPublisher) {
     return buildRequest(path, "POST", bodyPublisher);
+  }
+
+  private HttpRequest createContributeRequest(final String body, final String sessionId) {
+    return buildPostRequest("/contribute", BodyPublishers.ofString(body))
+        .header("Authorization", "Bearer " + sessionId)
+        .header("Content-Type", ContentType.JSON)
+        .build();
   }
 
   private HttpRequest.Builder buildRequest(
@@ -193,18 +205,18 @@ public class SequencerClient {
   }
 
   private void throwException(final HttpResponse<String> response, final String errorPrefix) {
-    throw new SequencerClientException(getFailureMessage(response, errorPrefix));
+    throw new SequencerClientException(createExceptionMessage(response, errorPrefix));
   }
 
-  private String getFailureMessage(final HttpResponse<String> response, final String errorPrefix) {
-    return String.format(
-        "%s (status: %s%s)",
-        errorPrefix,
-        response.statusCode(),
-        Optional.ofNullable(response.body())
-            .filter(body -> !body.isBlank())
-            .map(body -> ", message: " + body)
-            .orElse(""));
+  private String createExceptionMessage(
+      final HttpResponse<String> response, final String errorPrefix) {
+    final String failureMessage =
+        getFailureMessage(response).map(message -> ", message: " + message).orElse("");
+    return String.format("%s (status: %s%s)", errorPrefix, response.statusCode(), failureMessage);
+  }
+
+  private Optional<String> getFailureMessage(final HttpResponse<String> response) {
+    return Optional.ofNullable(response.body()).filter(body -> !body.isBlank());
   }
 
   private Optional<SequencerError> getMaybeSequencerError(final String json) {
