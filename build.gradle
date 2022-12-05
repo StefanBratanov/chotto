@@ -40,7 +40,7 @@ dependencies {
     implementation("info.picocli:picocli:${picocliVersion}")
     annotationProcessor("info.picocli:picocli-codegen:${picocliVersion}")
     implementation("tech.pegasys:jblst:0.3.8")
-    implementation("org.apache.tuweni:tuweni-units:2.3.0")
+    implementation("org.apache.tuweni:tuweni-units:2.3.1")
     implementation("com.networknt:json-schema-validator:1.0.73")
     implementation("gg.jte:jte:2.2.3")
     implementation("com.pivovarit:throwing-function:1.5.1")
