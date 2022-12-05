@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import shaded_package.org.checkerframework.checker.units.qual.C;
 
 class ContributeTrierTest {
 
