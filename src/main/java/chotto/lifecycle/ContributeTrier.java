@@ -100,7 +100,7 @@ public class ContributeTrier {
       final CeremonyStatus ceremonyStatus = sequencerClient.getCeremonyStatus();
       LOG.info("Current lobby size: {}", ceremonyStatus.getLobbySize());
     } catch (final Exception __) {
-      LOG.warn("Error while querying the current lobby size. Will not stop trying to contribute");
+      LOG.warn("Error while querying the current lobby size. Will not stop trying to contribute.");
     }
   }
 }
