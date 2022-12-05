@@ -65,7 +65,7 @@ terminated, all secrets will be wiped out from the memory.
 
 Required arguments:
 
-* `entropy-entry`
+* `entropy-entry` (see [Generating randomness](#generating-randomness) for more information)
 * `sequencer`
 
 ### Sample Usage
