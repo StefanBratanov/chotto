@@ -1,6 +1,7 @@
 package chotto.lifecycle;
 
 import chotto.objects.BatchContribution;
+import chotto.objects.CeremonyStatus;
 import chotto.objects.SequencerError;
 import chotto.sequencer.SequencerClient;
 import chotto.sequencer.TryContributeResponse;
@@ -37,6 +38,9 @@ public class ContributeTrier {
     while (tryContributeResponse.getBatchContribution().isEmpty()) {
       final Optional<SequencerError> maybeSequencerError =
           tryContributeResponse.getSequencerError();
+      if (errorIsAnotherContributionInProgress(maybeSequencerError)) {
+        tryLogLobbySize();
+      }
       final int nextAttemptPeriod = getNextAttemptPeriod(maybeSequencerError);
       LOG.info(
           "Will try to contribute again in {} {}",
@@ -72,6 +76,13 @@ public class ContributeTrier {
     rateLimitingAttemptPeriod = attemptPeriod;
   }
 
+  private boolean errorIsAnotherContributionInProgress(
+      final Optional<SequencerError> maybeSequencerError) {
+    return maybeSequencerError
+        .map(sequencerError -> sequencerError.getCode().contains("AnotherContributionInProgress"))
+        .orElse(false);
+  }
+
   private boolean errorIsRateLimiting(final SequencerError sequencerError) {
     return sequencerError.getCode().contains("RateLimited");
   }
@@ -82,5 +93,14 @@ public class ContributeTrier {
 
   private void sleep(final int period) {
     ThrowingRunnable.unchecked(() -> attemptTimeUnit.sleep(period)).run();
+  }
+
+  private void tryLogLobbySize() {
+    try {
+      final CeremonyStatus ceremonyStatus = sequencerClient.getCeremonyStatus();
+      LOG.info("Current lobby size: {}", ceremonyStatus.getLobbySize());
+    } catch (final Exception __) {
+      LOG.warn("Error while querying the current lobby size. Will not stop trying to contribute");
+    }
   }
 }

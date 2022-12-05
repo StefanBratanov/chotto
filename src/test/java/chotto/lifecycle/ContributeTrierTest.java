@@ -1,12 +1,14 @@
 package chotto.lifecycle;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import chotto.objects.BatchContribution;
+import chotto.objects.CeremonyStatus;
 import chotto.objects.SequencerError;
 import chotto.sequencer.SequencerClient;
 import chotto.sequencer.TryContributeResponse;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import shaded_package.org.checkerframework.checker.units.qual.C;
 
 class ContributeTrierTest {
 
@@ -26,15 +29,23 @@ class ContributeTrierTest {
   private final TryContributeResponse successResponse =
       new TryContributeResponse(Optional.of(receivedContribution), Optional.empty());
 
-  final TryContributeResponse emptyResponse =
+  private final TryContributeResponse emptyResponse =
       new TryContributeResponse(Optional.empty(), Optional.empty());
 
-  final TryContributeResponse rateLimitingResponse =
+  private final TryContributeResponse rateLimitingResponse =
       new TryContributeResponse(
           Optional.empty(),
           Optional.of(
               new SequencerError(
                   "TryContributeError::RateLimited", "call came too early. rate limited")));
+
+  private final TryContributeResponse anotherContributionInProgressResponse =
+      new TryContributeResponse(
+          Optional.empty(),
+          Optional.of(
+              new SequencerError(
+                  "TryContributeError::AnotherContributionInProgress",
+                  "another contribution in progress")));
 
   private final ContributeTrier contributeTrier =
       new ContributeTrier(sequencerClient, TimeUnit.MILLISECONDS, 100);
@@ -53,6 +64,38 @@ class ContributeTrierTest {
     assertThat(result).isEqualTo(receivedContribution);
 
     verify(sequencerClient, times(4)).tryContribute(sessionId);
+  }
+
+  @Test
+  public void testAnotherContributionInProgressError() {
+    when(sequencerClient.getCeremonyStatus()).thenReturn(new CeremonyStatus(1, 10, "string"));
+
+    when(sequencerClient.tryContribute(sessionId))
+        .thenReturn(anotherContributionInProgressResponse)
+        .thenReturn(successResponse);
+
+    final BatchContribution result = contributeTrier.tryContributeUntilSuccess(sessionId);
+
+    assertThat(result).isEqualTo(receivedContribution);
+
+    verify(sequencerClient).getCeremonyStatus();
+    verify(sequencerClient, times(2)).tryContribute(sessionId);
+  }
+
+  @Test
+  public void testQueryingCeremonyStatusFailureDoesNotStopTryingToContribute() {
+    doThrow(new IllegalStateException("oopsy")).when(sequencerClient).getCeremonyStatus();
+
+    when(sequencerClient.tryContribute(sessionId))
+        .thenReturn(anotherContributionInProgressResponse)
+        .thenReturn(successResponse);
+
+    final BatchContribution result = contributeTrier.tryContributeUntilSuccess(sessionId);
+
+    assertThat(result).isEqualTo(receivedContribution);
+
+    verify(sequencerClient).getCeremonyStatus();
+    verify(sequencerClient, times(2)).tryContribute(sessionId);
   }
 
   @Test
