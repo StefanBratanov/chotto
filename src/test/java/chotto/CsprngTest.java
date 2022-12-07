@@ -4,6 +4,7 @@ import static chotto.Constants.CURVE_ORDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import chotto.objects.Secret;
+import chotto.secret.Csprng;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.tuweni.units.bigints.UInt256;

@@ -6,10 +6,13 @@ import static org.mockito.Mockito.when;
 
 import chotto.Constants;
 import chotto.Store;
-import chotto.objects.BatchContribution;
+import chotto.contribution.SubContributionContext;
+import chotto.contribution.SubContributionManager;
+import chotto.objects.BatchTranscript;
 import chotto.template.TemplateResolver;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import okhttp3.Response;
@@ -21,26 +24,33 @@ class EcdsaSignerTest {
 
   private final TemplateResolver templateResolver = mock(TemplateResolver.class);
 
+  private final SubContributionManager subContributionManager = mock(SubContributionManager.class);
+
+  private final SubContributionContext subContributionContext = mock(SubContributionContext.class);
+
   private final Store store = mock(Store.class);
 
   private final EcdsaSigner ecdsaSigner =
-      new EcdsaSigner(app, templateResolver, "https://ethfoo.bar", true, store);
+      new EcdsaSigner(
+          app, templateResolver, "https://ethfoo.bar", true, subContributionManager, store);
 
   @Test
   public void testEcdsaSigning() {
     final String ethAddress = "0xC4b1c53aB4a4636e4DF2283B04e71aa022B7Aae3";
-    final BatchContribution batchContribution = mock(BatchContribution.class);
+    final BatchTranscript batchTranscript = mock(BatchTranscript.class);
 
     final String expectedSignature =
         "0x1949e68bfab53a3f921ace3c83d562e36fa5fe82d6f603394e58627a2fa4a31553aca183c6adbb1dad2ac032358b863d2c2137fe2b046e822041037fb97758251c";
 
-    when(templateResolver.createTypedData(batchContribution)).thenReturn("{}");
+    when(subContributionManager.getContexts()).thenReturn(List.of(subContributionContext));
+    when(templateResolver.createTypedData(batchTranscript, List.of(subContributionContext)))
+        .thenReturn("{}");
     when(templateResolver.createSignContributionHtml(
             ethAddress, "{}", Constants.ECDSA_SIGN_CALLBACK_PATH))
         .thenReturn("<html></html>");
     when(store.getEcdsaSignature()).thenReturn(Optional.of(expectedSignature));
 
-    final String signature = ecdsaSigner.sign(ethAddress, batchContribution);
+    final String signature = ecdsaSigner.sign(ethAddress, batchTranscript);
 
     assertThat(signature).isEqualTo(expectedSignature);
 

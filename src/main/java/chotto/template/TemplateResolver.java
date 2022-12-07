@@ -1,12 +1,15 @@
 package chotto.template;
 
-import chotto.objects.BatchContribution;
+import chotto.contribution.SubContributionContext;
+import chotto.objects.BatchTranscript;
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.TemplateOutput;
 import gg.jte.output.StringOutput;
 import gg.jte.resolve.ResourceCodeResolver;
+import java.util.List;
+import java.util.Map;
 
 public class TemplateResolver {
 
@@ -17,9 +20,15 @@ public class TemplateResolver {
     this.templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
   }
 
-  public String createTypedData(final BatchContribution batchContribution) {
+  public String createTypedData(
+      final BatchTranscript batchTranscript,
+      final List<SubContributionContext> subContributionContexts) {
     final TemplateOutput output = new StringOutput();
-    templateEngine.render("typedData.jte", batchContribution, output);
+    templateEngine.render(
+        "typedData.jte",
+        Map.of(
+            "batchTranscript", batchTranscript, "subContributionContexts", subContributionContexts),
+        output);
     return output.toString();
   }
 

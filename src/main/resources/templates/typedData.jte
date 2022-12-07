@@ -1,7 +1,10 @@
 @import gg.jte.support.ForSupport
-@import chotto.objects.BatchContribution
+@import chotto.objects.BatchTranscript
+@import chotto.contribution.SubContributionContext
+@import java.util.List
 
-@param BatchContribution model
+@param BatchTranscript batchTranscript
+@param List<SubContributionContext> subContributionContexts
 
 {
   "types": {
@@ -48,15 +51,15 @@
   },
   "message": {
     "potPubkeys": [
-      @for(var contribution : ForSupport.of(model.getContributions()))
+      @for(var transcript : ForSupport.of(batchTranscript.getTranscripts()))
         {
-          "numG1Powers": ${contribution.get().getNumG1Powers()},
-          "numG2Powers": ${contribution.get().getNumG2Powers()},
-          "potPubkey": "${contribution.get().getPotPubkey().toHexString()}"
+          "numG1Powers": ${transcript.get().getNumG1Powers()},
+          "numG2Powers": ${transcript.get().getNumG2Powers()},
+          "potPubkey": "${subContributionContexts.get(transcript.getIndex()).getPotPubkey().toHexString()}"
         }
-        @if(!contribution.isLast())
-          ,  
-        @endif  
+        @if(!transcript.isLast())
+          ,
+        @endif
       @endfor
     ]
   }

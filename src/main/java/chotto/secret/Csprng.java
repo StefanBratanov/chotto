@@ -1,4 +1,4 @@
-package chotto;
+package chotto.secret;
 
 import chotto.objects.Secret;
 import java.util.Arrays;
@@ -37,9 +37,5 @@ public class Csprng {
     }
     generatedSecrets.add(secret);
     return secret;
-  }
-
-  public void destroySecrets() {
-    generatedSecrets.clear();
   }
 }

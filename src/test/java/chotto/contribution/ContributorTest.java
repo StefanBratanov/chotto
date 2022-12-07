@@ -1,24 +1,19 @@
 package chotto.contribution;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import chotto.Csprng;
 import chotto.CsprngStub;
 import chotto.TestUtil;
-import chotto.auth.Provider;
-import chotto.auth.SessionInfo;
 import chotto.objects.BatchContribution;
 import chotto.objects.Secret;
+import chotto.secret.Csprng;
+import chotto.secret.SecretsGenerator;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;
-import chotto.sign.EcdsaSigner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.json.JSONException;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,26 +25,21 @@ class ContributorTest {
 
   private static final ObjectMapper OBJECT_MAPPER = ChottoObjectMapper.getInstance();
 
-  private final List<Secret> secrets =
-      List.of(
-          Secret.fromText("foo"),
-          Secret.fromText("bar"),
-          Secret.fromText("danksharding"),
-          Secret.fromText("devcon"));
+  private static final SecretsGenerator SECRET_MANAGER;
 
-  private final Csprng csprng = CsprngStub.fromPredefinedSecrets(secrets);
-
-  private final BlsSigner blsSigner = new BlsSigner();
-
-  private final EcdsaSigner ecdsaSigner = mock(EcdsaSigner.class);
+  static {
+    final List<Secret> secrets = TestUtil.getTestSecrets();
+    final Csprng csprng = CsprngStub.fromPredefinedSecrets(secrets);
+    SECRET_MANAGER = new SecretsGenerator(csprng);
+    SECRET_MANAGER.generateSecrets();
+  }
 
   private final ContributionVerification contributionVerification =
       new ContributionVerification(OBJECT_MAPPER);
 
-  @ParameterizedTest(name = "{3}")
+  @ParameterizedTest(name = "{2}")
   @MethodSource("provideContributorInput")
   public void checkContributionFlow(
-      final SessionInfo sessionInfo,
       final boolean blsSignSubContributions,
       final boolean ecdsaSignContribution,
       final String expectedContributionResource)
@@ -57,20 +47,20 @@ class ContributorTest {
 
     final String identity = "git|14827647|@StefanBratanov";
 
-    final String ecdsaSignature =
-        "0x1949e68bfab53a3f921ace3c83d562e36fa5fe82d6f603394e58627a2fa4a31553aca183c6adbb1dad2ac032358b863d2c2137fe2b046e822041037fb97758251c";
+    final SubContributionManager subContributionManager =
+        new SubContributionManager(
+            SECRET_MANAGER, new BlsSigner(), identity, blsSignSubContributions);
 
-    final Contributor contributor =
-        new Contributor(
-            csprng,
-            blsSigner,
-            ecdsaSigner,
-            sessionInfo,
-            identity,
-            blsSignSubContributions,
-            ecdsaSignContribution);
+    subContributionManager.generateContexts();
 
-    when(ecdsaSigner.sign(eq(sessionInfo.getNickname()), notNull())).thenReturn(ecdsaSignature);
+    Optional<String> ecdsaSignatureMaybe = Optional.empty();
+    if (ecdsaSignContribution) {
+      ecdsaSignatureMaybe =
+          Optional.of(
+              "0x1949e68bfab53a3f921ace3c83d562e36fa5fe82d6f603394e58627a2fa4a31553aca183c6adbb1dad2ac032358b863d2c2137fe2b046e822041037fb97758251c");
+    }
+
+    final Contributor contributor = new Contributor(subContributionManager, ecdsaSignatureMaybe);
 
     final BatchContribution initialBatchContribution = TestUtil.getInitialBatchContribution();
 
@@ -90,13 +80,9 @@ class ContributorTest {
   }
 
   private static Stream<Arguments> provideContributorInput() {
-    final SessionInfo ethereumSessionInfo =
-        new SessionInfo(Provider.ETHEREUM, "0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad", null);
-    final SessionInfo githubSessionInfo = new SessionInfo(Provider.GITHUB, "StefanBratanov", null);
     return Stream.of(
-        Arguments.of(ethereumSessionInfo, true, true, "updatedContribution.json"),
-        Arguments.of(githubSessionInfo, true, false, "updatedContributionNoEcdsa.json"),
-        Arguments.of(ethereumSessionInfo, false, false, "updatedContributionNoBlsNoEcdsa.json"),
-        Arguments.of(githubSessionInfo, true, true, "updatedContributionNoEcdsa.json"));
+        Arguments.of(true, true, "updatedContribution.json"),
+        Arguments.of(true, false, "updatedContributionNoEcdsa.json"),
+        Arguments.of(false, false, "updatedContributionNoBlsNoEcdsa.json"));
   }
 }

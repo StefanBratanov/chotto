@@ -28,9 +28,4 @@ public class ContributionUpdater {
       power = power.multiplyMod(secret, Constants.CURVE_ORDER);
     }
   }
-
-  public static void updateWitness(final Contribution contribution, final UInt256 secret) {
-    final G2Point potPubkey = G2Point.generator().mul(secret);
-    contribution.setPotPubkey(potPubkey);
-  }
 }

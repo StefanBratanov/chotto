@@ -11,10 +11,14 @@ import chotto.cli.CliInstructor;
 import chotto.cli.PropertiesVersionProvider;
 import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
+import chotto.contribution.SubContributionManager;
 import chotto.identity.IdentityRetriever;
 import chotto.lifecycle.ApiLifecycle;
 import chotto.lifecycle.ContributeTrier;
+import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
+import chotto.secret.Csprng;
+import chotto.secret.SecretsGenerator;
 import chotto.sequencer.SequencerClient;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;
@@ -199,8 +203,9 @@ public class Chotto implements Callable<Integer> {
     AsciiArtHelper.printCeremonyStatus(ceremonyStatus);
 
     final Csprng csprng = new Csprng(entropyEntry);
+    final SecretsGenerator secretsGenerator = new SecretsGenerator(csprng);
 
-    Runtime.getRuntime().addShutdownHook(new Thread(csprng::destroySecrets));
+    secretsGenerator.generateSecrets();
 
     final BlsSigner blsSigner = new BlsSigner();
 
@@ -212,9 +217,6 @@ public class Chotto implements Callable<Integer> {
     final boolean callbackEndpointIsDefined = callbackEndpoint.isPresent();
 
     final TemplateResolver templateResolver = new TemplateResolver();
-
-    final EcdsaSigner ecdsaSigner =
-        new EcdsaSigner(app, templateResolver, host, callbackEndpointIsDefined, store);
 
     CliInstructor.instructUserToLogin(loginLink, callbackEndpointIsDefined);
 
@@ -232,15 +234,24 @@ public class Chotto implements Callable<Integer> {
 
     LOG.info("Your identity is {}", identity);
 
-    final Contributor contributor =
-        new Contributor(
-            csprng,
-            blsSigner,
-            ecdsaSigner,
-            sessionInfo,
-            identity,
-            blsSignSubContributions,
-            ecdsaSignContribution);
+    final SubContributionManager contributionManager =
+        new SubContributionManager(secretsGenerator, blsSigner, identity, blsSignSubContributions);
+
+    contributionManager.generateContexts();
+
+    final EcdsaSigner ecdsaSigner =
+        new EcdsaSigner(
+            app, templateResolver, host, callbackEndpointIsDefined, contributionManager, store);
+
+    final BatchTranscript batchTranscript = sequencerClient.getTranscript();
+
+    Optional<String> ecdsaSignatureMaybe = Optional.empty();
+    if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
+      final String ecdsaSignature = ecdsaSigner.sign(identity, batchTranscript);
+      ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
+    }
+
+    final Contributor contributor = new Contributor(contributionManager, ecdsaSignatureMaybe);
 
     final ContributeTrier contributeTrier =
         new ContributeTrier(sequencerClient, TimeUnit.SECONDS, contributionAttemptPeriod);
