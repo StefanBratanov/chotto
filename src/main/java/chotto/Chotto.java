@@ -230,7 +230,9 @@ public class Chotto implements Callable<Integer> {
     final IdentityRetriever identityRetriever =
         IdentityRetriever.create(sessionInfo.getProvider(), httpClient, objectMapper);
 
-    final String identity = identityRetriever.getIdentity(sessionInfo.getNickname());
+    final String nickname = sessionInfo.getNickname();
+
+    final String identity = identityRetriever.getIdentity(nickname);
 
     LOG.info("Your identity is {}", identity);
 
@@ -247,7 +249,7 @@ public class Chotto implements Callable<Integer> {
 
     Optional<String> ecdsaSignatureMaybe = Optional.empty();
     if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
-      final String ecdsaSignature = ecdsaSigner.sign(identity, batchTranscript);
+      final String ecdsaSignature = ecdsaSigner.sign(nickname, batchTranscript);
       ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
     }
 
