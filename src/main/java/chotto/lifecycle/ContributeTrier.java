@@ -1,5 +1,9 @@
 package chotto.lifecycle;
 
+import static chotto.sequencer.SequencerClient.ANOTHER_CONTRIBUTION_IN_PROGRESS_ERROR;
+import static chotto.sequencer.SequencerClient.RATE_LIMITED_ERROR;
+import static chotto.sequencer.SequencerClient.UNKNOWN_SESSION_ID_ERROR;
+
 import chotto.objects.BatchContribution;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.SequencerError;
@@ -79,16 +83,18 @@ public class ContributeTrier {
   private boolean errorIsAnotherContributionInProgress(
       final Optional<SequencerError> maybeSequencerError) {
     return maybeSequencerError
-        .map(sequencerError -> sequencerError.getCode().contains("AnotherContributionInProgress"))
+        .map(
+            sequencerError ->
+                sequencerError.getCode().contains(ANOTHER_CONTRIBUTION_IN_PROGRESS_ERROR))
         .orElse(false);
   }
 
   private boolean errorIsRateLimiting(final SequencerError sequencerError) {
-    return sequencerError.getCode().contains("RateLimited");
+    return sequencerError.getCode().contains(RATE_LIMITED_ERROR);
   }
 
   private boolean errorIsUnknownSessionId(final SequencerError sequencerError) {
-    return sequencerError.getCode().contains("UnknownSessionId");
+    return sequencerError.getCode().contains(UNKNOWN_SESSION_ID_ERROR);
   }
 
   private void sleep(final int period) {

@@ -3,7 +3,7 @@ package chotto.contribution;
 import chotto.objects.BlsSignature;
 import chotto.objects.G2Point;
 import chotto.objects.Secret;
-import chotto.secret.SecretsGenerator;
+import chotto.secret.SecretsManager;
 import chotto.sign.BlsSigner;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +14,24 @@ public class SubContributionManager {
 
   private final List<SubContributionContext> contexts = new ArrayList<>();
 
-  private final SecretsGenerator secretsGenerator;
+  private final SecretsManager secretsManager;
   private final BlsSigner blsSigner;
   private final String identity;
   private final boolean blsSignSubContributions;
 
   public SubContributionManager(
-      final SecretsGenerator secretsGenerator,
+      final SecretsManager secretsManager,
       final BlsSigner blsSigner,
       final String identity,
       final boolean blsSignSubContributions) {
-    this.secretsGenerator = secretsGenerator;
+    this.secretsManager = secretsManager;
     this.blsSigner = blsSigner;
     this.identity = identity;
     this.blsSignSubContributions = blsSignSubContributions;
   }
 
   public void generateContexts() {
-    final List<Secret> secrets = secretsGenerator.getSecrets();
+    final List<Secret> secrets = secretsManager.getSecrets();
     IntStream.range(0, secrets.size())
         .forEach(
             i -> {

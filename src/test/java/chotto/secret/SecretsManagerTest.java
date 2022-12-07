@@ -9,25 +9,25 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class SecretsGeneratorTest {
+class SecretsManagerTest {
 
   private final List<Secret> secrets = TestUtil.getTestSecrets();
 
   private final Csprng csprng = CsprngStub.fromPredefinedSecrets(secrets);
 
-  private final SecretsGenerator secretsGenerator = new SecretsGenerator(csprng);
+  private final SecretsManager secretsManager = new SecretsManager(csprng);
 
   @Test
   public void throwsIfTriesToGetBeforeGenerating() {
     final IllegalStateException exception =
-        Assertions.assertThrows(IllegalStateException.class, secretsGenerator::getSecrets);
+        Assertions.assertThrows(IllegalStateException.class, secretsManager::getSecrets);
     assertThat(exception).hasMessage("Expected 4 secrets to have been generated but it was 0");
   }
 
   @Test
   public void generatesAndGetsSecrets() {
-    secretsGenerator.generateSecrets();
-    final List<Secret> secrets = secretsGenerator.getSecrets();
+    secretsManager.generateSecrets();
+    final List<Secret> secrets = secretsManager.getSecrets();
     assertThat(secrets).hasSize(4);
     assertThat(secrets).isEqualTo(secrets);
   }

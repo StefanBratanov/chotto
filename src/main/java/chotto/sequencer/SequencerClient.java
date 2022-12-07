@@ -27,6 +27,11 @@ import org.slf4j.LoggerFactory;
 
 public class SequencerClient {
 
+  public static final String RATE_LIMITED_ERROR = "RateLimited";
+  public static final String UNKNOWN_SESSION_ID_ERROR = "UnknownSessionId";
+  public static final String ANOTHER_CONTRIBUTION_IN_PROGRESS_ERROR =
+      "AnotherContributionInProgress";
+
   private static final Logger LOG = LoggerFactory.getLogger(SequencerClient.class);
 
   private final HttpClient httpClient;
@@ -106,7 +111,12 @@ public class SequencerClient {
     final Optional<SequencerError> maybeSequencerError = getMaybeSequencerError(contributionJson);
 
     if (maybeSequencerError.isPresent()) {
-      LOG.info(createExceptionMessage(response, "Contribution is not available"));
+      final SequencerError sequencerError = maybeSequencerError.get();
+      if (sequencerError.getCode().contains(ANOTHER_CONTRIBUTION_IN_PROGRESS_ERROR)) {
+        LOG.info("Contribution is not available. Another contribution is in progress.");
+      } else {
+        LOG.info(createExceptionMessage(response, "Contribution is not available"));
+      }
       return new TryContributeResponse(Optional.empty(), maybeSequencerError);
     }
 

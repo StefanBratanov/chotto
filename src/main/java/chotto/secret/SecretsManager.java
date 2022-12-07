@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class SecretsGenerator {
+public class SecretsManager {
 
   private final List<Secret> secrets = new ArrayList<>();
 
   private final Csprng csprng;
 
-  public SecretsGenerator(final Csprng csprng) {
+  public SecretsManager(final Csprng csprng) {
     this.csprng = csprng;
   }
 

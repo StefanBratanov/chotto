@@ -18,7 +18,7 @@ import chotto.lifecycle.ContributeTrier;
 import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
 import chotto.secret.Csprng;
-import chotto.secret.SecretsGenerator;
+import chotto.secret.SecretsManager;
 import chotto.sequencer.SequencerClient;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;
@@ -203,9 +203,9 @@ public class Chotto implements Callable<Integer> {
     AsciiArtHelper.printCeremonyStatus(ceremonyStatus);
 
     final Csprng csprng = new Csprng(entropyEntry);
-    final SecretsGenerator secretsGenerator = new SecretsGenerator(csprng);
+    final SecretsManager secretsManager = new SecretsManager(csprng);
 
-    secretsGenerator.generateSecrets();
+    secretsManager.generateSecrets();
 
     final BlsSigner blsSigner = new BlsSigner();
 
@@ -234,14 +234,14 @@ public class Chotto implements Callable<Integer> {
 
     LOG.info("Your identity is {}", identity);
 
-    final SubContributionManager contributionManager =
-        new SubContributionManager(secretsGenerator, blsSigner, identity, blsSignSubContributions);
+    final SubContributionManager subContributionManager =
+        new SubContributionManager(secretsManager, blsSigner, identity, blsSignSubContributions);
 
-    contributionManager.generateContexts();
+    subContributionManager.generateContexts();
 
     final EcdsaSigner ecdsaSigner =
         new EcdsaSigner(
-            app, templateResolver, host, callbackEndpointIsDefined, contributionManager, store);
+            app, templateResolver, host, callbackEndpointIsDefined, subContributionManager, store);
 
     final BatchTranscript batchTranscript = sequencerClient.getTranscript();
 
@@ -251,7 +251,7 @@ public class Chotto implements Callable<Integer> {
       ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
     }
 
-    final Contributor contributor = new Contributor(contributionManager, ecdsaSignatureMaybe);
+    final Contributor contributor = new Contributor(subContributionManager, ecdsaSignatureMaybe);
 
     final ContributeTrier contributeTrier =
         new ContributeTrier(sequencerClient, TimeUnit.SECONDS, contributionAttemptPeriod);

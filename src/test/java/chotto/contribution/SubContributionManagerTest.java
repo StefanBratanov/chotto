@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import chotto.TestUtil;
 import chotto.objects.BlsSignature;
 import chotto.objects.Secret;
-import chotto.secret.SecretsGenerator;
+import chotto.secret.SecretsManager;
 import chotto.sign.BlsSigner;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class SubContributionManagerTest {
 
-  private final SecretsGenerator secretsGenerator = mock(SecretsGenerator.class);
+  private final SecretsManager secretsManager = mock(SecretsManager.class);
 
   private final BlsSigner blsSigner = mock(BlsSigner.class);
 
@@ -26,13 +26,13 @@ class SubContributionManagerTest {
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
-  public void generatesContexts(final boolean blsSignSubContributions) {
+  public void generatesAndGetsContexts(final boolean blsSignSubContributions) {
     final SubContributionManager subContributionManager =
-        new SubContributionManager(secretsGenerator, blsSigner, identity, blsSignSubContributions);
+        new SubContributionManager(secretsManager, blsSigner, identity, blsSignSubContributions);
 
     final List<Secret> secrets = TestUtil.getTestSecrets();
 
-    when(secretsGenerator.getSecrets()).thenReturn(secrets);
+    when(secretsManager.getSecrets()).thenReturn(secrets);
 
     final BlsSignature blsSignature =
         BlsSignature.fromHexString(

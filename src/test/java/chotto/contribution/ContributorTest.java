@@ -7,7 +7,7 @@ import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import chotto.objects.Secret;
 import chotto.secret.Csprng;
-import chotto.secret.SecretsGenerator;
+import chotto.secret.SecretsManager;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +25,13 @@ class ContributorTest {
 
   private static final ObjectMapper OBJECT_MAPPER = ChottoObjectMapper.getInstance();
 
-  private static final SecretsGenerator SECRET_MANAGER;
+  private static final SecretsManager SECRETS_MANAGER;
 
   static {
     final List<Secret> secrets = TestUtil.getTestSecrets();
     final Csprng csprng = CsprngStub.fromPredefinedSecrets(secrets);
-    SECRET_MANAGER = new SecretsGenerator(csprng);
-    SECRET_MANAGER.generateSecrets();
+    SECRETS_MANAGER = new SecretsManager(csprng);
+    SECRETS_MANAGER.generateSecrets();
   }
 
   private final ContributionVerification contributionVerification =
@@ -49,7 +49,7 @@ class ContributorTest {
 
     final SubContributionManager subContributionManager =
         new SubContributionManager(
-            SECRET_MANAGER, new BlsSigner(), identity, blsSignSubContributions);
+            SECRETS_MANAGER, new BlsSigner(), identity, blsSignSubContributions);
 
     subContributionManager.generateContexts();
 
