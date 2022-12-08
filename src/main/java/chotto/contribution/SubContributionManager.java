@@ -2,18 +2,16 @@ package chotto.contribution;
 
 import chotto.objects.BlsSignature;
 import chotto.objects.G2Point;
-import chotto.objects.Secret;
 import chotto.objects.SubContributionContext;
 import chotto.secret.SecretsManager;
 import chotto.sign.BlsSigner;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 public class SubContributionManager {
 
-  private final List<SubContributionContext> contexts = new ArrayList<>();
+  private final List<SubContributionContext> contexts = new LinkedList<>();
 
   private final SecretsManager secretsManager;
   private final BlsSigner blsSigner;
@@ -32,11 +30,10 @@ public class SubContributionManager {
   }
 
   public void generateContexts() {
-    final List<Secret> secrets = secretsManager.getSecrets();
-    IntStream.range(0, secrets.size())
+    secretsManager
+        .getSecrets()
         .forEach(
-            i -> {
-              final Secret secret = secrets.get(i);
+            secret -> {
               final G2Point potPubKey = G2Point.generator().mul(secret.toUInt256());
               Optional<BlsSignature> blsSignature = Optional.empty();
               if (blsSignSubContributions) {

@@ -3,13 +3,13 @@ package chotto.secret;
 import static chotto.Constants.NUMBER_OF_SECRETS;
 
 import chotto.objects.Secret;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class SecretsManager {
 
-  private final List<Secret> secrets = new ArrayList<>();
+  private final List<Secret> secrets = new LinkedList<>();
 
   private final Csprng csprng;
 

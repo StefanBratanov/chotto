@@ -41,17 +41,17 @@ public class Contributor {
           .ifPresentOrElse(
               blsSignature -> {
                 contribution.setBlsSignature(blsSignature);
-                LOG.info("Signed the sub-contribution using your identity");
+                LOG.info("Signed the sub-contribution with a BLS signature");
               },
               () -> {
                 contribution.setBlsSignature(null);
-                LOG.info("Skipped signing the sub-contribution");
+                LOG.info("Skipped signing the sub-contribution with a BLS signature");
               });
     }
     ecdsaSignatureMaybe.ifPresentOrElse(
         ecdsaSignature -> {
           batchContribution.setEcdsaSignature(ecdsaSignature);
-          LOG.info("Signed the contribution with your ECDSA Signature");
+          LOG.info("Signed the contribution with an ECDSA Signature");
         },
         () -> {
           batchContribution.setEcdsaSignature(null);
