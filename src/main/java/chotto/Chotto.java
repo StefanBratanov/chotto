@@ -177,16 +177,10 @@ public class Chotto implements Callable<Integer> {
     final EcdsaSignCallback ecdsaSignCallback = new EcdsaSignCallback(store);
 
     final Javalin app =
-        Javalin.create(
-                config ->
-                    config.staticFiles.add(
-                        staticFiles -> {
-                          staticFiles.hostedPath = "/static";
-                          staticFiles.directory = "/static";
-                        }))
+        Javalin.create()
+            .addHandler(HandlerType.GET, AUTH_CALLBACK_PATH, authCallback)
+            .addHandler(HandlerType.GET, ECDSA_SIGN_CALLBACK_PATH, ecdsaSignCallback)
             .start(serverPort);
-    app.addHandler(HandlerType.GET, AUTH_CALLBACK_PATH, authCallback);
-    app.addHandler(HandlerType.GET, ECDSA_SIGN_CALLBACK_PATH, ecdsaSignCallback);
 
     LOG.info("Started server on port {}", serverPort);
 

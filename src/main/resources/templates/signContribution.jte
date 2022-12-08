@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sign Contribution</title>
-    <script src="/static/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js" integrity="sha256-cdcyjItaOZqsMpqD2GtRBYwB4OBBT8RXfav8ecUYxtg=" crossorigin="anonymous"></script>
 </head>
 
 <body>

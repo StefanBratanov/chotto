@@ -21,7 +21,6 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.AfterEach;
@@ -89,8 +88,6 @@ class ChottoIntegrationTest {
     final CompletableFuture<Integer> exitCode = runChottoCommand();
 
     await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
-
-    verifyStaticFilesAreAvailable();
 
     triggerAuthCallbackManually(provider);
 
@@ -243,23 +240,6 @@ class ChottoIntegrationTest {
             response()
                 .withStatusCode(200)
                 .withBody(TestUtil.readResource("integration/transcript.json")));
-  }
-
-  private void verifyStaticFilesAreAvailable() {
-    final List<String> staticFiles = List.of("web3.min.js");
-    staticFiles.forEach(
-        staticFile -> {
-          final HttpRequest request =
-              HttpRequest.newBuilder()
-                  .uri(URI.create(getLocalServerHost()).resolve("/static/" + staticFile))
-                  .GET()
-                  .build();
-          final HttpResponse<String> response =
-              ThrowingSupplier.unchecked(() -> httpClient.send(request, BodyHandlers.ofString()))
-                  .get();
-          assertThat(response.statusCode()).isEqualTo(200);
-          assertThat(response.body()).isNotBlank();
-        });
   }
 
   private void verifySignPageContainsCorrectValues() {
