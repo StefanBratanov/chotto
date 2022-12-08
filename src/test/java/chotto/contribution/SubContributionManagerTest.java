@@ -1,5 +1,6 @@
 package chotto.contribution;
 
+import static chotto.Constants.NUMBER_OF_SECRETS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.when;
 import chotto.TestUtil;
 import chotto.objects.BlsSignature;
 import chotto.objects.Secret;
+import chotto.objects.SubContributionContext;
 import chotto.secret.SecretsManager;
 import chotto.sign.BlsSigner;
 import java.util.List;
@@ -22,11 +24,10 @@ class SubContributionManagerTest {
 
   private final BlsSigner blsSigner = mock(BlsSigner.class);
 
-  private final String identity = "git|14827647|@StefanBratanov";
-
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   public void generatesAndGetsContexts(final boolean blsSignSubContributions) {
+    final String identity = "git|14827647|@StefanBratanov";
     final SubContributionManager subContributionManager =
         new SubContributionManager(secretsManager, blsSigner, identity, blsSignSubContributions);
 
@@ -44,7 +45,7 @@ class SubContributionManagerTest {
 
     final List<SubContributionContext> contexts = subContributionManager.getContexts();
 
-    assertThat(contexts).hasSize(4);
+    assertThat(contexts).hasSize(NUMBER_OF_SECRETS);
     assertThat(contexts.stream().map(SubContributionContext::getSecret)).hasSameElementsAs(secrets);
     assertThat(contexts.stream().map(SubContributionContext::getPotPubkey))
         .allMatch(Objects::nonNull);

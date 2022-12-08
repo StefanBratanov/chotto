@@ -5,6 +5,7 @@ import static org.awaitility.Awaitility.await;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
+import chotto.auth.Provider;
 import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
 import chotto.serialization.ChottoObjectMapper;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
 import org.slf4j.event.Level;
@@ -45,6 +48,8 @@ class ChottoIntegrationTest {
   private final String sessionId = "a6d8bd3b-3154-4d29-bdd7-d28669b0a4a5";
 
   private final String ethAddress = "0x33b187514f5Ea150a007651bEBc82eaaBF4da5ad";
+
+  private final String githubUsername = "StefanBratanov";
 
   private final String ecdsaSignature =
       "0x1949e68bfab53a3f921ace3c83d562e36fa5fe82d6f603394e58627a2fa4a31553aca183c6adbb1dad2ac032358b863d2c2137fe2b046e822041037fb97758251c";
@@ -72,8 +77,10 @@ class ChottoIntegrationTest {
     mockServer.stop();
   }
 
-  @Test
-  public void testSuccessfulContribution() throws IOException, InterruptedException {
+  @ParameterizedTest
+  @EnumSource(Provider.class)
+  public void testSuccessfulContribution(final Provider provider)
+      throws IOException, InterruptedException {
 
     mockTryContributeResponse();
     mockUploadingContributionResponse();
@@ -85,24 +92,30 @@ class ChottoIntegrationTest {
 
     verifyStaticFilesAreAvailable();
 
-    triggerAuthCallbackManually();
+    triggerAuthCallbackManually(provider);
 
-    await()
-        .atMost(Duration.ofMinutes(1))
-        .until(
-            () ->
-                logCaptor
-                    .getInfoLogs()
-                    .contains("Waiting for an ECDSA signature for the contribution..."));
+    if (provider.equals(Provider.ETHEREUM)) {
+      await()
+          .atMost(Duration.ofMinutes(1))
+          .until(
+              () ->
+                  logCaptor
+                      .getInfoLogs()
+                      .contains("Waiting for an ECDSA signature for the contribution..."));
 
-    triggerEcdsaSignCallbackManually();
+      verifySignPageContainsCorrectValues();
+
+      triggerEcdsaSignCallbackManually();
+    }
 
     await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
 
     assertThat(exitCode).isCompletedWithValue(0);
 
+    final String filesSuffix = provider.equals(Provider.ETHEREUM) ? ethAddress : githubUsername;
+
     // verify contribution
-    final Path savedContribution = tempDir.resolve("contribution-" + ethAddress + ".json");
+    final Path savedContribution = tempDir.resolve("contribution-" + filesSuffix + ".json");
     assertThat(savedContribution)
         .exists()
         .content()
@@ -112,10 +125,14 @@ class ChottoIntegrationTest {
               final BatchContribution batchContribution =
                   objectMapper.readValue(contributionJson, BatchContribution.class);
               assertThat(contributionVerification.subgroupChecks(batchContribution)).isTrue();
-              assertThat(batchContribution.getEcdsaSignature()).isEqualTo(ecdsaSignature);
+              if (provider.equals(Provider.ETHEREUM)) {
+                assertThat(batchContribution.getEcdsaSignature()).isEqualTo(ecdsaSignature);
+              } else {
+                assertThat(batchContribution.getEcdsaSignature()).isNull();
+              }
             });
     // verify receipt is saved
-    assertThat(tempDir.resolve("receipt-" + ethAddress + ".txt")).exists().isNotEmptyFile();
+    assertThat(tempDir.resolve("receipt-" + filesSuffix + ".txt")).exists().isNotEmptyFile();
     assertThat(TestUtil.findSavedTranscriptFile(tempDir)).isNotEmptyFile();
   }
 
@@ -123,13 +140,15 @@ class ChottoIntegrationTest {
   public void testProcessFailWhenUnknownSessionIdFromSequencer()
       throws IOException, InterruptedException {
 
+    mockGetTranscriptResponse();
+
     mockTryContributeUnknownSessionIdResponse();
 
     final CompletableFuture<Integer> exitCode = runChottoCommand();
 
     await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
 
-    triggerAuthCallbackManually();
+    triggerAuthCallbackManually(Provider.GITHUB);
 
     await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
 
@@ -243,12 +262,30 @@ class ChottoIntegrationTest {
         });
   }
 
-  private void triggerAuthCallbackManually() throws IOException, InterruptedException {
+  private void verifySignPageContainsCorrectValues() {
+    final HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(getLocalServerHost()).resolve("/sign/ecdsa"))
+            .GET()
+            .build();
+    final HttpResponse<String> response =
+        ThrowingSupplier.unchecked(() -> httpClient.send(request, BodyHandlers.ofString())).get();
+
+    assertThat(response.statusCode()).isEqualTo(200);
+    final String body = response.body();
+    assertThat(body)
+        .contains(
+            String.format("const ethAddress = \"%s\"", ethAddress),
+            String.format("const callbackPath = \"%s\"", Constants.ECDSA_SIGN_CALLBACK_PATH));
+  }
+
+  private void triggerAuthCallbackManually(final Provider provider)
+      throws IOException, InterruptedException {
     final HttpRequest request =
         HttpRequest.newBuilder()
             .uri(
                 URI.create(getLocalServerHost())
-                    .resolve(Constants.AUTH_CALLBACK_PATH + getAuthCallbackQueryParams()))
+                    .resolve(Constants.AUTH_CALLBACK_PATH + getAuthCallbackQueryParams(provider)))
             .GET()
             .build();
     httpClient.send(request, BodyHandlers.discarding());
@@ -266,14 +303,17 @@ class ChottoIntegrationTest {
     httpClient.send(request, BodyHandlers.discarding());
   }
 
-  private String getAuthCallbackQueryParams() {
+  private String getAuthCallbackQueryParams(final Provider provider) {
     return "?session_id="
         + sessionId
-        + "&sub=eth+%7C+"
-        + ethAddress
+        + (provider.equals(Provider.ETHEREUM)
+            ? "&sub=eth+%7C+" + ethAddress
+            : "&sub=git%7C14827647%7C" + githubUsername)
         + "&nickname="
-        + ethAddress
-        + "&provider=Ethereum&exp=18446744073709551645";
+        + (provider.equals(Provider.ETHEREUM) ? ethAddress : githubUsername)
+        + "&provider="
+        + provider
+        + "&exp=18446744073709551645";
   }
 
   private String getLocalServerHost() {

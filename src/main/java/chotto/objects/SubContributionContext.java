@@ -1,8 +1,6 @@
-package chotto.contribution;
+package chotto.objects;
 
-import chotto.objects.BlsSignature;
-import chotto.objects.G2Point;
-import chotto.objects.Secret;
+import java.util.Objects;
 import java.util.Optional;
 
 public class SubContributionContext {
@@ -30,5 +28,24 @@ public class SubContributionContext {
 
   public G2Point getPotPubkey() {
     return potPubkey;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final SubContributionContext that = (SubContributionContext) o;
+    return Objects.equals(secret, that.secret)
+        && Objects.equals(blsSignatureMaybe, that.blsSignatureMaybe)
+        && Objects.equals(potPubkey, that.potPubkey);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(secret, blsSignatureMaybe, potPubkey);
   }
 }

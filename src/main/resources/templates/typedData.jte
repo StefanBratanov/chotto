@@ -1,6 +1,6 @@
 @import gg.jte.support.ForSupport
 @import chotto.objects.BatchTranscript
-@import chotto.contribution.SubContributionContext
+@import chotto.objects.SubContributionContext
 @import java.util.List
 
 @param BatchTranscript batchTranscript

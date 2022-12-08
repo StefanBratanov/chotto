@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import chotto.Constants;
 import chotto.TestUtil;
-import chotto.contribution.SubContributionContext;
 import chotto.objects.BatchTranscript;
 import chotto.objects.G2Point;
+import chotto.objects.SubContributionContext;
 import java.util.List;
 import java.util.Optional;
 import org.json.JSONException;

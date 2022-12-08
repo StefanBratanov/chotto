@@ -1,7 +1,7 @@
 package chotto.template;
 
-import chotto.contribution.SubContributionContext;
 import chotto.objects.BatchTranscript;
+import chotto.objects.SubContributionContext;
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;

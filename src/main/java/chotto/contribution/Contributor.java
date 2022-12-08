@@ -2,7 +2,7 @@ package chotto.contribution;
 
 import chotto.objects.BatchContribution;
 import chotto.objects.Contribution;
-import chotto.objects.Secret;
+import chotto.objects.SubContributionContext;
 import java.util.List;
 import java.util.Optional;
 import org.apache.tuweni.units.bigints.UInt256;
@@ -28,12 +28,11 @@ public class Contributor {
     final List<SubContributionContext> subContributionContexts =
         subContributionManager.getContexts();
     final List<Contribution> contributions = batchContribution.getContributions();
-    for (Contribution contribution : contributions) {
+    for (final Contribution contribution : contributions) {
       final SubContributionContext subContributionContext = subContributionContexts.get(index);
-      final Secret secret = subContributionContext.getSecret();
-      final UInt256 secretNumber = secret.toUInt256();
+      final UInt256 secret = subContributionContext.getSecret().toUInt256();
       LOG.info("Updating sub-contribution {}/{}", ++index, contributions.size());
-      ContributionUpdater.updatePowersOfTau(contribution, secretNumber);
+      ContributionUpdater.updatePowersOfTau(contribution, secret);
       LOG.info("Updated Powers of Tau");
       contribution.setPotPubkey(subContributionContext.getPotPubkey());
       LOG.info("Updated Witness");

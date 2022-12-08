@@ -3,6 +3,7 @@ package chotto.contribution;
 import chotto.objects.BlsSignature;
 import chotto.objects.G2Point;
 import chotto.objects.Secret;
+import chotto.objects.SubContributionContext;
 import chotto.secret.SecretsManager;
 import chotto.sign.BlsSigner;
 import java.util.ArrayList;

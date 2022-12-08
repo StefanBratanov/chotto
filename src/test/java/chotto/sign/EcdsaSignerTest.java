@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 
 import chotto.Constants;
 import chotto.Store;
-import chotto.contribution.SubContributionContext;
 import chotto.contribution.SubContributionManager;
 import chotto.objects.BatchTranscript;
+import chotto.objects.SubContributionContext;
 import chotto.template.TemplateResolver;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
