@@ -2,11 +2,11 @@ package chotto.contribution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import chotto.CsprngStub;
 import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import chotto.objects.Secret;
 import chotto.secret.Csprng;
+import chotto.secret.CsprngStub;
 import chotto.secret.SecretsManager;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;

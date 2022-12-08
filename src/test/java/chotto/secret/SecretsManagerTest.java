@@ -1,19 +1,17 @@
 package chotto.secret;
 
+import static chotto.Constants.NUMBER_OF_SECRETS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import chotto.CsprngStub;
-import chotto.TestUtil;
 import chotto.objects.Secret;
 import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class SecretsManagerTest {
 
-  private final List<Secret> secrets = TestUtil.getTestSecrets();
-
-  private final Csprng csprng = CsprngStub.fromPredefinedSecrets(secrets);
+  private final Csprng csprng = new Csprng("Danksharding");
 
   private final SecretsManager secretsManager = new SecretsManager(csprng);
 
@@ -28,7 +26,7 @@ class SecretsManagerTest {
   public void generatesAndGetsSecrets() {
     secretsManager.generateSecrets();
     final List<Secret> secrets = secretsManager.getSecrets();
-    assertThat(secrets).hasSize(4);
-    assertThat(secrets).isEqualTo(secrets);
+    assertThat(secrets).hasSize(NUMBER_OF_SECRETS);
+    assertThat(secrets).allMatch(Objects::nonNull).doesNotHaveDuplicates();
   }
 }

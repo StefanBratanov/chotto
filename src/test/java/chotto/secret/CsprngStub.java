@@ -1,7 +1,6 @@
-package chotto;
+package chotto.secret;
 
 import chotto.objects.Secret;
-import chotto.secret.Csprng;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
