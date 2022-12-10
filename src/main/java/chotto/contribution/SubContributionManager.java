@@ -46,6 +46,9 @@ public class SubContributionManager {
   }
 
   public List<SubContributionContext> getContexts() {
+    if (contexts.isEmpty()) {
+      throw new IllegalStateException("Sub-contribution contexts haven't been generated.");
+    }
     return contexts;
   }
 }

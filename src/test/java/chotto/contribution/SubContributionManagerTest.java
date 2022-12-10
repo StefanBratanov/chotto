@@ -15,6 +15,8 @@ import chotto.secret.SecretsManager;
 import chotto.sign.BlsSigner;
 import java.util.List;
 import java.util.Objects;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -24,10 +26,20 @@ class SubContributionManagerTest {
 
   private final BlsSigner blsSigner = mock(BlsSigner.class);
 
+  private final String identity = "git|14827647|@StefanBratanov";
+
+  @Test
+  public void throwsIfTriesToGetBeforeGenerating() {
+    final SubContributionManager subContributionManager =
+        new SubContributionManager(secretsManager, blsSigner, identity, true);
+    final IllegalStateException exception =
+        Assertions.assertThrows(IllegalStateException.class, subContributionManager::getContexts);
+    assertThat(exception).hasMessage("Sub-contribution contexts haven't been generated.");
+  }
+
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   public void generatesAndGetsContexts(final boolean blsSignSubContributions) {
-    final String identity = "git|14827647|@StefanBratanov";
     final SubContributionManager subContributionManager =
         new SubContributionManager(secretsManager, blsSigner, identity, blsSignSubContributions);
 
