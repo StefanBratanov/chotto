@@ -80,7 +80,6 @@ sourceSets {
     }
 }
 
-//a task that generates the resources:
 tasks.register("generateVersionTxt") {
     description "Creates a version.txt file with build info that is added to the root of the jar"
     doLast {
