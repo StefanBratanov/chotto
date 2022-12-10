@@ -35,12 +35,12 @@ public class SubContributionManager {
         .forEach(
             secret -> {
               final G2Point potPubKey = G2Point.generator().mul(secret.toUInt256());
-              Optional<BlsSignature> blsSignature = Optional.empty();
-              if (blsSignSubContributions) {
-                blsSignature = Optional.of(blsSigner.sign(secret, identity));
-              }
+              final Optional<BlsSignature> blsSignatureMaybe =
+                  blsSignSubContributions
+                      ? Optional.of(blsSigner.sign(secret, identity))
+                      : Optional.empty();
               final SubContributionContext context =
-                  new SubContributionContext(secret, blsSignature, potPubKey);
+                  new SubContributionContext(secret, blsSignatureMaybe, potPubKey);
               contexts.add(context);
             });
   }
