@@ -62,8 +62,8 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion("11")
-    targetCompatibility = JavaVersion.toVersion("11")
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 compileJava {
@@ -81,7 +81,7 @@ sourceSets {
 }
 
 //a task that generates the resources:
-task generateVersionTxt {
+tasks.register("generateVersionTxt") {
     description "Creates a version.txt file with build info that is added to the root of the jar"
     doLast {
         new File(generatedResources).mkdirs()
@@ -97,7 +97,7 @@ spotless {
     }
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }
 

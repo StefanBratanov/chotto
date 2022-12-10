@@ -12,6 +12,8 @@ import chotto.serialization.ChottoObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -74,6 +76,14 @@ class ChottoIntegrationTest {
   @AfterEach
   public void cleanUp() {
     mockServer.stop();
+  }
+
+  @Test
+  public void checkRetrievingVersion() {
+    final StringWriter sw = new StringWriter();
+    cmd.setOut(new PrintWriter(sw));
+    cmd.execute("--version");
+    assertThat(sw.toString()).isNotEmpty();
   }
 
   @ParameterizedTest
