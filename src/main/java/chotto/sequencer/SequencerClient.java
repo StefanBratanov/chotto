@@ -62,6 +62,8 @@ public class SequencerClient {
   }
 
   public BatchTranscript getTranscript() {
+    LOG.info("Requesting ceremony transcript...");
+
     final HttpRequest request = buildGetRequest("/info/current_state").build();
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 

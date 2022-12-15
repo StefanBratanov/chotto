@@ -153,6 +153,12 @@ public class Chotto implements Callable<Integer> {
   private Path outputDirectory =
       Paths.get(System.getProperty("user.home") + File.separator + "kzg-ceremony");
 
+  @Option(
+      names = {"--Xtest-ceremony"},
+      description = "Whether the ceremony is a test one or a real one.",
+      hidden = true)
+  private boolean testCeremony = true;
+
   @Override
   public Integer call() {
     try {
@@ -239,10 +245,9 @@ public class Chotto implements Callable<Integer> {
         new EcdsaSigner(
             app, templateResolver, host, callbackEndpointIsDefined, subContributionManager, store);
 
-    final BatchTranscript batchTranscript = sequencerClient.getTranscript();
-
     Optional<String> ecdsaSignatureMaybe = Optional.empty();
     if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
+      final BatchTranscript batchTranscript = sequencerClient.getTranscript();
       final String ecdsaSignature = ecdsaSigner.sign(nickname, batchTranscript);
       ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
     }
@@ -264,6 +269,8 @@ public class Chotto implements Callable<Integer> {
     apiLifecycle.runLifecycle();
 
     AsciiArtHelper.printThankYou();
+
+    CliInstructor.instructUserToShareOnTwitter(testCeremony, identity);
   }
 
   private void createOutputDirectoryIfNeeded() {

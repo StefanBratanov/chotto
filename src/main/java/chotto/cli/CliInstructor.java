@@ -5,9 +5,13 @@ import static com.pivovarit.function.ThrowingRunnable.unchecked;
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class CliInstructor {
+
+  private static final String TWITTER_SHARE_FORMAT = "https://twitter.com/intent/tweet?text=%s";
 
   public static void instructUserToLogin(
       final String loginLink, final boolean callbackEndpointIsDefined) {
@@ -43,6 +47,16 @@ public class CliInstructor {
     }
   }
 
+  public static void instructUserToShareOnTwitter(
+      final boolean testCeremony, final String identity) {
+    final String tweetText =
+        String.format(
+            "I just contributed to the%sKZG Ceremony to scale Ethereum using %s.",
+            testCeremony ? " test " : " ", identity);
+    System.out.printf("You can use the link below to share your contribution on Twitter.%n%n");
+    System.out.printf(TWITTER_SHARE_FORMAT + "%n", urlEncode(tweetText));
+  }
+
   private static boolean canOpenBrowserOnThisMachine() {
     return Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE);
   }
@@ -60,5 +74,9 @@ public class CliInstructor {
   private static void throwCallbackEndpointMustBeDefinedException() {
     throw new IllegalStateException(
         "--callback-endpoint must be defined when a local browser is not supported");
+  }
+
+  private static String urlEncode(final String input) {
+    return URLEncoder.encode(input, StandardCharsets.UTF_8);
   }
 }
