@@ -11,14 +11,11 @@ bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers o
 (PoT) client CLI implementation written in Java. It follows the spec defined in
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
-🕯️🕯️🕯️
-Currently, there is a Test Ceremony running and the url of the `sequencer`
-is https://kzg-ceremony-sequencer-dev.fly.dev.
-🕯️🕯️🕯️
-
-Check the [Install Instructions](#install-instructions) and [Usage](#usage) to see how to use Chotto
+🕯️🕯️🕯️ Currently, there is a Test Ceremony running and the url of the `sequencer`
+is https://kzg-ceremony-sequencer-dev.fly.dev. Check
+the [Install Instructions](#install-instructions) and [Usage](#usage) to see how to use Chotto
 to contribute. After contributing, you can check your
-contribution [here](https://ceremony.ethereum.org/#/record).
+contribution [here](https://ceremony.ethereum.org/#/record). 🕯️🕯️🕯️
 
 ## Install Instructions
 
