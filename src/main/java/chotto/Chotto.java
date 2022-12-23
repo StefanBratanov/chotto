@@ -153,12 +153,6 @@ public class Chotto implements Callable<Integer> {
   private Path outputDirectory =
       Paths.get(System.getProperty("user.home") + File.separator + "kzg-ceremony");
 
-  @Option(
-      names = {"--Xtest-ceremony"},
-      description = "Whether the ceremony is a test one or a real one.",
-      hidden = true)
-  private boolean testCeremony = true;
-
   @Override
   public Integer call() {
     try {
@@ -270,7 +264,7 @@ public class Chotto implements Callable<Integer> {
 
     AsciiArtHelper.printThankYou();
 
-    CliInstructor.instructUserToShareOnTwitter(testCeremony, identity);
+    CliInstructor.instructUserToShareOnTwitter(identity);
   }
 
   private void createOutputDirectoryIfNeeded() {
