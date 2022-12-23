@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.StringBody.subString;
 
 import chotto.TestUtil;
 import chotto.auth.Provider;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
-import org.mockserver.matchers.Times;
 import org.mockserver.model.HttpRequest;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -281,38 +279,6 @@ class SequencerClientTest {
     assertThat(exception)
         .hasMessage(
             "Failed to upload contribution (status: 400, message: {\"code\":\"SessionError::InvalidSessionId\",\"error\":\"invalid Bearer token\"})");
-  }
-
-  @Test
-  public void testSequencerSerializationErrorWorkaround() {
-    final BatchContribution batchContribution =
-        TestUtil.getBatchContribution("updatedContribution.json");
-
-    final HttpRequest requestDefinition =
-        request()
-            .withMethod("POST")
-            .withHeader("Authorization", "Bearer " + sessionId)
-            .withPath("/contribute");
-
-    mockServer
-        .when(requestDefinition.withBody(subString("ecdsaSignature")), Times.once())
-        .respond(
-            response()
-                .withStatusCode(422)
-                .withBody(
-                    "Failed to deserialize the JSON body into the target type: unknown field `ecdsaSignature`, expected `contributions` or `ecdsa_signature` at line 1 column 6258317"));
-
-    mockServer
-        .when(requestDefinition.withBody(subString("ecdsa_signature")), Times.once())
-        .respond(
-            response()
-                .withStatusCode(200)
-                .withBody("{\"receipt\":\"string\",\"signature\":\"string\"}"));
-
-    final Receipt receipt = sequencerClient.contribute(batchContribution, sessionId);
-
-    assertThat(receipt.getReceipt()).isEqualTo("string");
-    assertThat(receipt.getSignature()).isEqualTo("string");
   }
 
   @Test

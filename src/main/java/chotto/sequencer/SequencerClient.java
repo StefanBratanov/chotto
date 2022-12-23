@@ -11,6 +11,7 @@ import chotto.objects.Receipt;
 import chotto.objects.SequencerError;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pivovarit.function.ThrowingSupplier;
 import io.javalin.http.ContentType;
 import java.io.IOException;
 import java.net.URI;
@@ -145,29 +146,24 @@ public class SequencerClient {
 
   public Receipt contribute(final BatchContribution batchContribution, final String sessionId) {
 
-    final String body = unchecked(() -> objectMapper.writeValueAsString(batchContribution)).get();
+    final HttpRequest request =
+        buildPostRequest(
+                "/contribute",
+                BodyPublishers.ofByteArray(
+                    ThrowingSupplier.unchecked(
+                            () -> objectMapper.writeValueAsBytes(batchContribution))
+                        .get()))
+            .header("Authorization", "Bearer " + sessionId)
+            .header("Content-Type", ContentType.JSON)
+            .build();
 
-    HttpRequest request = createContributeRequest(body, sessionId);
-    HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
-
-    // will be no longer needed after https://github.com/ethereum/kzg-ceremony-sequencer/pull/127 is
-    // merged
-    if (response.statusCode() == 422
-        && getFailureMessage(response).stream()
-            .anyMatch(
-                failureMessage -> failureMessage.contains("unknown field `ecdsaSignature`"))) {
-      request =
-          createContributeRequest(body.replace("ecdsaSignature", "ecdsa_signature"), sessionId);
-      response = sendRequest(request, BodyHandlers.ofString());
-    }
+    final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
 
     if (response.statusCode() != 200) {
       throwException(response, "Failed to upload contribution");
     }
 
-    final HttpResponse<String> finalResponse = response;
-
-    return unchecked(() -> objectMapper.readValue(finalResponse.body(), Receipt.class)).get();
+    return unchecked(() -> objectMapper.readValue(response.body(), Receipt.class)).get();
   }
 
   public void abortContribution(final String sessionId) {
@@ -193,13 +189,6 @@ public class SequencerClient {
   private HttpRequest.Builder buildPostRequest(
       final String path, final BodyPublisher bodyPublisher) {
     return buildRequest(path, "POST", bodyPublisher);
-  }
-
-  private HttpRequest createContributeRequest(final String body, final String sessionId) {
-    return buildPostRequest("/contribute", BodyPublishers.ofString(body))
-        .header("Authorization", "Bearer " + sessionId)
-        .header("Content-Type", ContentType.JSON)
-        .build();
   }
 
   private HttpRequest.Builder buildRequest(
