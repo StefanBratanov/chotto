@@ -79,11 +79,31 @@ class ChottoIntegrationTest {
   }
 
   @Test
+  public void testInvalidParameters() {
+    final StringWriter sw = new StringWriter();
+    cmd.setErr(new PrintWriter(sw));
+    // short entropy entry
+    int exitCode = cmd.execute(getSequencerArg(), "--entropy-entry=foo");
+    assertThat(sw.toString())
+        .contains(
+            "Invalid value 'foo' for option '--entropy-entry': the text should be more than 5 characters.");
+    assertThat(exitCode).isEqualTo(2);
+    // <= 0 contribution attempt period
+    exitCode =
+        cmd.execute(getSequencerArg(), getEntropyEntryArg(), "--contribution-attempt-period=0");
+    assertThat(sw.toString())
+        .contains(
+            "Invalid value '0' for option '--contribution-attempt-period': value should be bigger than 0.");
+    assertThat(exitCode).isEqualTo(2);
+  }
+
+  @Test
   public void checkRetrievingVersion() {
     final StringWriter sw = new StringWriter();
     cmd.setOut(new PrintWriter(sw));
-    cmd.execute("--version");
+    final int exitCode = cmd.execute("--version");
     assertThat(sw.toString()).isNotEmpty();
+    assertThat(exitCode).isZero();
   }
 
   @ParameterizedTest
@@ -171,11 +191,19 @@ class ChottoIntegrationTest {
     return CompletableFuture.supplyAsync(
         () ->
             cmd.execute(
-                "--sequencer=" + "http://localhost:" + mockServer.getPort(),
-                "--entropy-entry=Danksharding",
+                getSequencerArg(),
+                getEntropyEntryArg(),
                 "--server-port=" + serverPort,
                 "--callback-endpoint=" + getLocalServerHost(),
                 "--output-directory=" + tempDir));
+  }
+
+  private String getSequencerArg() {
+    return "--sequencer=" + "http://localhost:" + mockServer.getPort();
+  }
+
+  private String getEntropyEntryArg() {
+    return "--entropy-entry=Danksharding";
   }
 
   private void mockCeremonyStatusResponse() {

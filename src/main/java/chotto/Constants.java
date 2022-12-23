@@ -5,6 +5,8 @@ import org.apache.tuweni.units.bigints.UInt256;
 
 public class Constants {
 
+  private Constants() {}
+
   public static final int NUMBER_OF_SECRETS = 4;
 
   public static final String AUTH_CALLBACK_PATH = "/auth/callback";
