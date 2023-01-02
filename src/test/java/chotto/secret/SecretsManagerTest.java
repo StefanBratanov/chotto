@@ -7,6 +7,7 @@ import chotto.objects.Secret;
 import java.util.List;
 import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class SecretsManagerTest {
@@ -22,7 +23,7 @@ class SecretsManagerTest {
     assertThat(exception).hasMessage("Expected 4 secrets to have been generated but it was 0");
   }
 
-  @Test
+  @RepeatedTest(100)
   public void generatesAndGetsSecrets() {
     secretsManager.generateSecrets();
     final List<Secret> secrets = secretsManager.getSecrets();

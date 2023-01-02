@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
 import org.slf4j.event.Level;
@@ -107,21 +107,22 @@ class ChottoIntegrationTest {
   }
 
   @ParameterizedTest
-  @EnumSource(Provider.class)
-  public void testSuccessfulContribution(final Provider provider)
+  @CsvSource({"ETHEREUM,true", "ETHEREUM,false", "GITHUB,true"})
+  public void testSuccessfulContribution(
+      final Provider provider, final boolean ecdsaSignContribution)
       throws IOException, InterruptedException {
 
     mockTryContributeResponse();
     mockUploadingContributionResponse();
     mockGetTranscriptResponse();
 
-    final CompletableFuture<Integer> exitCode = runChottoCommand();
+    final CompletableFuture<Integer> exitCode = runChottoCommand(ecdsaSignContribution);
 
     await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
 
     triggerAuthCallbackManually(provider);
 
-    if (provider.equals(Provider.ETHEREUM)) {
+    if (provider.equals(Provider.ETHEREUM) && ecdsaSignContribution) {
       await()
           .atMost(Duration.ofMinutes(1))
           .until(
@@ -152,7 +153,7 @@ class ChottoIntegrationTest {
               final BatchContribution batchContribution =
                   objectMapper.readValue(contributionJson, BatchContribution.class);
               assertThat(contributionVerification.subgroupChecks(batchContribution)).isTrue();
-              if (provider.equals(Provider.ETHEREUM)) {
+              if (provider.equals(Provider.ETHEREUM) && ecdsaSignContribution) {
                 assertThat(batchContribution.getEcdsaSignature()).isEqualTo(ecdsaSignature);
               } else {
                 assertThat(batchContribution.getEcdsaSignature()).isNull();
@@ -188,6 +189,10 @@ class ChottoIntegrationTest {
   }
 
   private CompletableFuture<Integer> runChottoCommand() {
+    return runChottoCommand(true);
+  }
+
+  private CompletableFuture<Integer> runChottoCommand(final boolean ecdsaSignContribution) {
     return CompletableFuture.supplyAsync(
         () ->
             cmd.execute(
@@ -195,7 +200,8 @@ class ChottoIntegrationTest {
                 getEntropyEntryArg(),
                 "--server-port=" + serverPort,
                 "--callback-endpoint=" + getLocalServerHost(),
-                "--output-directory=" + tempDir));
+                "--output-directory=" + tempDir,
+                "--ecdsa-sign-contribution=" + ecdsaSignContribution));
   }
 
   private String getSequencerArg() {

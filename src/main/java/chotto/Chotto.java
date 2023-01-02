@@ -239,11 +239,14 @@ public class Chotto implements Callable<Integer> {
         new EcdsaSigner(
             app, templateResolver, host, callbackEndpointIsDefined, subContributionManager, store);
 
-    Optional<String> ecdsaSignatureMaybe = Optional.empty();
+    final Optional<String> ecdsaSignatureMaybe;
+
     if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
       final BatchTranscript batchTranscript = sequencerClient.getTranscript();
       final String ecdsaSignature = ecdsaSigner.sign(nickname, batchTranscript);
       ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
+    } else {
+      ecdsaSignatureMaybe = Optional.empty();
     }
 
     final Contributor contributor = new Contributor(subContributionManager, ecdsaSignatureMaybe);
