@@ -12,7 +12,7 @@ bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers o
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
 🕯️🕯️🕯️ Currently, there is a Test Ceremony running and the url of the `sequencer`
-is https://kzg-ceremony-sequencer-dev.fly.dev. Check
+is https://sequencer.ceremony.ethereum.org. Check
 the [Install Instructions](#install-instructions) and [Usage](#usage) to see how to use Chotto
 to contribute. After contributing, you can check your
 contribution [here](https://ceremony.ethereum.org/#/record). 🕯️🕯️🕯️
@@ -57,9 +57,9 @@ secret is generated in Chotto is as follows:
 * The seed is passed to a `BLS KeyGen` function which adds more randomness and ultimately generates
   the secret.
 
-The secrets only live in the Java process, so when logging in and signing your contribution via the
-browser there is no need to worry about the browser cache or cookies. After the Java process is
-terminated, all secrets will be wiped out from the memory.
+The secrets will only live in the Java process and will never be exposed to the internet. After the
+Java process is
+terminated, all secrets will be wiped out from memory.
 
 ## Usage
 
@@ -75,13 +75,13 @@ Note: For Windows, use the `chotto.bat` executable.
 #### Authenticate with Ethereum
 
 ```bash
-./chotto --sequencer=https://kzg-ceremony-sequencer-dev.fly.dev/ --entropy-entry="Ethereum is awesome"
+./chotto --sequencer=https://sequencer.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome"
 ```
 
 #### Authenticate with GitHub
 
 ```bash
-./chotto --sequencer=https://kzg-ceremony-sequencer-dev.fly.dev/ --entropy-entry="Ethereum is awesome" --authentication=github
+./chotto --sequencer=https://sequencer.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome" --authentication=github
 ```
 
 #### Run against a local sequencer
