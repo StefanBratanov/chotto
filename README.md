@@ -57,9 +57,9 @@ secret is generated in Chotto is as follows:
 * The seed is passed to a `BLS KeyGen` function which adds more randomness and ultimately generates
   the secret.
 
-The secrets will only live in the Java process and will never be exposed to the internet. After the
-Java process is
-terminated, all secrets will be wiped out from memory.
+The secrets will only live in the Java process, so won't be exposed when the browser is opened for
+logging in and signing the contribution. After the
+Java process is terminated, all secrets will be wiped out from memory.
 
 ## Usage
 

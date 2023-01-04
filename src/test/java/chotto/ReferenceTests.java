@@ -18,28 +18,16 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-/**
- * <a href="https://github.com/jsign/kzg-ceremony-test-vectors">Ethereum KZG Powers of Tau Test
- * Vectors</a>
- */
-public class TestVectorsTest {
-
-  private static final Csprng FIXED_CSPRNG;
-
-  static {
-    FIXED_CSPRNG =
-        CsprngStub.fromFixedSecrets(
-            List.of(
-                Secret.fromHexString("0x111100"),
-                Secret.fromHexString("0x221100"),
-                Secret.fromHexString("0x331100"),
-                Secret.fromHexString("0x441100")));
-  }
+public class ReferenceTests {
 
   private final ObjectMapper objectMapper = ChottoObjectMapper.getInstance();
 
+  /**
+   * <a href="https://github.com/jsign/kzg-ceremony-test-vectors">Ethereum KZG Powers of Tau Test
+   * Vectors</a>
+   */
   @Test
-  public void validateImplementation() throws IOException, JSONException {
+  public void validateImplementationAgainstJsignTestVectors() throws IOException, JSONException {
     final BatchContribution initialBatchContribution =
         objectMapper.readValue(
             new URL(
@@ -53,7 +41,15 @@ public class TestVectorsTest {
                     "https://raw.githubusercontent.com/jsign/kzg-ceremony-test-vectors/main/updatedContribution.json"))
             .toString();
 
-    final SecretsManager secretsManager = new SecretsManager(FIXED_CSPRNG);
+    final Csprng fixedCsprng =
+        CsprngStub.fromFixedSecrets(
+            List.of(
+                Secret.fromHexString("0x111100"),
+                Secret.fromHexString("0x221100"),
+                Secret.fromHexString("0x331100"),
+                Secret.fromHexString("0x441100")));
+
+    final SecretsManager secretsManager = new SecretsManager(fixedCsprng);
     secretsManager.generateSecrets();
 
     // reference implementation uses an empty string as an identity
