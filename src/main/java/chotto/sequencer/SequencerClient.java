@@ -66,7 +66,7 @@ public class SequencerClient {
     return unchecked(() -> objectMapper.readValue(response.body(), CeremonyStatus.class)).get();
   }
 
-  public BatchTranscript getTranscript(final boolean verifyTranscript) {
+  public BatchTranscript getTranscript() {
     LOG.info("Requesting ceremony transcript...");
 
     final HttpRequest request = buildGetRequest("/info/current_state").build();
@@ -78,28 +78,23 @@ public class SequencerClient {
 
     final String transcriptJson = response.body();
 
-    if (verifyTranscript) {
-
-      if (!transcriptVerification.schemaCheck(transcriptJson)) {
-        throw new IllegalStateException(
-            "The received transcript does not match the defined transcript json schema");
-      }
-
-      LOG.info("Transcript passes schema check");
-
-      final BatchTranscript batchTranscript =
-          unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
-
-      if (!transcriptVerification.pointChecks(batchTranscript)) {
-        throw new IllegalStateException("The received transcript does not pass the point checks");
-      }
-
-      LOG.info("Transcript passes point checks");
-
-      return batchTranscript;
+    if (!transcriptVerification.schemaCheck(transcriptJson)) {
+      throw new IllegalStateException(
+          "The received transcript does not match the defined transcript json schema");
     }
 
-    return unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
+    LOG.info("Transcript passes schema check");
+
+    final BatchTranscript batchTranscript =
+        unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
+
+    if (!transcriptVerification.pointChecks(batchTranscript)) {
+      throw new IllegalStateException("The received transcript does not pass the point checks");
+    }
+
+    LOG.info("Transcript passes point checks");
+
+    return batchTranscript;
   }
 
   public String getLoginLink(final Provider provider, final String redirectTo) {

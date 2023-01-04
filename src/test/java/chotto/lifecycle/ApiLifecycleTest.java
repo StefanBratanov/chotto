@@ -7,12 +7,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import chotto.TestUtil;
 import chotto.auth.Provider;
 import chotto.auth.SessionInfo;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
-import chotto.objects.BatchTranscript;
 import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,8 +32,6 @@ class ApiLifecycleTest {
   private final BatchContribution receivedContribution = mock(BatchContribution.class);
 
   private final BatchContribution updatedContribution = mock(BatchContribution.class);
-
-  private final BatchTranscript transcript = mock(BatchTranscript.class);
 
   private final ObjectMapper objectMapper = mock(ObjectMapper.class);
 
@@ -62,20 +58,14 @@ class ApiLifecycleTest {
 
     when(sequencerClient.contribute(updatedContribution, "123")).thenReturn(receipt);
 
-    when(sequencerClient.getTranscript(false)).thenReturn(transcript);
-
     when(objectMapper.writeValueAsString(updatedContribution)).thenReturn("contribution123");
-    when(objectMapper.writeValueAsString(transcript)).thenReturn("transcript123");
 
     apiLifecycle.runLifecycle();
 
     assertThat(tempDir).isNotEmptyDirectory();
 
     assertThat(tempDir.resolve("receipt-foobar.txt")).exists().hasContent("receipt123");
-
     assertThat(tempDir.resolve("contribution-foobar.json")).exists().hasContent("contribution123");
-
-    assertThat(TestUtil.findSavedTranscriptFile(tempDir)).hasContent("transcript123");
   }
 
   @Test

@@ -7,23 +7,17 @@ import chotto.auth.SessionInfo;
 import chotto.cli.AsciiArtHelper;
 import chotto.contribution.Contributor;
 import chotto.objects.BatchContribution;
-import chotto.objects.BatchTranscript;
 import chotto.objects.Receipt;
 import chotto.sequencer.SequencerClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApiLifecycle {
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiLifecycle.class);
-
-  private static final DateTimeFormatter FILE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
   private final SessionInfo sessionInfo;
   private final ContributeTrier contributeTrier;
@@ -52,7 +46,7 @@ public class ApiLifecycle {
     final String sessionId = sessionInfo.getSessionId();
     final String nickname = sessionInfo.getNickname();
 
-    LOG.info("Trying to contribute");
+    LOG.info("Trying to contribute...");
 
     final BatchContribution batchContribution =
         contributeTrier.tryContributeUntilSuccess(sessionId);
@@ -81,7 +75,6 @@ public class ApiLifecycle {
 
     saveContribution(updatedBatchContribution, nickname);
     saveReceipt(receipt, nickname);
-    requestAndSaveTranscript();
   }
 
   private void saveContribution(final BatchContribution contribution, final String nickname) {
@@ -103,20 +96,6 @@ public class ApiLifecycle {
     } catch (final Exception __) {
       LOG.warn("Couldn't save receipt to {}. Will log it instead below.", receiptPath);
       LOG.info(receipt.getReceipt());
-    }
-  }
-
-  private void requestAndSaveTranscript() {
-    final Path transcriptPath =
-        outputDirectory.resolve(
-            "transcript-" + FILE_TIME_FORMATTER.format(LocalDateTime.now()) + ".json");
-    try {
-      final BatchTranscript transcript = sequencerClient.getTranscript(false);
-      final String transcriptJson = objectMapper.writeValueAsString(transcript);
-      Files.writeString(transcriptPath, transcriptJson, CREATE);
-      LOG.info("Saved the current transcript to {}", transcriptPath);
-    } catch (final Exception ex) {
-      LOG.error("Couldn't save the current transcript to " + transcriptPath, ex);
     }
   }
 }

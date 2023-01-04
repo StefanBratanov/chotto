@@ -161,7 +161,6 @@ class ChottoIntegrationTest {
             });
     // verify receipt is saved
     assertThat(tempDir.resolve("receipt-" + filesSuffix + ".txt")).exists().isNotEmptyFile();
-    assertThat(TestUtil.findSavedTranscriptFile(tempDir)).isNotEmptyFile();
   }
 
   @Test

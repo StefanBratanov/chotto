@@ -9,11 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public class TestUtil {
 
@@ -50,18 +47,6 @@ public class TestUtil {
 
     try {
       return ChottoObjectMapper.getInstance().readValue(transcriptIs, BatchTranscript.class);
-    } catch (final IOException ioex) {
-      throw new UncheckedIOException(ioex);
-    }
-  }
-
-  public static Path findSavedTranscriptFile(final Path outputDirectory) {
-    try (final Stream<Path> outputDirectoryFiles = Files.list(outputDirectory)) {
-      return outputDirectoryFiles
-          .filter(path -> path.getFileName().toString().startsWith("transcript-"))
-          .findFirst()
-          .orElseThrow(
-              () -> new IllegalStateException("Transcript file not found in " + outputDirectory));
     } catch (final IOException ioex) {
       throw new UncheckedIOException(ioex);
     }
