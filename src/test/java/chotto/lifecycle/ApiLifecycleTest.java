@@ -62,7 +62,7 @@ class ApiLifecycleTest {
 
     when(sequencerClient.contribute(updatedContribution, "123")).thenReturn(receipt);
 
-    when(sequencerClient.getTranscript()).thenReturn(transcript);
+    when(sequencerClient.getTranscript(false)).thenReturn(transcript);
 
     when(objectMapper.writeValueAsString(updatedContribution)).thenReturn("contribution123");
     when(objectMapper.writeValueAsString(transcript)).thenReturn("transcript123");

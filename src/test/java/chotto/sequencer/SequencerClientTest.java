@@ -10,7 +10,6 @@ import static org.mockserver.model.HttpResponse.response;
 
 import chotto.TestUtil;
 import chotto.auth.Provider;
-import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
 import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
@@ -18,6 +17,8 @@ import chotto.objects.Receipt;
 import chotto.objects.Transcript;
 import chotto.objects.Witness;
 import chotto.serialization.ChottoObjectMapper;
+import chotto.verification.ContributionVerification;
+import chotto.verification.TranscriptVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
@@ -42,6 +45,8 @@ class SequencerClientTest {
 
   private ClientAndServer mockServer;
 
+  private final TranscriptVerification transcriptVerification = mock(TranscriptVerification.class);
+
   private final ContributionVerification contributionVerification =
       mock(ContributionVerification.class);
 
@@ -56,9 +61,12 @@ class SequencerClientTest {
             HttpClient.newBuilder().build(),
             URI.create("http://localhost:" + mockServer.getPort()),
             objectMapper,
+            transcriptVerification,
             contributionVerification);
+    when(transcriptVerification.schemaCheck(anyString())).thenReturn(true);
+    when(transcriptVerification.pointChecks(any(BatchTranscript.class))).thenReturn(true);
     when(contributionVerification.schemaCheck(anyString())).thenReturn(true);
-    when(contributionVerification.subgroupChecks(any())).thenReturn(true);
+    when(contributionVerification.pointChecks(any(BatchContribution.class))).thenReturn(true);
   }
 
   @AfterEach
@@ -84,15 +92,38 @@ class SequencerClientTest {
   }
 
   @Test
-  public void testGettingCurrentTranscript() {
-    mockServer
-        .when(request().withMethod("GET").withPath("/info/current_state"))
-        .respond(
-            response()
-                .withStatusCode(200)
-                .withBody(TestUtil.readResource("initialTranscript.json")));
+  public void testGettingTranscriptDoesNotPassSchemaCheck() {
+    setupTranscriptResponse();
 
-    final BatchTranscript batchTranscript = sequencerClient.getTranscript();
+    when(transcriptVerification.schemaCheck(anyString())).thenReturn(false);
+
+    final IllegalStateException exception =
+        Assertions.assertThrows(
+            IllegalStateException.class, () -> sequencerClient.getTranscript(true));
+
+    assertThat(exception)
+        .hasMessage("The received transcript does not match the defined transcript json schema");
+  }
+
+  @Test
+  public void testGettingTranscriptDoesNotPassPointChecks() {
+    setupTranscriptResponse();
+
+    when(transcriptVerification.pointChecks(any(BatchTranscript.class))).thenReturn(false);
+
+    final IllegalStateException exception =
+        Assertions.assertThrows(
+            IllegalStateException.class, () -> sequencerClient.getTranscript(true));
+
+    assertThat(exception).hasMessage("The received transcript does not pass the point checks");
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  public void testGettingCurrentTranscript(final boolean verifyTranscript) {
+    setupTranscriptResponse();
+
+    final BatchTranscript batchTranscript = sequencerClient.getTranscript(verifyTranscript);
     final List<Transcript> transcripts = batchTranscript.getTranscripts();
 
     assertThat(transcripts).hasSize(4);
@@ -205,7 +236,7 @@ class SequencerClientTest {
   public void testContributionDoesNotPassPointChecks() {
     setupContributionResponse();
 
-    when(contributionVerification.subgroupChecks(any())).thenReturn(false);
+    when(contributionVerification.pointChecks(any())).thenReturn(false);
 
     final IllegalStateException exception =
         Assertions.assertThrows(
@@ -294,6 +325,15 @@ class SequencerClientTest {
     sequencerClient.abortContribution(sessionId);
 
     assertThat(mockServer.retrieveRecordedRequests(requestDefinition)).hasSize(1);
+  }
+
+  private void setupTranscriptResponse() {
+    mockServer
+        .when(request().withMethod("GET").withPath("/info/current_state"))
+        .respond(
+            response()
+                .withStatusCode(200)
+                .withBody(TestUtil.readResource("initialTranscript.json")));
   }
 
   private void setupContributionResponse() {

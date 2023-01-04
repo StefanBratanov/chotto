@@ -7,21 +7,21 @@ import java.util.function.Supplier;
 
 public class CsprngStub extends Csprng {
 
-  private final Supplier<Secret> predefinedSecrets;
+  private final Supplier<Secret> fixedSecrets;
 
   public static Csprng fromFixedSecrets(final List<Secret> secrets) {
     final AtomicInteger currentIndex = new AtomicInteger(0);
-    final Supplier<Secret> predefinedSecrets = () -> secrets.get(currentIndex.getAndIncrement());
-    return new CsprngStub(predefinedSecrets);
+    final Supplier<Secret> fixedSecrets = () -> secrets.get(currentIndex.getAndIncrement());
+    return new CsprngStub(fixedSecrets);
   }
 
-  private CsprngStub(final Supplier<Secret> predefinedSecrets) {
+  private CsprngStub(final Supplier<Secret> fixedSecrets) {
     super("foobar");
-    this.predefinedSecrets = predefinedSecrets;
+    this.fixedSecrets = fixedSecrets;
   }
 
   @Override
   public Secret generateSecret() {
-    return predefinedSecrets.get();
+    return fixedSecrets.get();
   }
 }

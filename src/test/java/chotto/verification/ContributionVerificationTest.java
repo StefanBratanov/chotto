@@ -1,4 +1,4 @@
-package chotto.contribution;
+package chotto.verification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +23,6 @@ class ContributionVerificationTest {
   public void checksSubgroups() {
     final BatchContribution batchContribution = TestUtil.getInitialBatchContribution();
 
-    assertThat(contributionVerification.subgroupChecks(batchContribution)).isTrue();
+    assertThat(contributionVerification.pointChecks(batchContribution)).isTrue();
   }
 }

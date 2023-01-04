@@ -6,6 +6,7 @@ import chotto.TestUtil;
 import chotto.objects.BatchContribution;
 import chotto.objects.Secret;
 import chotto.serialization.ChottoObjectMapper;
+import chotto.verification.ContributionVerification;
 import org.junit.jupiter.api.Test;
 
 class ContributionUpdaterTest {
@@ -30,6 +31,6 @@ class ContributionUpdaterTest {
             });
 
     // contribution validity check
-    assertThat(contributionVerification.subgroupChecks(batchContribution)).isTrue();
+    assertThat(contributionVerification.pointChecks(batchContribution)).isTrue();
   }
 }

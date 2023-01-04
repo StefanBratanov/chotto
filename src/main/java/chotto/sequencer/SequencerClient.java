@@ -3,12 +3,13 @@ package chotto.sequencer;
 import static com.pivovarit.function.ThrowingSupplier.unchecked;
 
 import chotto.auth.Provider;
-import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
 import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.Receipt;
 import chotto.objects.SequencerError;
+import chotto.verification.ContributionVerification;
+import chotto.verification.TranscriptVerification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
@@ -38,16 +39,19 @@ public class SequencerClient {
   private final HttpClient httpClient;
   private final URI sequencerEndpoint;
   private final ObjectMapper objectMapper;
+  private final TranscriptVerification transcriptVerification;
   private final ContributionVerification contributionVerification;
 
   public SequencerClient(
       final HttpClient httpClient,
       final URI sequencerEndpoint,
       final ObjectMapper objectMapper,
+      final TranscriptVerification transcriptVerification,
       final ContributionVerification contributionVerification) {
     this.httpClient = httpClient;
     this.sequencerEndpoint = sequencerEndpoint;
     this.objectMapper = objectMapper;
+    this.transcriptVerification = transcriptVerification;
     this.contributionVerification = contributionVerification;
   }
 
@@ -62,7 +66,7 @@ public class SequencerClient {
     return unchecked(() -> objectMapper.readValue(response.body(), CeremonyStatus.class)).get();
   }
 
-  public BatchTranscript getTranscript() {
+  public BatchTranscript getTranscript(final boolean verifyTranscript) {
     LOG.info("Requesting ceremony transcript...");
 
     final HttpRequest request = buildGetRequest("/info/current_state").build();
@@ -72,7 +76,30 @@ public class SequencerClient {
       throwException(response, "Failed to get transcript");
     }
 
-    return unchecked(() -> objectMapper.readValue(response.body(), BatchTranscript.class)).get();
+    final String transcriptJson = response.body();
+
+    if (verifyTranscript) {
+
+      if (!transcriptVerification.schemaCheck(transcriptJson)) {
+        throw new IllegalStateException(
+            "The received transcript does not match the defined transcript json schema");
+      }
+
+      LOG.info("Transcript passes schema check");
+
+      final BatchTranscript batchTranscript =
+          unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
+
+      if (!transcriptVerification.pointChecks(batchTranscript)) {
+        throw new IllegalStateException("The received transcript does not pass the point checks");
+      }
+
+      LOG.info("Transcript passes point checks");
+
+      return batchTranscript;
+    }
+
+    return unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
   }
 
   public String getLoginLink(final Provider provider, final String redirectTo) {
@@ -135,7 +162,7 @@ public class SequencerClient {
     final BatchContribution batchContribution =
         unchecked(() -> objectMapper.readValue(contributionJson, BatchContribution.class)).get();
 
-    if (!contributionVerification.subgroupChecks(batchContribution)) {
+    if (!contributionVerification.pointChecks(batchContribution)) {
       throw new IllegalStateException("The received contribution does not pass the point checks");
     }
 

@@ -22,6 +22,18 @@ public class AuthCallback implements Handler {
   @Override
   public void handle(final Context ctx) {
     final HttpServletRequest request = ctx.req();
+    final String error = request.getParameter("error");
+    if (error != null) {
+      final String code = request.getParameter("code");
+      final String exceptionMessage =
+          String.format(
+              "Error while logging in (code: %s, error: %s). You can restart Chotto to try to contribute again.",
+              code, error);
+      LOG.error(exceptionMessage);
+      ctx.status(500);
+      ctx.result(exceptionMessage);
+      return;
+    }
     final String sessionId =
         Objects.requireNonNull(request.getParameter("session_id"), "session_id must not be null");
     final String nickname =

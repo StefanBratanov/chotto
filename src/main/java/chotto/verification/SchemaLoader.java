@@ -1,4 +1,4 @@
-package chotto.contribution;
+package chotto.verification;
 
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
@@ -12,6 +12,10 @@ public class SchemaLoader {
 
   public static JsonSchema loadContributionSchema() {
     return FACTORY.getSchema(getResource("contributionSchema.json"));
+  }
+
+  public static JsonSchema loadTranscriptSchema() {
+    return FACTORY.getSchema(getResource("transcriptSchema.json"));
   }
 
   private static InputStream getResource(final String resource) {

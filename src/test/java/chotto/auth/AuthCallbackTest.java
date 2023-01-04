@@ -45,4 +45,22 @@ class AuthCallbackTest {
                   });
         }));
   }
+
+  @Test
+  public void testErrorCallback() {
+    JavalinTest.test(
+        ((server, client) -> {
+          server.addHandler(HandlerType.GET, AUTH_CALLBACK_PATH, authCallback);
+
+          final Response response =
+              client.get(
+                  AUTH_CALLBACK_PATH
+                      + "?code=AuthErrorPayload%3A%3AUserCreatedAfterDeadline&error=user+created+after+deadline");
+
+          assertThat(response.code()).isEqualTo(500);
+          assertThat(Objects.requireNonNull(response.body()).string())
+              .isEqualTo(
+                  "Error while logging in (code: AuthErrorPayload::UserCreatedAfterDeadline, error: user created after deadline). You can restart Chotto to try to contribute again.");
+        }));
+  }
 }

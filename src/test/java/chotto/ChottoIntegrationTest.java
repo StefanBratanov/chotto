@@ -6,9 +6,9 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 import chotto.auth.Provider;
-import chotto.contribution.ContributionVerification;
 import chotto.objects.BatchContribution;
 import chotto.serialization.ChottoObjectMapper;
+import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
 import java.io.IOException;
@@ -152,7 +152,7 @@ class ChottoIntegrationTest {
               assertThat(contributionVerification.schemaCheck(contributionJson)).isTrue();
               final BatchContribution batchContribution =
                   objectMapper.readValue(contributionJson, BatchContribution.class);
-              assertThat(contributionVerification.subgroupChecks(batchContribution)).isTrue();
+              assertThat(contributionVerification.pointChecks(batchContribution)).isTrue();
               if (provider.equals(Provider.ETHEREUM) && ecdsaSignContribution) {
                 assertThat(batchContribution.getEcdsaSignature()).isEqualTo(ecdsaSignature);
               } else {

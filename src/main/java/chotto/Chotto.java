@@ -9,7 +9,6 @@ import chotto.auth.SessionInfo;
 import chotto.cli.AsciiArtHelper;
 import chotto.cli.CliInstructor;
 import chotto.cli.PropertiesVersionProvider;
-import chotto.contribution.ContributionVerification;
 import chotto.contribution.Contributor;
 import chotto.contribution.SubContributionManager;
 import chotto.identity.IdentityRetriever;
@@ -25,6 +24,8 @@ import chotto.sign.BlsSigner;
 import chotto.sign.EcdsaSignCallback;
 import chotto.sign.EcdsaSigner;
 import chotto.template.TemplateResolver;
+import chotto.verification.ContributionVerification;
+import chotto.verification.TranscriptVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
 import io.javalin.Javalin;
@@ -187,11 +188,13 @@ public class Chotto implements Callable<Integer> {
     final HttpClient httpClient = HttpClient.newBuilder().build();
     final ObjectMapper objectMapper = ChottoObjectMapper.getInstance();
 
+    final TranscriptVerification transcriptVerification = new TranscriptVerification(objectMapper);
     final ContributionVerification contributionVerification =
         new ContributionVerification(objectMapper);
 
     final SequencerClient sequencerClient =
-        new SequencerClient(httpClient, sequencer, objectMapper, contributionVerification);
+        new SequencerClient(
+            httpClient, sequencer, objectMapper, transcriptVerification, contributionVerification);
 
     final CeremonyStatus ceremonyStatus = sequencerClient.getCeremonyStatus();
     AsciiArtHelper.printCeremonyStatus(ceremonyStatus);
@@ -239,10 +242,10 @@ public class Chotto implements Callable<Integer> {
         new EcdsaSigner(
             app, templateResolver, host, callbackEndpointIsDefined, subContributionManager, store);
 
-    final Optional<String> ecdsaSignatureMaybe;
+    final BatchTranscript batchTranscript = sequencerClient.getTranscript(true);
 
+    final Optional<String> ecdsaSignatureMaybe;
     if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
-      final BatchTranscript batchTranscript = sequencerClient.getTranscript();
       final String ecdsaSignature = ecdsaSigner.sign(nickname, batchTranscript);
       ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
     } else {

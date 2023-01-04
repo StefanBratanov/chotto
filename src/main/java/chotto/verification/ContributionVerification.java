@@ -1,4 +1,4 @@
-package chotto.contribution;
+package chotto.verification;
 
 import chotto.objects.BatchContribution;
 import chotto.objects.Contribution;
@@ -42,7 +42,7 @@ public class ContributionVerification {
     return true;
   }
 
-  public boolean subgroupChecks(final BatchContribution batchContribution) {
+  public boolean pointChecks(final BatchContribution batchContribution) {
     return batchContribution.getContributions().stream()
         .map(Contribution::getPowersOfTau)
         .allMatch(this::verifyPowersOfTau);

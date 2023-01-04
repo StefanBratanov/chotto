@@ -111,7 +111,7 @@ public class ApiLifecycle {
         outputDirectory.resolve(
             "transcript-" + FILE_TIME_FORMATTER.format(LocalDateTime.now()) + ".json");
     try {
-      final BatchTranscript transcript = sequencerClient.getTranscript();
+      final BatchTranscript transcript = sequencerClient.getTranscript(false);
       final String transcriptJson = objectMapper.writeValueAsString(transcript);
       Files.writeString(transcriptPath, transcriptJson, CREATE);
       LOG.info("Saved the current transcript to {}", transcriptPath);

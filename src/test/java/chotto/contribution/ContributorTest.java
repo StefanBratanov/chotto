@@ -10,6 +10,7 @@ import chotto.secret.CsprngStub;
 import chotto.secret.SecretsManager;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;
+import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -73,7 +74,7 @@ class ContributorTest {
     JSONAssert.assertEquals(expectedContribution, actualContribution, true);
 
     final boolean validJson = contributionVerification.schemaCheck(actualContribution);
-    final boolean validContribution = contributionVerification.subgroupChecks(updatedContribution);
+    final boolean validContribution = contributionVerification.pointChecks(updatedContribution);
 
     assertThat(validJson).isTrue();
     assertThat(validContribution).isTrue();
