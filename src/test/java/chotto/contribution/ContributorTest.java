@@ -29,7 +29,7 @@ class ContributorTest {
 
   static {
     final List<Secret> secrets = TestUtil.getTestSecrets();
-    final Csprng csprng = CsprngStub.fromPredefinedSecrets(secrets);
+    final Csprng csprng = CsprngStub.fromFixedSecrets(secrets);
     SECRETS_MANAGER = new SecretsManager(csprng);
     SECRETS_MANAGER.generateSecrets();
   }

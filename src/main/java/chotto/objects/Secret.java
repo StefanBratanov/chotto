@@ -2,6 +2,7 @@ package chotto.objects;
 
 import java.util.Objects;
 import org.apache.tuweni.bytes.Bytes;
+import org.apache.tuweni.bytes.Bytes32;
 import org.apache.tuweni.units.bigints.UInt256;
 import supranational.blst.SecretKey;
 
@@ -19,6 +20,13 @@ public class Secret {
     final byte[] textBytes = text.getBytes();
     System.arraycopy(textBytes, 0, in, 0, Math.min(textBytes.length, 32));
     secretKey.from_bendian(in);
+    return new Secret(secretKey);
+  }
+
+  public static Secret fromHexString(final String hexString) {
+    final SecretKey secretKey = new SecretKey();
+    final Bytes32 hexStringBytes = Bytes32.fromHexString(hexString);
+    secretKey.from_bendian(hexStringBytes.toArray());
     return new Secret(secretKey);
   }
 
