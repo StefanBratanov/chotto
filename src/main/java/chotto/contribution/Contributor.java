@@ -54,7 +54,7 @@ public class Contributor {
           LOG.info("Signed the contribution with an ECDSA Signature");
         },
         () -> {
-          batchContribution.setEcdsaSignature(null);
+          batchContribution.setEcdsaSignature("");
           LOG.info("Skipped signing the contribution with an ECDSA Signature");
         });
 

@@ -1,7 +1,5 @@
 package chotto;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import chotto.contribution.Contributor;
 import chotto.contribution.SubContributionManager;
 import chotto.objects.BatchContribution;
@@ -58,7 +56,7 @@ public class TestVectorsTest {
     final SecretsManager secretsManager = new SecretsManager(FIXED_CSPRNG);
     secretsManager.generateSecrets();
 
-    // reference implementation uses an empty identity
+    // reference implementation uses an empty string as an identity
     final SubContributionManager subContributionManager =
         new SubContributionManager(secretsManager, new BlsSigner(), "", true);
     subContributionManager.generateContexts();
@@ -67,10 +65,6 @@ public class TestVectorsTest {
 
     final BatchContribution updatedBatchContribution =
         contributor.contribute(initialBatchContribution);
-    assertThat(updatedBatchContribution.getEcdsaSignature()).isNull();
-    // the expected json uses an empty ecdsaSignature in the json which is equivalent to not
-    // including it at all (what Chotto does)
-    updatedBatchContribution.setEcdsaSignature("");
 
     JSONAssert.assertEquals(
         expectedBatchContribution, objectMapper.writeValueAsString(updatedBatchContribution), true);
