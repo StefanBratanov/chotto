@@ -18,11 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.skyscreamer.jsonassert.comparator.CustomComparator;
-import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 /**
  * <a href="https://github.com/jsign/kzg-ceremony-test-vectors">Ethereum KZG Powers of Tau Test
@@ -62,12 +58,9 @@ public class TestVectorsTest {
     final SecretsManager secretsManager = new SecretsManager(FIXED_CSPRNG);
     secretsManager.generateSecrets();
 
+    // reference implementation uses an empty identity
     final SubContributionManager subContributionManager =
-        new SubContributionManager(
-            secretsManager,
-            new BlsSigner(),
-            "eth|0x33b187514f5ea150a007651bebc82eaabf4da5ad",
-            true);
+        new SubContributionManager(secretsManager, new BlsSigner(), "", true);
     subContributionManager.generateContexts();
 
     final Contributor contributor = new Contributor(subContributionManager, Optional.empty());
@@ -76,18 +69,10 @@ public class TestVectorsTest {
         contributor.contribute(initialBatchContribution);
     assertThat(updatedBatchContribution.getEcdsaSignature()).isNull();
     // the expected json uses an empty ecdsaSignature in the json which is equivalent to not
-    // including it at all
+    // including it at all (what Chotto does)
     updatedBatchContribution.setEcdsaSignature("");
 
-    // ignoring bls signatures
-    final JSONComparator comparator =
-        new CustomComparator(
-            JSONCompareMode.STRICT_ORDER,
-            new Customization("contributions[*].blsSignature", (__, ___) -> true));
-
     JSONAssert.assertEquals(
-        expectedBatchContribution,
-        objectMapper.writeValueAsString(updatedBatchContribution),
-        comparator);
+        expectedBatchContribution, objectMapper.writeValueAsString(updatedBatchContribution), true);
   }
 }
