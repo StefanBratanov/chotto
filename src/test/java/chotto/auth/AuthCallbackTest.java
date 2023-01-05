@@ -60,7 +60,7 @@ class AuthCallbackTest {
           assertThat(response.code()).isEqualTo(500);
           assertThat(Objects.requireNonNull(response.body()).string())
               .isEqualTo(
-                  "Error while logging in (code: AuthErrorPayload::UserCreatedAfterDeadline, error: user created after deadline). You can restart Chotto to try to contribute again.");
+                  "Error while logging in (code: AuthErrorPayload::UserCreatedAfterDeadline, error: user created after deadline). Try restarting the client and authenticating again.");
         }));
   }
 }

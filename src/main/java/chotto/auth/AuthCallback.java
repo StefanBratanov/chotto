@@ -27,7 +27,7 @@ public class AuthCallback implements Handler {
       final String code = request.getParameter("code");
       final String exceptionMessage =
           String.format(
-              "Error while logging in (code: %s, error: %s). You can restart Chotto to try to contribute again.",
+              "Error while logging in (code: %s, error: %s). Try restarting the client and authenticating again.",
               code, error);
       LOG.error(exceptionMessage);
       ctx.status(500);
