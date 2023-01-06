@@ -76,7 +76,7 @@ public class SequencerClient {
       throwException(response, "Failed to get transcript");
     }
 
-    LOG.info("A transcript was received" + (verifyTranscript ? " .Verifying it." : ""));
+    LOG.info("A transcript was received" + (verifyTranscript ? ". Verifying it." : ""));
 
     final String transcriptJson = response.body();
 
