@@ -111,6 +111,12 @@ public class Chotto implements Callable<Integer> {
   private int contributionAttemptPeriod = 15;
 
   @Option(
+      names = {"--verify-transcript"},
+      description = "Whether to verify the sequencer transcript or not.",
+      showDefaultValue = Visibility.ALWAYS)
+  private boolean verifyTranscript = false;
+
+  @Option(
       names = {"--contribution-attempt-period"},
       description =
           "How often (in seconds) to attempt contribution once authenticated. This value could change dynamically based on responses from the sequencer.",
@@ -242,10 +248,13 @@ public class Chotto implements Callable<Integer> {
         new EcdsaSigner(
             app, templateResolver, host, callbackEndpointIsDefined, subContributionManager, store);
 
-    final BatchTranscript batchTranscript = sequencerClient.getTranscript();
+    final Optional<BatchTranscript> verifiedBatchTranscript =
+        verifyTranscript ? Optional.of(sequencerClient.getTranscript(true)) : Optional.empty();
 
     final Optional<String> ecdsaSignatureMaybe;
     if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
+      final BatchTranscript batchTranscript =
+          verifiedBatchTranscript.orElseGet(() -> sequencerClient.getTranscript(false));
       final String ecdsaSignature = ecdsaSigner.sign(nickname, batchTranscript);
       ecdsaSignatureMaybe = Optional.of(ecdsaSignature);
     } else {

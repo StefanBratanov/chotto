@@ -12,7 +12,7 @@ bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers o
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
 🕯️🕯️🕯️ Currently, there is a Test Ceremony running and the url of the `sequencer`
-is https://sequencer.ceremony.ethereum.org. Check
+is https://seq.ceremony.ethereum.org. Check
 the [Install Instructions](#install-instructions) and [Usage](#usage) to see how to use Chotto
 to contribute. After contributing, you can check your
 contribution [here](https://ceremony.ethereum.org/#/record). 🕯️🕯️🕯️
@@ -75,13 +75,13 @@ Note: For Windows, use the `chotto.bat` executable.
 #### Authenticate with Ethereum
 
 ```bash
-./chotto --sequencer=https://sequencer.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome"
+./chotto --sequencer=https://seq.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome"
 ```
 
 #### Authenticate with GitHub
 
 ```bash
-./chotto --sequencer=https://sequencer.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome" --authentication=github
+./chotto --sequencer=https://seq.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome" --authentication=github
 ```
 
 #### Run against a local sequencer
@@ -104,7 +104,7 @@ $ ./chotto --help
 | |____| | | | (_) | |_| || (_) |
  \_____|_| |_|\___/ \__|\__\___/
 Usage: chotto [-hV] [--bls-sign-sub-contributions] [--ecdsa-sign-contribution]
-              [--authentication=<provider>]
+              [--verify-transcript] [--authentication=<provider>]
               [--callback-endpoint=<callbackEndpoint>]
               [--contribution-attempt-period=<contributionAttemptPeriod>]
               --entropy-entry=<entropyEntry>
@@ -112,41 +112,48 @@ Usage: chotto [-hV] [--bls-sign-sub-contributions] [--ecdsa-sign-contribution]
               [--server-port=<serverPort>]
 Ethereum's Power of Tau client implementation written in Java
       --authentication=<provider>
-                  The authentication provider which will be used for logging
-                    in. Valid values: Ethereum, Github
-                    Default: Ethereum
+                            The authentication provider which will be used for
+                              logging in. Valid values: Ethereum, Github
+                              Default: Ethereum
       --bls-sign-sub-contributions
-                  Sign your sub-contributions using your identity. Doing so is
-                    RECOMMENDED.
-                    Default: true
+                            Sign your sub-contributions using your identity.
+                              Doing so is RECOMMENDED.
+                              Default: true
       --callback-endpoint=<callbackEndpoint>
-                  The URL of the server which is started by this process.
-                    Specify this option ONLY if you decide to login and sign
-                    from a browser on a different computer. Make sure the URL
-                    is accessible from that browser.
+                            The URL of the server which is started by this
+                              process. Specify this option ONLY if you decide
+                              to login and sign from a browser on a different
+                              computer. Make sure the URL is accessible from
+                              that browser.
       --contribution-attempt-period=<contributionAttemptPeriod>
-                  How often (in seconds) to attempt contribution once
-                    authenticated. This value could change dynamically based on
-                    responses from the sequencer.
-                    Default: 15
+                            How often (in seconds) to attempt contribution once
+                              authenticated. This value could change
+                              dynamically based on responses from the sequencer.
+                              Default: 15
       --ecdsa-sign-contribution
-                  Sign your contribution using the Ethereum address you logged
-                    in with. Doing so is RECOMMENDED. This value is only
-                    applicable when you have authenticated with Ethereum.
-                    Default: true
+                            Sign your contribution using the Ethereum address
+                              you logged in with. Doing so is RECOMMENDED. This
+                              value is only applicable when you have
+                              authenticated with Ethereum.
+                              Default: true
       --entropy-entry=<entropyEntry>
-                  A text which would be used as a seed to generate random
-                    secrets in the background. There will be several layers of
-                    randomness on top of this text, so there is no need to
-                    worry about its uniqueness or keeping it a secret.
-  -h, --help      Show this help message and exit.
+                            A text which would be used as a seed to generate
+                              random secrets in the background. There will be
+                              several layers of randomness on top of this text,
+                              so there is no need to worry about its uniqueness
+                              or keeping it a secret.
+  -h, --help                Show this help message and exit.
       --output-directory=<outputDirectory>
-                  The directory where the outputs of the ceremony will be saved
-                    Default: <user.home>\kzg-ceremony
+                            The directory where the outputs of the ceremony
+                              will be saved
+                              Default: <user.home>\kzg-ceremony
       --sequencer=<sequencer>
-                  The URL of the sequencer which would be used for the ceremony
+                            The URL of the sequencer which would be used for
+                              the ceremony
       --server-port=<serverPort>
-                  The port on which to start the local server
-                    Default: 8080
-  -V, --version   Print version information and exit.
+                            The port on which to start the local server
+                              Default: 8080
+  -V, --version             Print version information and exit.
+      --verify-transcript   Whether to verify the sequencer transcript or not.
+                              Default: false
 ```

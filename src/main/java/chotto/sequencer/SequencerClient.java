@@ -66,7 +66,7 @@ public class SequencerClient {
     return unchecked(() -> objectMapper.readValue(response.body(), CeremonyStatus.class)).get();
   }
 
-  public BatchTranscript getTranscript() {
+  public BatchTranscript getTranscript(final boolean verifyTranscript) {
     LOG.info("Requesting ceremony transcript...");
 
     final HttpRequest request = buildGetRequest("/info/current_state").build();
@@ -76,25 +76,32 @@ public class SequencerClient {
       throwException(response, "Failed to get transcript");
     }
 
+    LOG.info("A transcript was received" + (verifyTranscript ? " .Verifying it." : ""));
+
     final String transcriptJson = response.body();
 
-    if (!transcriptVerification.schemaCheck(transcriptJson)) {
-      throw new IllegalStateException(
-          "The received transcript does not match the defined transcript json schema");
+    if (verifyTranscript) {
+
+      if (!transcriptVerification.schemaCheck(transcriptJson)) {
+        throw new IllegalStateException(
+            "The received transcript does not match the defined transcript json schema");
+      }
+
+      LOG.info("Transcript passes schema check");
+
+      final BatchTranscript batchTranscript =
+          unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
+
+      if (!transcriptVerification.pointChecks(batchTranscript)) {
+        throw new IllegalStateException("The received transcript does not pass the point checks");
+      }
+
+      LOG.info("Transcript passes point checks");
+
+      return batchTranscript;
     }
 
-    LOG.info("Transcript passes schema check");
-
-    final BatchTranscript batchTranscript =
-        unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
-
-    if (!transcriptVerification.pointChecks(batchTranscript)) {
-      throw new IllegalStateException("The received transcript does not pass the point checks");
-    }
-
-    LOG.info("Transcript passes point checks");
-
-    return batchTranscript;
+    return unchecked(() -> objectMapper.readValue(transcriptJson, BatchTranscript.class)).get();
   }
 
   public String getLoginLink(final Provider provider, final String redirectTo) {

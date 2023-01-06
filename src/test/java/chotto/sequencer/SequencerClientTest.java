@@ -28,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
@@ -96,7 +98,8 @@ class SequencerClientTest {
     when(transcriptVerification.schemaCheck(anyString())).thenReturn(false);
 
     final IllegalStateException exception =
-        Assertions.assertThrows(IllegalStateException.class, () -> sequencerClient.getTranscript());
+        Assertions.assertThrows(
+            IllegalStateException.class, () -> sequencerClient.getTranscript(true));
 
     assertThat(exception)
         .hasMessage("The received transcript does not match the defined transcript json schema");
@@ -109,16 +112,18 @@ class SequencerClientTest {
     when(transcriptVerification.pointChecks(any(BatchTranscript.class))).thenReturn(false);
 
     final IllegalStateException exception =
-        Assertions.assertThrows(IllegalStateException.class, () -> sequencerClient.getTranscript());
+        Assertions.assertThrows(
+            IllegalStateException.class, () -> sequencerClient.getTranscript(true));
 
     assertThat(exception).hasMessage("The received transcript does not pass the point checks");
   }
 
-  @Test
-  public void testGettingCurrentTranscript() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  public void testGettingCurrentTranscript(final boolean verifyTranscript) {
     setupTranscriptResponse();
 
-    final BatchTranscript batchTranscript = sequencerClient.getTranscript();
+    final BatchTranscript batchTranscript = sequencerClient.getTranscript(verifyTranscript);
     final List<Transcript> transcripts = batchTranscript.getTranscripts();
 
     assertThat(transcripts).hasSize(4);
