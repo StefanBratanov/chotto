@@ -112,7 +112,7 @@ public class Chotto implements Callable<Integer> {
 
   @Option(
       names = {"--verify-transcript"},
-      description = "Whether to verify the sequencer transcript or not.",
+      description = "Whether to verify the sequencer transcript or not",
       showDefaultValue = Visibility.ALWAYS)
   private boolean verifyTranscript = false;
 
