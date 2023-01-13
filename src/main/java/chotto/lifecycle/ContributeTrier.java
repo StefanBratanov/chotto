@@ -63,7 +63,7 @@ public class ContributeTrier {
       if (errorIsRateLimiting(sequencerError)) {
         LOG.info(
             "Rate limiting error was received from the sequencer. Will increase period for the next contribution attempt.");
-        rateLimitingAttemptPeriod *= 2;
+        rateLimitingAttemptPeriod = (int) Math.floor(rateLimitingAttemptPeriod * 1.1);
         return rateLimitingAttemptPeriod;
       } else if (errorIsUnknownSessionId(sequencerError)) {
         throw new IllegalStateException(

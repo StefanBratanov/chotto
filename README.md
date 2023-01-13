@@ -11,7 +11,7 @@ bring [EIP-4844](https://www.eip4844.com/) to life. It is an Ethereum's Powers o
 (PoT) client CLI implementation written in Java. It follows the spec defined in
 the [KZG ceremony specs](https://github.com/ethereum/kzg-ceremony-specs).
 
-🕯️🕯️🕯️ Currently, there is a Test Ceremony running and the url of the `sequencer`
+🕯️🕯️🕯️ **The KZG Ceremony is live** and the url of the `sequencer`
 is https://seq.ceremony.ethereum.org. Check
 the [Install Instructions](#install-instructions) and [Usage](#usage) to see how to use Chotto
 to contribute. After contributing, you can check your
@@ -129,7 +129,7 @@ Ethereum's Power of Tau client implementation written in Java
                             How often (in seconds) to attempt contribution once
                               authenticated. This value could change
                               dynamically based on responses from the sequencer.
-                              Default: 15
+                              Default: 30
       --ecdsa-sign-contribution
                             Sign your contribution using the Ethereum address
                               you logged in with. Doing so is RECOMMENDED. This

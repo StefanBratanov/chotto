@@ -120,7 +120,7 @@ public class Chotto implements Callable<Integer> {
       names = {"--contribution-attempt-period"},
       description =
           "How often (in seconds) to attempt contribution once authenticated. This value could change dynamically based on responses from the sequencer.",
-      defaultValue = "15",
+      defaultValue = "30",
       showDefaultValue = Visibility.ALWAYS)
   public void setContributionAttemptPeriod(final int value) {
     if (value < 1) {

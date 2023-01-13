@@ -98,7 +98,7 @@ class ContributeTrierTest {
   }
 
   @Test
-  public void testContributionDoublesUpNextPeriodWhenRateLimitingErrorOccurs() {
+  public void testContributionIncreasesAttemptPeriodWhenRateLimitingErrorOccurs() {
 
     when(sequencerClient.tryContribute(sessionId))
         .thenReturn(rateLimitingResponse)
@@ -115,12 +115,12 @@ class ContributeTrierTest {
 
     verify(sequencerClient, times(3)).tryContribute(sessionId);
 
-    // 200 (2nd call) + 100 (3rd call)
-    assertThat(endCall - startCall).isGreaterThanOrEqualTo(300);
+    // 110 (2nd call) + 100 (3rd call)
+    assertThat(endCall - startCall).isGreaterThanOrEqualTo(210);
   }
 
   @Test
-  public void testContributionDoublesUpAttemptPeriodTwiceIfMoreThanOneRateLimitingErrorInARow() {
+  public void testContributionIncreasesAttemptPeriodTwiceIfMoreThanOneRateLimitingErrorInARow() {
 
     when(sequencerClient.tryContribute(sessionId))
         .thenReturn(rateLimitingResponse)
@@ -138,12 +138,12 @@ class ContributeTrierTest {
 
     verify(sequencerClient, times(4)).tryContribute(sessionId);
 
-    // 200 (2nd call) + 400 (2nd call) + 100 (3rd call)
-    assertThat(endCall - startCall).isGreaterThanOrEqualTo(700);
+    // 110 (2nd call) + 121 (2nd call) + 100 (3rd call)
+    assertThat(endCall - startCall).isGreaterThanOrEqualTo(331);
   }
 
   @Test
-  public void testContributionDoesNotDoublesUpAttemptPeriodTwiceIfRateLimitingErrorsAreNotInARow() {
+  public void testContributionDoesNotIncreaseAttemptPeriodTwiceIfRateLimitingErrorsAreNotInARow() {
 
     when(sequencerClient.tryContribute(sessionId))
         .thenReturn(rateLimitingResponse)
@@ -161,9 +161,8 @@ class ContributeTrierTest {
 
     verify(sequencerClient, times(4)).tryContribute(sessionId);
 
-    // 200 (2nd call) + 100 (2nd call) + 200 (3rd call)
-    assertThat(endCall - startCall).isGreaterThanOrEqualTo(500);
-    assertThat(endCall - startCall).isLessThan(700);
+    // 110 (2nd call) + 100 (2nd call) + 110 (3rd call)
+    assertThat(endCall - startCall).isGreaterThanOrEqualTo(320);
   }
 
   @Test
