@@ -2,6 +2,7 @@ package chotto.cli;
 
 import static com.pivovarit.function.ThrowingRunnable.unchecked;
 
+import chotto.Constants;
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
 import java.net.URI;
@@ -50,7 +51,8 @@ public class CliInstructor {
   public static void instructUserToShareOnTwitter(final String identity) {
     final String tweetText =
         String.format(
-            "I just contributed to the KZG Ceremony to scale Ethereum using %s.", identity);
+            "I just contributed to the \uD83D\uDD6F KZG Ceremony \uD83D\uDD6F to scale Ethereum using %s%n%n\u2193 Add your own randomness \u2193%n%s",
+            identity, Constants.GITHUB_REPO);
     System.out.printf("You can use the link below to share your contribution on Twitter.%n%n");
     System.out.printf(TWITTER_SHARE_FORMAT + "%n", urlEncode(tweetText));
   }
