@@ -68,7 +68,7 @@ Required arguments:
 * `entropy-entry` (see [Generating randomness](#generating-randomness) for more information)
 * `sequencer`
 
-See [CLI Arguments](#cli-arguments) for all available arguments
+See [CLI Arguments](#cli-arguments) for all available arguments.
 
 ### Sample Usage
 
