@@ -213,6 +213,9 @@ public class Chotto implements Callable<Integer> {
 
     AsciiArtHelper.printCeremonyStatus(ceremonyStatus);
 
+    final Optional<BatchTranscript> verifiedBatchTranscript =
+        verifyTranscript ? Optional.of(sequencerClient.getTranscript(true)) : Optional.empty();
+
     final Csprng csprng = new Csprng(entropyEntry);
     final SecretsManager secretsManager = new SecretsManager(csprng);
 
@@ -259,9 +262,6 @@ public class Chotto implements Callable<Integer> {
     final EcdsaSigner ecdsaSigner =
         new EcdsaSigner(
             app, templateResolver, host, callbackEndpointIsDefined, subContributionManager, store);
-
-    final Optional<BatchTranscript> verifiedBatchTranscript =
-        verifyTranscript ? Optional.of(sequencerClient.getTranscript(true)) : Optional.empty();
 
     final Optional<String> ecdsaSignatureMaybe;
     if (sessionInfo.getProvider().equals(Provider.ETHEREUM) && ecdsaSignContribution) {
