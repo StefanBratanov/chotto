@@ -47,9 +47,8 @@ public class AsciiArtHelper {
   }
 
   private static String readResource(final String resource) {
-    final InputStream inputStream =
-        Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-    try {
+    try (final InputStream inputStream =
+        Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {
       return new String(Objects.requireNonNull(inputStream).readAllBytes(), StandardCharsets.UTF_8);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
