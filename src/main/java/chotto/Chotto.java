@@ -232,7 +232,7 @@ public class Chotto implements Callable<Integer> {
 
     final TemplateResolver templateResolver = new TemplateResolver();
 
-    CliInstructor.instructUserToLogin(loginLink, callbackEndpointIsDefined);
+    CliInstructor.instructUserToLogin(verifyTranscript, loginLink, callbackEndpointIsDefined);
 
     while (store.getSessionInfo().isEmpty()) {
       final Optional<String> maybeAuthError = store.getAuthError();

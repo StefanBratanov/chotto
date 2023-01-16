@@ -15,10 +15,13 @@ public class CliInstructor {
   private static final String TWITTER_SHARE_FORMAT = "https://twitter.com/intent/tweet?text=%s";
 
   public static void instructUserToLogin(
-      final String loginLink, final boolean callbackEndpointIsDefined) {
+      final boolean addNewLineAtStart,
+      final String loginLink,
+      final boolean callbackEndpointIsDefined) {
     if (canOpenBrowserOnThisMachine()) {
       System.out.printf(
-          "A login window will open on your browser in a second. Follow the instructions to login. If you accidentally close the browser window before logging in, observe an error or you want to login from a different machine, you can use the link below.%n%n%s%n%n",
+          (addNewLineAtStart ? "%n" : "")
+              + "A login window will open on your browser in a second. Follow the instructions to login. If you accidentally close the browser window before logging in, observe an error or you want to login from a different machine, you can use the link below.%n%n%s%n%n",
           loginLink);
       openLinkInBrowser(loginLink);
     } else {
