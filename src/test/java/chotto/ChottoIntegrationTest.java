@@ -164,6 +164,23 @@ class ChottoIntegrationTest {
   }
 
   @Test
+  public void testProcessFailsWhenAuthError() throws IOException, InterruptedException {
+    final CompletableFuture<Integer> exitCode = runChottoCommand();
+
+    await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
+
+    triggerAuthErrorCallbackManually();
+
+    await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
+
+    assertThat(exitCode).isCompletedWithValue(1);
+
+    assertThat(logCaptor.getErrorLogs())
+        .contains(
+            "There was an error during the ceremony. You can restart Chotto to try to contribute again.");
+  }
+
+  @Test
   public void testProcessFailWhenUnknownSessionIdFromSequencer()
       throws IOException, InterruptedException {
 
@@ -309,6 +326,19 @@ class ChottoIntegrationTest {
             .uri(
                 URI.create(getLocalServerHost())
                     .resolve(Constants.AUTH_CALLBACK_PATH + getAuthCallbackQueryParams(provider)))
+            .GET()
+            .build();
+    httpClient.send(request, BodyHandlers.discarding());
+  }
+
+  private void triggerAuthErrorCallbackManually() throws IOException, InterruptedException {
+    final HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(
+                URI.create(getLocalServerHost())
+                    .resolve(
+                        Constants.AUTH_CALLBACK_PATH
+                            + "?code=AuthErrorPayload%3A%3AUserAlreadyContributed&error=user+already+contributed"))
             .GET()
             .build();
     httpClient.send(request, BodyHandlers.discarding());

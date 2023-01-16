@@ -112,7 +112,7 @@ public class Chotto implements Callable<Integer> {
 
   @Option(
       names = {"--verify-transcript"},
-      description = "Whether to verify the sequencer transcript or not",
+      description = "Whether to verify the sequencer transcript at startup or not",
       showDefaultValue = Visibility.ALWAYS)
   private boolean verifyTranscript = false;
 
@@ -224,6 +224,10 @@ public class Chotto implements Callable<Integer> {
     CliInstructor.instructUserToLogin(loginLink, callbackEndpointIsDefined);
 
     while (store.getSessionInfo().isEmpty()) {
+      final Optional<String> maybeAuthError = store.getAuthError();
+      if (maybeAuthError.isPresent()) {
+        throw new IllegalStateException(maybeAuthError.get());
+      }
       LOG.info("Waiting for user login...");
       ThrowingRunnable.unchecked(() -> TimeUnit.SECONDS.sleep(5)).run();
     }

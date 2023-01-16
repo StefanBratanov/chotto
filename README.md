@@ -154,6 +154,7 @@ Ethereum's Power of Tau client implementation written in Java
                             The port on which to start the local server
                               Default: 8080
   -V, --version             Print version information and exit.
-      --verify-transcript   Whether to verify the sequencer transcript or not
+      --verify-transcript   Whether to verify the sequencer transcript at
+                              startup or not
                               Default: false
 ```

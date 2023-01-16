@@ -57,10 +57,13 @@ class AuthCallbackTest {
                   AUTH_CALLBACK_PATH
                       + "?code=AuthErrorPayload%3A%3AUserCreatedAfterDeadline&error=user+created+after+deadline");
 
+          final String expectedAuthError =
+              "Error while logging in (code: AuthErrorPayload::UserCreatedAfterDeadline, message: user created after deadline)";
+
           assertThat(response.code()).isEqualTo(500);
-          assertThat(Objects.requireNonNull(response.body()).string())
-              .isEqualTo(
-                  "Error while logging in (code: AuthErrorPayload::UserCreatedAfterDeadline, message: user created after deadline). Try restarting the client and authenticating again.");
+          assertThat(Objects.requireNonNull(response.body()).string()).isEqualTo(expectedAuthError);
+
+          assertThat(store.getAuthError()).hasValue(expectedAuthError);
         }));
   }
 }
