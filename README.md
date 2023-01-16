@@ -104,7 +104,8 @@ $ ./chotto --help
 | |____| | | | (_) | |_| || (_) |
  \_____|_| |_|\___/ \__|\__\___/
 Usage: chotto [-hV] [--bls-sign-sub-contributions] [--ecdsa-sign-contribution]
-              [--verify-transcript] [--authentication=<provider>]
+              [--validate-receipt] [--verify-transcript]
+              [--authentication=<provider>]
               [--callback-endpoint=<callbackEndpoint>]
               [--contribution-attempt-period=<contributionAttemptPeriod>]
               --entropy-entry=<entropyEntry>
@@ -127,8 +128,7 @@ Ethereum's Power of Tau client implementation written in Java
                               that browser.
       --contribution-attempt-period=<contributionAttemptPeriod>
                             How often (in seconds) to attempt contribution once
-                              authenticated. This value could change
-                              dynamically based on responses from the sequencer.
+                              authenticated.
                               Default: 30
       --ecdsa-sign-contribution
                             Sign your contribution using the Ethereum address
@@ -154,6 +154,9 @@ Ethereum's Power of Tau client implementation written in Java
                             The port on which to start the local server
                               Default: 8080
   -V, --version             Print version information and exit.
+      --validate-receipt    Whether to validate the contribution receipt
+                              against the sequencer or not.
+                              Default: false
       --verify-transcript   Whether to verify the sequencer transcript at
                               startup or not
                               Default: false

@@ -41,7 +41,7 @@ public class ApiLifecycle {
     this.outputDirectory = outputDirectory;
   }
 
-  public void runLifecycle() {
+  public Receipt runLifecycle() {
 
     final String sessionId = sessionInfo.getSessionId();
     final String nickname = sessionInfo.getNickname();
@@ -75,6 +75,8 @@ public class ApiLifecycle {
 
     saveContribution(updatedBatchContribution, nickname);
     saveReceipt(receipt, nickname);
+
+    return receipt;
   }
 
   private void saveContribution(final BatchContribution contribution, final String nickname) {
@@ -91,7 +93,8 @@ public class ApiLifecycle {
   private void saveReceipt(final Receipt receipt, final String nickname) {
     final Path receiptPath = outputDirectory.resolve("receipt-" + nickname + ".txt");
     try {
-      Files.writeString(receiptPath, receipt.getReceipt(), CREATE, TRUNCATE_EXISTING);
+      final String receiptJson = objectMapper.writeValueAsString(receipt);
+      Files.writeString(receiptPath, receiptJson, CREATE, TRUNCATE_EXISTING);
       LOG.info("Saved receipt to {}", receiptPath);
     } catch (final Exception __) {
       LOG.warn("Couldn't save receipt to {}. Will log it instead below.", receiptPath);

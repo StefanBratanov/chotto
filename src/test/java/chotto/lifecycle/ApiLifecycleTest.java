@@ -54,18 +54,21 @@ class ApiLifecycleTest {
   public void testLifecycle() throws IOException {
     when(contributor.contribute(receivedContribution)).thenReturn(updatedContribution);
 
-    final Receipt receipt = new Receipt("receipt123", "12345");
+    final Receipt receipt = new Receipt("receipt", "12345");
 
     when(sequencerClient.contribute(updatedContribution, "123")).thenReturn(receipt);
 
     when(objectMapper.writeValueAsString(updatedContribution)).thenReturn("contribution123");
+    when(objectMapper.writeValueAsString(receipt)).thenReturn("receipt12345");
 
-    apiLifecycle.runLifecycle();
+    final Receipt result = apiLifecycle.runLifecycle();
 
     assertThat(tempDir).isNotEmptyDirectory();
 
-    assertThat(tempDir.resolve("receipt-foobar.txt")).exists().hasContent("receipt123");
+    assertThat(tempDir.resolve("receipt-foobar.txt")).exists().hasContent("receipt12345");
     assertThat(tempDir.resolve("contribution-foobar.json")).exists().hasContent("contribution123");
+
+    assertThat(result).isEqualTo(receipt);
   }
 
   @Test

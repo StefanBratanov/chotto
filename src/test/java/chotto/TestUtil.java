@@ -2,9 +2,11 @@ package chotto;
 
 import chotto.objects.BatchContribution;
 import chotto.objects.BatchTranscript;
+import chotto.objects.Receipt;
 import chotto.objects.Secret;
 import chotto.secret.Csprng;
 import chotto.serialization.ChottoObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -15,6 +17,8 @@ import java.util.UUID;
 public class TestUtil {
 
   private static final Csprng CSPRNG = new Csprng(UUID.randomUUID().toString());
+
+  private static final ObjectMapper OBJECT_MAPPER = ChottoObjectMapper.getInstance();
 
   public static String readResource(final String resource) {
     try (final InputStream resourceIs = readResourceAsInputStream(resource)) {
@@ -33,20 +37,20 @@ public class TestUtil {
   }
 
   public static BatchContribution getBatchContribution(final String resource) {
-    final InputStream contributionIs = readResourceAsInputStream(resource);
-
-    try {
-      return ChottoObjectMapper.getInstance().readValue(contributionIs, BatchContribution.class);
-    } catch (final IOException ioex) {
-      throw new UncheckedIOException(ioex);
-    }
+    return getObjectFromResource(resource, BatchContribution.class);
   }
 
   public static BatchTranscript getBatchTranscript(final String resource) {
-    final InputStream transcriptIs = readResourceAsInputStream(resource);
+    return getObjectFromResource(resource, BatchTranscript.class);
+  }
 
-    try {
-      return ChottoObjectMapper.getInstance().readValue(transcriptIs, BatchTranscript.class);
+  public static Receipt getReceipt(final String resource) {
+    return getObjectFromResource(resource, Receipt.class);
+  }
+
+  private static <T> T getObjectFromResource(final String resource, final Class<T> objectClass) {
+    try (final InputStream inputStream = readResourceAsInputStream(resource)) {
+      return OBJECT_MAPPER.readValue(inputStream, objectClass);
     } catch (final IOException ioex) {
       throw new UncheckedIOException(ioex);
     }

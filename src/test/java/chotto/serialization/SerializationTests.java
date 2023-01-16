@@ -40,7 +40,12 @@ class SerializationTests {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"initialTranscript.json", "integration/transcript.json"})
+  @ValueSource(
+      strings = {
+        "initialTranscript.json",
+        "integration/transcript.json",
+        "integration/otherTranscript.json"
+      })
   public void deserializesAndSerializesTranscript(final String transcriptResource)
       throws JsonProcessingException, JSONException {
     final String transcriptJson = TestUtil.readResource(transcriptResource);

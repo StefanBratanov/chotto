@@ -107,16 +107,17 @@ class ChottoIntegrationTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"ETHEREUM,true", "ETHEREUM,false", "GITHUB,true"})
+  @CsvSource({"ETHEREUM,true,true", "ETHEREUM,false,false", "GITHUB,true,false"})
   public void testSuccessfulContribution(
-      final Provider provider, final boolean ecdsaSignContribution)
+      final Provider provider, final boolean ecdsaSignContribution, final boolean validateReceipt)
       throws IOException, InterruptedException {
 
     mockTryContributeResponse();
     mockUploadingContributionResponse();
     mockGetTranscriptResponse();
 
-    final CompletableFuture<Integer> exitCode = runChottoCommand(ecdsaSignContribution);
+    final CompletableFuture<Integer> exitCode =
+        runChottoCommand(ecdsaSignContribution, validateReceipt);
 
     await().until(() -> logCaptor.getInfoLogs().contains("Waiting for user login..."));
 
@@ -205,10 +206,11 @@ class ChottoIntegrationTest {
   }
 
   private CompletableFuture<Integer> runChottoCommand() {
-    return runChottoCommand(true);
+    return runChottoCommand(true, false);
   }
 
-  private CompletableFuture<Integer> runChottoCommand(final boolean ecdsaSignContribution) {
+  private CompletableFuture<Integer> runChottoCommand(
+      final boolean ecdsaSignContribution, final boolean validateReceipt) {
     return CompletableFuture.supplyAsync(
         () ->
             cmd.execute(
@@ -217,7 +219,8 @@ class ChottoIntegrationTest {
                 "--server-port=" + serverPort,
                 "--callback-endpoint=" + getLocalServerHost(),
                 "--output-directory=" + tempDir,
-                "--ecdsa-sign-contribution=" + ecdsaSignContribution));
+                "--ecdsa-sign-contribution=" + ecdsaSignContribution,
+                "--validate-receipt=" + validateReceipt));
   }
 
   private String getSequencerArg() {

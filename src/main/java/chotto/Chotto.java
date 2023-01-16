@@ -16,6 +16,7 @@ import chotto.lifecycle.ApiLifecycle;
 import chotto.lifecycle.ContributeTrier;
 import chotto.objects.BatchTranscript;
 import chotto.objects.CeremonyStatus;
+import chotto.objects.Receipt;
 import chotto.secret.Csprng;
 import chotto.secret.SecretsManager;
 import chotto.sequencer.SequencerClient;
@@ -25,6 +26,7 @@ import chotto.sign.EcdsaSignCallback;
 import chotto.sign.EcdsaSigner;
 import chotto.template.TemplateResolver;
 import chotto.verification.ContributionVerification;
+import chotto.verification.ReceiptValidator;
 import chotto.verification.TranscriptVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingRunnable;
@@ -118,8 +120,7 @@ public class Chotto implements Callable<Integer> {
 
   @Option(
       names = {"--contribution-attempt-period"},
-      description =
-          "How often (in seconds) to attempt contribution once authenticated. This value could change dynamically based on responses from the sequencer.",
+      description = "How often (in seconds) to attempt contribution once authenticated.",
       defaultValue = "30",
       showDefaultValue = Visibility.ALWAYS)
   public void setContributionAttemptPeriod(final int value) {
@@ -159,6 +160,12 @@ public class Chotto implements Callable<Integer> {
       showDefaultValue = Visibility.ALWAYS)
   private Path outputDirectory =
       Paths.get(System.getProperty("user.home") + File.separator + "kzg-ceremony");
+
+  @Option(
+      names = {"--validate-receipt"},
+      description = "Whether to validate the contribution receipt against the sequencer or not.",
+      showDefaultValue = Visibility.ALWAYS)
+  private boolean validateReceipt = false;
 
   @Override
   public Integer call() {
@@ -203,6 +210,7 @@ public class Chotto implements Callable<Integer> {
             httpClient, sequencer, objectMapper, transcriptVerification, contributionVerification);
 
     final CeremonyStatus ceremonyStatus = sequencerClient.getCeremonyStatus();
+
     AsciiArtHelper.printCeremonyStatus(ceremonyStatus);
 
     final Csprng csprng = new Csprng(entropyEntry);
@@ -279,7 +287,15 @@ public class Chotto implements Callable<Integer> {
             objectMapper,
             outputDirectory);
 
-    apiLifecycle.runLifecycle();
+    final Receipt receipt = apiLifecycle.runLifecycle();
+
+    if (validateReceipt) {
+      final ReceiptValidator receiptValidator = new ReceiptValidator(objectMapper);
+      final BatchTranscript batchTranscript = sequencerClient.getTranscript(false);
+      LOG.info("Validating receipt against the sequencer...");
+      receiptValidator.validate(receipt, batchTranscript);
+      LOG.info("Receipt validation was successful");
+    }
 
     AsciiArtHelper.printThankYou();
 
