@@ -163,7 +163,8 @@ public class Chotto implements Callable<Integer> {
 
   @Option(
       names = {"--validate-receipt"},
-      description = "Whether to validate the contribution receipt against the sequencer or not.",
+      description =
+          "Whether to validate the contribution receipt against the sequencer transcript or not.",
       showDefaultValue = Visibility.ALWAYS)
   private boolean validateReceipt = false;
 

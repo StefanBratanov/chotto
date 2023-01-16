@@ -157,7 +157,7 @@ Ethereum's Power of Tau client implementation written in Java
                               Default: 8080
   -V, --version             Print version information and exit.
       --validate-receipt    Whether to validate the contribution receipt
-                              against the sequencer or not.
+                              against the sequencer transcript or not.
                               Default: false
       --verify-transcript   Whether to verify the sequencer transcript at
                               startup or not
