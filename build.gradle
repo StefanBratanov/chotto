@@ -51,7 +51,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.1")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
     testImplementation("io.javalin:javalin-testtools:${javalinVersion}")
-    testImplementation("org.mock-server:mockserver-netty-no-dependencies:5.14.0")
+    testImplementation("org.mock-server:mockserver-netty-no-dependencies:5.15.0")
     testImplementation("org.awaitility:awaitility:4.2.0")
     testImplementation("io.github.hakky54:logcaptor:2.7.10")
 
