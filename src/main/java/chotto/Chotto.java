@@ -120,7 +120,7 @@ public class Chotto implements Callable<Integer> {
 
   @Option(
       names = {"--contribution-attempt-period"},
-      description = "How often (in seconds) to attempt contribution once authenticated.",
+      description = "How often (in seconds) to attempt contribution once authenticated",
       defaultValue = "30",
       showDefaultValue = Visibility.ALWAYS)
   public void setContributionAttemptPeriod(final int value) {
@@ -164,7 +164,7 @@ public class Chotto implements Callable<Integer> {
   @Option(
       names = {"--validate-receipt"},
       description =
-          "Whether to validate the contribution receipt against the sequencer transcript or not.",
+          "Whether to validate the receipt after contributing against the sequencer transcript or not",
       showDefaultValue = Visibility.ALWAYS)
   private boolean validateReceipt = false;
 

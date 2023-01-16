@@ -130,7 +130,7 @@ Ethereum's Power of Tau client implementation written in Java
                               that browser.
       --contribution-attempt-period=<contributionAttemptPeriod>
                             How often (in seconds) to attempt contribution once
-                              authenticated.
+                              authenticated
                               Default: 30
       --ecdsa-sign-contribution
                             Sign your contribution using the Ethereum address
@@ -156,8 +156,8 @@ Ethereum's Power of Tau client implementation written in Java
                             The port on which to start the local server
                               Default: 8080
   -V, --version             Print version information and exit.
-      --validate-receipt    Whether to validate the contribution receipt
-                              against the sequencer transcript or not.
+      --validate-receipt    Whether to validate the receipt after contributing
+                              against the sequencer transcript or not
                               Default: false
       --verify-transcript   Whether to verify the sequencer transcript at
                               startup or not
