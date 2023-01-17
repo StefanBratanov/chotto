@@ -67,7 +67,7 @@ public class ContributeTrier {
         return rateLimitingAttemptPeriod;
       } else if (errorIsUnknownSessionId(sequencerError)) {
         throw new IllegalStateException(
-            "Unknown session id error was received from the sequencer. Try restarting the client and authenticating again.");
+            "Unknown session id error was received from the sequencer.");
       } else {
         resetRateLimitingAttemptPeriod();
       }
