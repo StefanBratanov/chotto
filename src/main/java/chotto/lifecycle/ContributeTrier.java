@@ -66,8 +66,7 @@ public class ContributeTrier {
         rateLimitingAttemptPeriod = (int) Math.floor(rateLimitingAttemptPeriod * 1.1);
         return rateLimitingAttemptPeriod;
       } else if (errorIsUnknownSessionId(sequencerError)) {
-        throw new IllegalStateException(
-            "Unknown session id error was received from the sequencer");
+        throw new IllegalStateException("Unknown session id error was received from the sequencer");
       } else {
         resetRateLimitingAttemptPeriod();
       }
