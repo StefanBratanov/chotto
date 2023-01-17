@@ -182,7 +182,7 @@ class ContributeTrierTest {
             IllegalStateException.class,
             () -> contributeTrier.tryContributeUntilSuccess(sessionId));
 
-    assertThat(exception).hasMessage("Unknown session id error was received from the sequencer.");
+    assertThat(exception).hasMessage("Unknown session id error was received from the sequencer");
 
     verify(sequencerClient, times(2)).tryContribute(sessionId);
   }
