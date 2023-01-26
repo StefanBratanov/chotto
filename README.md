@@ -142,8 +142,7 @@ Ethereum's Power of Tau client implementation written in Java
                             A text which would be used as a seed to generate
                               random secrets in the background. There will be
                               several layers of randomness on top of this text,
-                              so there is no need to worry about its uniqueness
-                              or keeping it a secret.
+                              but it's RECOMMENDED to forget it forever!
   -h, --help                Show this help message and exit.
       --output-directory=<outputDirectory>
                             The directory where the outputs of the ceremony
