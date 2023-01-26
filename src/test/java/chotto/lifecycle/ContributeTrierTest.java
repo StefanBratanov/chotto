@@ -46,6 +46,12 @@ class ContributeTrierTest {
                   "TryContributeError::AnotherContributionInProgress",
                   "another contribution in progress")));
 
+  private final TryContributeResponse unknownSessionIdResponse =
+      new TryContributeResponse(
+          Optional.empty(),
+          Optional.of(
+              new SequencerError("TryContributeError::UnknownSessionId", "unknown session id")));
+
   private final ContributeTrier contributeTrier =
       new ContributeTrier(sequencerClient, TimeUnit.MILLISECONDS, 100);
 
@@ -98,80 +104,24 @@ class ContributeTrierTest {
   }
 
   @Test
-  public void testContributionIncreasesAttemptPeriodWhenRateLimitingErrorOccurs() {
+  public void testContributionFailsIfThereIsRateLimitingError() {
 
     when(sequencerClient.tryContribute(sessionId))
-        .thenReturn(rateLimitingResponse)
         .thenReturn(emptyResponse)
-        .thenReturn(successResponse);
+        .thenReturn(rateLimitingResponse);
 
-    long startCall = System.currentTimeMillis();
+    final IllegalStateException exception =
+        Assertions.assertThrows(
+            IllegalStateException.class,
+            () -> contributeTrier.tryContributeUntilSuccess(sessionId));
 
-    final BatchContribution result = contributeTrier.tryContributeUntilSuccess(sessionId);
+    assertThat(exception).hasMessage("Rate limiting error was received from the sequencer");
 
-    long endCall = System.currentTimeMillis();
-
-    assertThat(result).isEqualTo(receivedContribution);
-
-    verify(sequencerClient, times(3)).tryContribute(sessionId);
-
-    // 110 (2nd call) + 100 (3rd call)
-    assertThat(endCall - startCall).isGreaterThanOrEqualTo(210);
-  }
-
-  @Test
-  public void testContributionIncreasesAttemptPeriodTwiceIfMoreThanOneRateLimitingErrorInARow() {
-
-    when(sequencerClient.tryContribute(sessionId))
-        .thenReturn(rateLimitingResponse)
-        .thenReturn(rateLimitingResponse)
-        .thenReturn(emptyResponse)
-        .thenReturn(successResponse);
-
-    long startCall = System.currentTimeMillis();
-
-    final BatchContribution result = contributeTrier.tryContributeUntilSuccess(sessionId);
-
-    long endCall = System.currentTimeMillis();
-
-    assertThat(result).isEqualTo(receivedContribution);
-
-    verify(sequencerClient, times(4)).tryContribute(sessionId);
-
-    // 110 (2nd call) + 121 (2nd call) + 100 (3rd call)
-    assertThat(endCall - startCall).isGreaterThanOrEqualTo(331);
-  }
-
-  @Test
-  public void testContributionDoesNotIncreaseAttemptPeriodTwiceIfRateLimitingErrorsAreNotInARow() {
-
-    when(sequencerClient.tryContribute(sessionId))
-        .thenReturn(rateLimitingResponse)
-        .thenReturn(emptyResponse)
-        .thenReturn(rateLimitingResponse)
-        .thenReturn(successResponse);
-
-    long startCall = System.currentTimeMillis();
-
-    final BatchContribution result = contributeTrier.tryContributeUntilSuccess(sessionId);
-
-    long endCall = System.currentTimeMillis();
-
-    assertThat(result).isEqualTo(receivedContribution);
-
-    verify(sequencerClient, times(4)).tryContribute(sessionId);
-
-    // 110 (2nd call) + 100 (2nd call) + 110 (3rd call)
-    assertThat(endCall - startCall).isGreaterThanOrEqualTo(320);
+    verify(sequencerClient, times(2)).tryContribute(sessionId);
   }
 
   @Test
   public void testContributionFailsIfThereIsUnknownSessionIdError() {
-    final TryContributeResponse unknownSessionIdResponse =
-        new TryContributeResponse(
-            Optional.empty(),
-            Optional.of(
-                new SequencerError("TryContributeError::UnknownSessionId", "unknown session id")));
 
     when(sequencerClient.tryContribute(sessionId))
         .thenReturn(emptyResponse)

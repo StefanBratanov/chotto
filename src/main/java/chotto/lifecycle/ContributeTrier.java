@@ -10,7 +10,6 @@ import chotto.objects.SequencerError;
 import chotto.sequencer.SequencerClient;
 import chotto.sequencer.TryContributeResponse;
 import com.pivovarit.function.ThrowingRunnable;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +22,6 @@ public class ContributeTrier {
   private final TimeUnit attemptTimeUnit;
   private final int attemptPeriod;
 
-  private int rateLimitingAttemptPeriod;
-
   public ContributeTrier(
       final SequencerClient sequencerClient,
       final TimeUnit attemptTimeUnit,
@@ -32,7 +29,6 @@ public class ContributeTrier {
     this.sequencerClient = sequencerClient;
     this.attemptTimeUnit = attemptTimeUnit;
     this.attemptPeriod = attemptPeriod;
-    rateLimitingAttemptPeriod = attemptPeriod;
   }
 
   public BatchContribution tryContributeUntilSuccess(final String sessionId) {
@@ -40,52 +36,30 @@ public class ContributeTrier {
     TryContributeResponse tryContributeResponse = sequencerClient.tryContribute(sessionId);
 
     while (tryContributeResponse.getBatchContribution().isEmpty()) {
-      final Optional<SequencerError> maybeSequencerError =
-          tryContributeResponse.getSequencerError();
-      if (errorIsAnotherContributionInProgress(maybeSequencerError)) {
-        tryLogLobbySize();
-      }
-      final int nextAttemptPeriod = getNextAttemptPeriod(maybeSequencerError);
+      tryContributeResponse.getSequencerError().ifPresent(this::handleError);
       LOG.info(
           "Will try to contribute again in {} {}",
-          nextAttemptPeriod,
+          attemptPeriod,
           attemptTimeUnit.name().toLowerCase());
-      sleep(nextAttemptPeriod);
+      sleep(attemptPeriod);
       tryContributeResponse = sequencerClient.tryContribute(sessionId);
     }
 
     return tryContributeResponse.getBatchContribution().get();
   }
 
-  private int getNextAttemptPeriod(final Optional<SequencerError> maybeSequencerError) {
-    if (maybeSequencerError.isPresent()) {
-      final SequencerError sequencerError = maybeSequencerError.get();
-      if (errorIsRateLimiting(sequencerError)) {
-        LOG.info(
-            "Rate limiting error was received from the sequencer. Will increase period for the next contribution attempt.");
-        rateLimitingAttemptPeriod = (int) Math.floor(rateLimitingAttemptPeriod * 1.1);
-        return rateLimitingAttemptPeriod;
-      } else if (errorIsUnknownSessionId(sequencerError)) {
-        throw new IllegalStateException("Unknown session id error was received from the sequencer");
-      } else {
-        resetRateLimitingAttemptPeriod();
-      }
+  private void handleError(final SequencerError sequencerError) {
+    if (errorIsAnotherContributionInProgress(sequencerError)) {
+      tryLogLobbySize();
+    } else if (errorIsRateLimiting(sequencerError)) {
+      throw new IllegalStateException("Rate limiting error was received from the sequencer");
+    } else if (errorIsUnknownSessionId(sequencerError)) {
+      throw new IllegalStateException("Unknown session id error was received from the sequencer");
     }
-    resetRateLimitingAttemptPeriod();
-    return attemptPeriod;
   }
 
-  private void resetRateLimitingAttemptPeriod() {
-    rateLimitingAttemptPeriod = attemptPeriod;
-  }
-
-  private boolean errorIsAnotherContributionInProgress(
-      final Optional<SequencerError> maybeSequencerError) {
-    return maybeSequencerError
-        .map(
-            sequencerError ->
-                sequencerError.getCode().contains(ANOTHER_CONTRIBUTION_IN_PROGRESS_ERROR))
-        .orElse(false);
+  private boolean errorIsAnotherContributionInProgress(final SequencerError sequencerError) {
+    return sequencerError.getCode().contains(ANOTHER_CONTRIBUTION_IN_PROGRESS_ERROR);
   }
 
   private boolean errorIsRateLimiting(final SequencerError sequencerError) {
