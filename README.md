@@ -1,4 +1,4 @@
-# Chotto
+# chotto
 
 [![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/StefanBratanov/chotto)](https://github.com/StefanBratanov/chotto/releases/latest)
