@@ -53,7 +53,7 @@ dependencies {
     testImplementation("io.javalin:javalin-testtools:${javalinVersion}")
     testImplementation("org.mock-server:mockserver-netty-no-dependencies:5.15.0")
     testImplementation("org.awaitility:awaitility:4.2.0")
-    testImplementation("io.github.hakky54:logcaptor:2.7.10")
+    testImplementation("io.github.hakky54:logcaptor:2.8.0")
 
 }
 
