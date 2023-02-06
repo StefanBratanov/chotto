@@ -11,6 +11,7 @@ import chotto.serialization.ChottoObjectMapper;
 import chotto.verification.ContributionVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pivovarit.function.ThrowingSupplier;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -71,30 +72,12 @@ class ChottoIntegrationTest {
     serverPort = getFreePort();
     mockCeremonyStatusResponse();
     mockLoginLinksResponse();
+    provideEntropy("Danksharding");
   }
 
   @AfterEach
   public void cleanUp() {
     mockServer.stop();
-  }
-
-  @Test
-  public void testInvalidParameters() {
-    final StringWriter sw = new StringWriter();
-    cmd.setErr(new PrintWriter(sw));
-    // short entropy entry
-    int exitCode = cmd.execute(getSequencerArg(), "--entropy-entry=foo");
-    assertThat(sw.toString())
-        .contains(
-            "Invalid value 'foo' for option '--entropy-entry': the text should be more than 5 characters.");
-    assertThat(exitCode).isEqualTo(2);
-    // <= 0 contribution attempt period
-    exitCode =
-        cmd.execute(getSequencerArg(), getEntropyEntryArg(), "--contribution-attempt-period=0");
-    assertThat(sw.toString())
-        .contains(
-            "Invalid value '0' for option '--contribution-attempt-period': value should be bigger than 0.");
-    assertThat(exitCode).isEqualTo(2);
   }
 
   @Test
@@ -104,6 +87,34 @@ class ChottoIntegrationTest {
     final int exitCode = cmd.execute("--version");
     assertThat(sw.toString()).isNotEmpty();
     assertThat(exitCode).isZero();
+  }
+
+  @Test
+  public void testInvalidArguments() {
+    final StringWriter sw = new StringWriter();
+    cmd.setErr(new PrintWriter(sw));
+    // <= 0 contribution attempt period
+    int exitCode = cmd.execute(getSequencerArg(), "--contribution-attempt-period=0");
+    assertThat(sw.toString())
+        .contains(
+            "Invalid value '0' for option '--contribution-attempt-period': value should be bigger than 0.");
+    assertThat(exitCode).isEqualTo(2);
+  }
+
+  @Test
+  public void testShortEntropy() {
+
+    provideEntropy("foo");
+
+    final CompletableFuture<Integer> exitCode = runChottoCommand();
+
+    await().atMost(Duration.ofMinutes(1)).until(exitCode::isDone);
+
+    assertThat(exitCode).isCompletedWithValue(1);
+
+    assertThat(logCaptor.getErrorLogs())
+        .contains(
+            "There was an error during the ceremony. You can restart Chotto to try to contribute again.");
   }
 
   @ParameterizedTest
@@ -215,7 +226,6 @@ class ChottoIntegrationTest {
         () ->
             cmd.execute(
                 getSequencerArg(),
-                getEntropyEntryArg(),
                 "--server-port=" + serverPort,
                 "--callback-endpoint=" + getLocalServerHost(),
                 "--output-directory=" + tempDir,
@@ -227,8 +237,8 @@ class ChottoIntegrationTest {
     return "--sequencer=" + "http://localhost:" + mockServer.getPort();
   }
 
-  private String getEntropyEntryArg() {
-    return "--entropy-entry=Danksharding";
+  private void provideEntropy(final String entropy) {
+    System.setIn(new ByteArrayInputStream(entropy.getBytes()));
   }
 
   private void mockCeremonyStatusResponse() {

@@ -2,7 +2,7 @@
 
 [![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/StefanBratanov/chotto)](https://github.com/StefanBratanov/chotto/releases/latest)
-[![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg?logo=apache)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
 [![codecov](https://codecov.io/github/StefanBratanov/chotto/branch/master/graph/badge.svg?token=9WEPEA6GA7)](https://codecov.io/github/StefanBratanov/chotto)
 [![CodeFactor](https://www.codefactor.io/repository/github/stefanbratanov/chotto/badge)](https://www.codefactor.io/repository/github/stefanbratanov/chotto)
 
@@ -49,10 +49,11 @@ different random secrets. The user should not have a knowledge of these generate
 all secrets should be wiped out from memory after the contribution is complete. The way each random
 secret is generated in Chotto is as follows:
 
-* User provides `entropy-entry` argument of a text with at least 6 characters.
-* A seed with 256 bytes is initialised with the `entropy-entry` bytes. (truncated or padded with
+* User provides an entropy of at least 6 characters when starting the client.
+* A seed with 256 bytes is initialised with the entropy bytes. (truncated or padded with
   zeros)
-* Half or more bytes (128 or 256 - `entropy-entry` length) are replaced by random bytes. (based on
+* Half or more bytes (128 or 256 minus the length of the entropy) are replaced by random bytes. (
+  based on
   `java.util.Random`)
 * The seed is passed to a `BLS KeyGen` function which adds more randomness and ultimately generates
   the secret.
@@ -65,7 +66,6 @@ Java process is terminated, all secrets will be wiped out from memory.
 
 Required arguments:
 
-* `entropy-entry` (see [Generating randomness](#generating-randomness) for more information)
 * `sequencer`
 
 See [CLI Arguments](#cli-arguments) for all available arguments.
@@ -77,19 +77,19 @@ Note: For Windows, use the `chotto.bat` executable.
 #### Authenticate with Ethereum
 
 ```bash
-./chotto --sequencer=https://seq.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome"
+./chotto --sequencer=https://seq.ceremony.ethereum.org/
 ```
 
 #### Authenticate with GitHub
 
 ```bash
-./chotto --sequencer=https://seq.ceremony.ethereum.org/ --entropy-entry="Ethereum is awesome" --authentication=github
+./chotto --sequencer=https://seq.ceremony.ethereum.org/ --authentication=github
 ```
 
 #### Run against a local sequencer
 
 ```bash
-./chotto --sequencer=http://localhost:3000/ --entropy-entry="Ethereum is awesome"
+./chotto --sequencer=http://localhost:3000/
 ```
 
 You can start a local sequencer by following the setup instructions
@@ -110,7 +110,6 @@ Usage: chotto [-hV] [--bls-sign-sub-contributions] [--ecdsa-sign-contribution]
               [--authentication=<provider>]
               [--callback-endpoint=<callbackEndpoint>]
               [--contribution-attempt-period=<contributionAttemptPeriod>]
-              --entropy-entry=<entropyEntry>
               [--output-directory=<outputDirectory>] --sequencer=<sequencer>
               [--server-port=<serverPort>]
 Ethereum's Power of Tau client implementation written in Java
@@ -138,11 +137,6 @@ Ethereum's Power of Tau client implementation written in Java
                               value is only applicable when you have
                               authenticated with Ethereum.
                               Default: true
-      --entropy-entry=<entropyEntry>
-                            A text which would be used as a seed to generate
-                              random secrets in the background. There will be
-                              several layers of randomness on top of this text,
-                              but it's RECOMMENDED to forget it forever!
   -h, --help                Show this help message and exit.
       --output-directory=<outputDirectory>
                             The directory where the outputs of the ceremony

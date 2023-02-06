@@ -78,25 +78,6 @@ public class Chotto implements Callable<Integer> {
       required = true)
   private URI sequencer;
 
-  private String entropyEntry;
-
-  @Option(
-      names = {"--entropy-entry"},
-      description =
-          "A text which would be used as a seed to generate random secrets in the background. There will be several layers of randomness on top of this text, but it's RECOMMENDED to forget it forever!",
-      required = true)
-  public void setEntropyEntry(final String value) {
-    if (value.length() <= 5) {
-      throw new ParameterException(
-          spec.commandLine(),
-          String.format(
-              "Invalid value '%s' for option '--entropy-entry': "
-                  + "the text should be more than 5 characters.",
-              value));
-    }
-    entropyEntry = value;
-  }
-
   @Option(
       names = {"--server-port"},
       description = "The port on which to start the local server",
@@ -185,6 +166,8 @@ public class Chotto implements Callable<Integer> {
     createOutputDirectoryIfNeeded();
 
     AsciiArtHelper.printBannerOnStartup();
+
+    final String entropyEntry = CliInstructor.instructUserToProvideEntropy();
 
     final Store store = new Store();
 

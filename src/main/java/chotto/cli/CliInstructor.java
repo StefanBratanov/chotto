@@ -8,11 +8,25 @@ import java.awt.Desktop.Action;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class CliInstructor {
 
   private static final String TWITTER_SHARE_FORMAT = "https://twitter.com/intent/tweet?text=%s";
+
+  public static String instructUserToProvideEntropy() {
+    final Scanner scanner = new Scanner(System.in);
+    System.out.printf(
+        "%nPlease provide an entropy of at least 6 characters. Keep in mind it's recommended to FORGET the entropy forever after your contribution!%n%n");
+    final String entropy = scanner.next();
+    if (entropy.length() < 6) {
+      throw new IllegalArgumentException("Entropy should be of at least 6 characters.");
+    }
+    // add new line
+    System.out.println();
+    return entropy;
+  }
 
   public static void instructUserToLogin(
       final boolean addNewLineAtStart,
