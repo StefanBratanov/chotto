@@ -11,6 +11,7 @@ import chotto.objects.BatchContribution;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.SequencerError;
 import chotto.sequencer.SequencerClient;
+import chotto.sequencer.SequencerClientException;
 import chotto.sequencer.TryContributeResponse;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -135,5 +136,19 @@ class ContributeTrierTest {
     assertThat(exception).hasMessage("Unknown session id error was received from the sequencer");
 
     verify(sequencerClient, times(2)).tryContribute(sessionId);
+  }
+
+  @Test
+  public void testUnexpectedFailureDoesNotStopTryingToContribute() {
+    when(sequencerClient.tryContribute(sessionId))
+        .thenReturn(emptyResponse)
+        .thenThrow(new SequencerClientException("oopsy"))
+        .thenReturn(successResponse);
+
+    final BatchContribution result = contributeTrier.tryContributeUntilSuccess(sessionId);
+
+    assertThat(result).isEqualTo(receivedContribution);
+
+    verify(sequencerClient, times(3)).tryContribute(sessionId);
   }
 }

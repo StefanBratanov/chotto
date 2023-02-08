@@ -8,8 +8,10 @@ import chotto.objects.BatchContribution;
 import chotto.objects.CeremonyStatus;
 import chotto.objects.SequencerError;
 import chotto.sequencer.SequencerClient;
+import chotto.sequencer.SequencerClientException;
 import chotto.sequencer.TryContributeResponse;
 import com.pivovarit.function.ThrowingRunnable;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,13 @@ public class ContributeTrier {
           attemptPeriod,
           attemptTimeUnit.name().toLowerCase());
       sleep(attemptPeriod);
-      tryContributeResponse = sequencerClient.tryContribute(sessionId);
+      try {
+        tryContributeResponse = sequencerClient.tryContribute(sessionId);
+      } catch (final SequencerClientException ex) {
+        LOG.error(
+            "Error happened while trying to contribute: {}. Will attempt to contribute again regardless.",
+            Optional.ofNullable(ex.getCause()).orElse(ex).getMessage());
+      }
     }
 
     return tryContributeResponse.getBatchContribution().get();
