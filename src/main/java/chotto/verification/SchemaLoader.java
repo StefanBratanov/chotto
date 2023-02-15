@@ -7,6 +7,8 @@ import java.io.InputStream;
 
 public class SchemaLoader {
 
+  private SchemaLoader() {}
+
   private static final JsonSchemaFactory FACTORY =
       JsonSchemaFactory.getInstance(VersionFlag.V202012);
 

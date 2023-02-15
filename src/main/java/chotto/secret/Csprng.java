@@ -1,9 +1,9 @@
 package chotto.secret;
 
 import chotto.objects.Secret;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,8 @@ public class Csprng {
 
   private final byte[] entropyEntry;
 
+  private final SecureRandom random = new SecureRandom();
+
   private final Set<Secret> generatedSecrets = new HashSet<>();
 
   public Csprng(final String entropyEntry) {
@@ -27,7 +29,7 @@ public class Csprng {
     // replace half or more entries with random bytes to increase entropy
     final int leftBytesToFill = Math.max(SEED_LENGTH - entropyEntry.length, SEED_LENGTH / 2);
     final byte[] randomBytes = new byte[leftBytesToFill];
-    new Random().nextBytes(randomBytes);
+    random.nextBytes(randomBytes);
     System.arraycopy(randomBytes, 0, seed, SEED_LENGTH - leftBytesToFill, leftBytesToFill);
     // fromSeed is using the BLS KeyGen function to generate a secret
     final Secret secret = Secret.fromSeed(seed);

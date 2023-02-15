@@ -35,6 +35,7 @@ public class SequencerClient {
       "AnotherContributionInProgress";
 
   private static final Logger LOG = LoggerFactory.getLogger(SequencerClient.class);
+  private static final String AUTHORIZATION_HEADER = "Authorization";
 
   private final HttpClient httpClient;
   private final URI sequencerEndpoint;
@@ -76,7 +77,7 @@ public class SequencerClient {
       throwException(response, "Failed to get transcript");
     }
 
-    LOG.info("A transcript was received" + (verifyTranscript ? ". Verifying it." : ""));
+    LOG.info("A transcript was received{}", verifyTranscript ? ". Verifying it." : "");
 
     final String transcriptJson = response.body();
 
@@ -128,7 +129,7 @@ public class SequencerClient {
   public TryContributeResponse tryContribute(final String sessionId) {
     final HttpRequest request =
         buildPostRequest("/lobby/try_contribute", BodyPublishers.noBody())
-            .header("Authorization", "Bearer " + sessionId)
+            .header(AUTHORIZATION_HEADER, getBearer(sessionId))
             .build();
 
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
@@ -182,7 +183,7 @@ public class SequencerClient {
                     ThrowingSupplier.unchecked(
                             () -> objectMapper.writeValueAsBytes(batchContribution))
                         .get()))
-            .header("Authorization", "Bearer " + sessionId)
+            .header(AUTHORIZATION_HEADER, getBearer(sessionId))
             .header("Content-Type", ContentType.JSON)
             .build();
 
@@ -198,7 +199,7 @@ public class SequencerClient {
   public void abortContribution(final String sessionId) {
     final HttpRequest request =
         buildPostRequest("/contribution/abort", BodyPublishers.noBody())
-            .header("Authorization", "Bearer " + sessionId)
+            .header(AUTHORIZATION_HEADER, getBearer(sessionId))
             .build();
 
     final HttpResponse<String> response = sendRequest(request, BodyHandlers.ofString());
@@ -223,6 +224,10 @@ public class SequencerClient {
   private HttpRequest.Builder buildRequest(
       final String path, final String method, final BodyPublisher bodyPublisher) {
     return HttpRequest.newBuilder(sequencerEndpoint.resolve(path)).method(method, bodyPublisher);
+  }
+
+  private String getBearer(final String sessionId) {
+    return "Bearer " + sessionId;
   }
 
   private <T> HttpResponse<T> sendRequest(

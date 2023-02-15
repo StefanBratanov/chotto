@@ -10,11 +10,11 @@ public class ChottoObjectMapper {
 
   private ChottoObjectMapper() {}
 
-  private static ObjectMapper INSTANCE;
+  private static ObjectMapper instance;
 
   public static ObjectMapper getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new ObjectMapper();
+    if (instance == null) {
+      instance = new ObjectMapper();
       final SimpleModule module = new SimpleModule("Chotto");
       module.addSerializer(G1Point.class, new G1PointSerializer());
       module.addDeserializer(G1Point.class, new G1PointDeserializer());
@@ -22,9 +22,9 @@ public class ChottoObjectMapper {
       module.addDeserializer(G2Point.class, new G2PointDeserializer());
       module.addSerializer(BlsSignature.class, new BlsSignatureSerializer());
       module.addDeserializer(BlsSignature.class, new BlsSignatureDeserializer());
-      INSTANCE.registerModule(module);
-      INSTANCE.getSerializerProvider().setNullValueSerializer(new CustomNullSerializer());
+      instance.registerModule(module);
+      instance.getSerializerProvider().setNullValueSerializer(new CustomNullSerializer());
     }
-    return INSTANCE;
+    return instance;
   }
 }

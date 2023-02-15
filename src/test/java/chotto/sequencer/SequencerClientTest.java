@@ -137,8 +137,8 @@ class SequencerClientTest {
           assertThat(witness.getRunningProducts()).isNotEmpty();
           assertThat(witness.getPotPubkeys()).isNotEmpty();
           assertThat(witness.getBlsSignatures()).isNotEmpty();
-          assertThat(transcript.getNumG1Powers()).isGreaterThan(0);
-          assertThat(transcript.getNumG2Powers()).isGreaterThan(0);
+          assertThat(transcript.getNumG1Powers()).isPositive();
+          assertThat(transcript.getNumG2Powers()).isPositive();
         });
   }
 

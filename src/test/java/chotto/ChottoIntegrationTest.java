@@ -168,7 +168,7 @@ class ChottoIntegrationTest {
               if (provider.equals(Provider.ETHEREUM) && ecdsaSignContribution) {
                 assertThat(batchContribution.getEcdsaSignature()).isEqualTo(ecdsaSignature);
               } else {
-                assertThat(batchContribution.getEcdsaSignature()).isEqualTo("");
+                assertThat(batchContribution.getEcdsaSignature()).isEmpty();
               }
             });
     // verify receipt is saved

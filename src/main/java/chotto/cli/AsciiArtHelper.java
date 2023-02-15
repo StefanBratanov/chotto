@@ -9,6 +9,8 @@ import java.util.Objects;
 
 public class AsciiArtHelper {
 
+  private AsciiArtHelper() {}
+
   private static final String BANNER = readResource("banner.txt");
   private static final String CEREMONY_CANDLE = readResource("ceremony.txt");
 

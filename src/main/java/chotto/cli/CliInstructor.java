@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class CliInstructor {
 
+  private CliInstructor() {}
+
   private static final String TWITTER_SHARE_FORMAT = "https://twitter.com/intent/tweet?text=%s";
 
   public static String instructUserToProvideEntropy() {

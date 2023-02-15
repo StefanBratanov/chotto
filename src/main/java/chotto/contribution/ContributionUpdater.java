@@ -9,6 +9,8 @@ import org.apache.tuweni.units.bigints.UInt256;
 
 public class ContributionUpdater {
 
+  private ContributionUpdater() {}
+
   public static void updatePowersOfTau(final Contribution contribution, final UInt256 secret) {
     /// Updates the Powers of Tau within a sub-ceremony by multiplying each with a successive power
     // of the secret x.
