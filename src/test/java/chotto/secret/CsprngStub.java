@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-public class CsprngStub extends Csprng {
+public class CsprngStub implements Csprng {
 
   private final Supplier<Secret> fixedSecrets;
 
@@ -16,7 +16,6 @@ public class CsprngStub extends Csprng {
   }
 
   private CsprngStub(final Supplier<Secret> fixedSecrets) {
-    super("foobar");
     this.fixedSecrets = fixedSecrets;
   }
 

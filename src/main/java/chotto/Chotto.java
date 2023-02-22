@@ -19,6 +19,7 @@ import chotto.objects.CeremonyStatus;
 import chotto.objects.Receipt;
 import chotto.secret.Csprng;
 import chotto.secret.SecretsManager;
+import chotto.secret.StdioCsprng;
 import chotto.sequencer.SequencerClient;
 import chotto.serialization.ChottoObjectMapper;
 import chotto.sign.BlsSigner;
@@ -167,7 +168,12 @@ public class Chotto implements Callable<Integer> {
 
     AsciiArtHelper.printBannerOnStartup();
 
-    final String entropyEntry = CliInstructor.instructUserToProvideEntropy();
+    final String entropy = CliInstructor.instructUserToProvideEntropy();
+
+    final Csprng csprng = new StdioCsprng(entropy);
+    final SecretsManager secretsManager = new SecretsManager(csprng);
+
+    secretsManager.generateSecrets();
 
     final Store store = new Store();
 
@@ -199,11 +205,6 @@ public class Chotto implements Callable<Integer> {
 
     final Optional<BatchTranscript> verifiedBatchTranscript =
         verifyTranscript ? Optional.of(sequencerClient.getTranscript(true)) : Optional.empty();
-
-    final Csprng csprng = new Csprng(entropyEntry);
-    final SecretsManager secretsManager = new SecretsManager(csprng);
-
-    secretsManager.generateSecrets();
 
     final BlsSigner blsSigner = new BlsSigner();
 

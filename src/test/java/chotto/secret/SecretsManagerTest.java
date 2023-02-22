@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 class SecretsManagerTest {
 
-  private final Csprng csprng = new Csprng("Danksharding");
+  private final Csprng csprng = new StdioCsprng("Danksharding");
 
   private final SecretsManager secretsManager = new SecretsManager(csprng);
 

@@ -5,6 +5,7 @@ import chotto.objects.BatchTranscript;
 import chotto.objects.Receipt;
 import chotto.objects.Secret;
 import chotto.secret.Csprng;
+import chotto.secret.StdioCsprng;
 import chotto.serialization.ChottoObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 public class TestUtil {
 
-  private static final Csprng CSPRNG = new Csprng(UUID.randomUUID().toString());
+  private static final Csprng CSPRNG = new StdioCsprng(UUID.randomUUID().toString());
 
   private static final ObjectMapper OBJECT_MAPPER = ChottoObjectMapper.getInstance();
 

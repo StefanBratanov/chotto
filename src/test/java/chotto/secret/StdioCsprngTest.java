@@ -9,9 +9,9 @@ import java.util.Map;
 import org.apache.tuweni.units.bigints.UInt256;
 import org.junit.jupiter.api.Test;
 
-class CsprngTest {
+class StdioCsprngTest {
 
-  private final Csprng csprng = new Csprng("Danksharding");
+  private final StdioCsprng csprng = new StdioCsprng("Danksharding");
 
   @Test
   void generatesRandomSecrets() {
