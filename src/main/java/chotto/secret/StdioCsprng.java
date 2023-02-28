@@ -1,8 +1,7 @@
 package chotto.secret;
 
-import java.util.Arrays;
-
 import chotto.objects.Secret;
+import java.util.Arrays;
 
 public class StdioCsprng implements Csprng {
 
