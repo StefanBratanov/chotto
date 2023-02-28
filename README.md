@@ -51,12 +51,12 @@ all secrets should be wiped out from memory after the contribution is complete. 
 secret is generated in Chotto is as follows:
 
 * User provides an entropy of at least 6 characters when starting the client.
-* A seed with 256 bytes is initialised with the entropy bytes. (truncated or padded with
+* An IKM (input keying material) with 256 bytes is initialised with the entropy bytes. (truncated or padded with
   zeros)
 * Half or more bytes (128 or 256 minus the length of the entropy) are replaced by random bytes. (
   based on
-  `java.util.Random`)
-* The seed is passed to a `BLS KeyGen` function which adds more randomness and ultimately generates
+  `java.security.SecureRandom`)
+* The IKM is passed to a [BLS KeyGen](https://github.com/ethereum/kzg-ceremony-specs/blob/master/docs/cryptography/BLS.md#keygen) function which ultimately generates
   the secret.
 
 The secrets will only live in the Java process, so won't be exposed when the browser is opened for

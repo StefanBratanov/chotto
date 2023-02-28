@@ -1,11 +1,12 @@
 package chotto.secret;
 
-import chotto.objects.Secret;
 import java.util.Arrays;
+
+import chotto.objects.Secret;
 
 public class StdioCsprng implements Csprng {
 
-  private static final int SEED_LENGTH = 256;
+  private static final int IKM_LENGTH = 256;
 
   private final byte[] entropy;
 
@@ -15,13 +16,13 @@ public class StdioCsprng implements Csprng {
 
   @Override
   public Secret generateSecret() {
-    final byte[] seed = Arrays.copyOf(entropy, SEED_LENGTH);
+    final byte[] ikm = Arrays.copyOf(entropy, IKM_LENGTH);
     // replace half or more entries with random bytes to increase entropy
-    final int leftBytesToFill = Math.max(SEED_LENGTH - entropy.length, SEED_LENGTH / 2);
+    final int leftBytesToFill = Math.max(IKM_LENGTH - entropy.length, IKM_LENGTH / 2);
     final byte[] randomBytes = new byte[leftBytesToFill];
     SECURE_RANDOM.nextBytes(randomBytes);
-    System.arraycopy(randomBytes, 0, seed, SEED_LENGTH - leftBytesToFill, leftBytesToFill);
-    // fromSeed is using the BLS KeyGen function to generate a secret
-    return Secret.fromSeed(seed);
+    System.arraycopy(randomBytes, 0, ikm, IKM_LENGTH - leftBytesToFill, leftBytesToFill);
+    // fromIkm is using a BLS KeyGen(IKM) function to generate a secret
+    return Secret.fromIkm(ikm);
   }
 }
