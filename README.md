@@ -1,6 +1,6 @@
 # chotto
 
-## 🕯️🕯️🕯️ *** THE KZG CEREMONY IS CLOSED. THANKS FOR CONTRIBUTING. *** 🕯️🕯️🕯️ https://twitter.com/CarlBeek/status/1694566774375698789
+## 🕯️🕯️🕯️ THE KZG CEREMONY IS CLOSED. THANKS FOR CONTRIBUTING. 🕯️🕯️🕯️ https://twitter.com/CarlBeek/status/1694566774375698789
 
 [![GitHub license](https://img.shields.io/github/license/StefanBratanov/chotto.svg?logo=apache)](https://github.com/StefanBratanov/chotto/blob/master/LICENSE)
 [![build](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chotto/actions/workflows/build.yml)
